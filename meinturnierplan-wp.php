@@ -141,6 +141,7 @@ class MeinTurnierplanWP {
     wp_nonce_field('mtp_table_meta_box', 'mtp_table_meta_box_nonce');
     
     // Get current values
+    $tournament_id = get_post_meta($post->ID, '_mtp_tournament_id', true);
     $width = get_post_meta($post->ID, '_mtp_table_width', true);
     if (empty($width)) {
       $width = '300'; // Default width
@@ -148,6 +149,13 @@ class MeinTurnierplanWP {
     
     // Output the form
     echo '<table class="form-table">';
+    echo '<tr>';
+    echo '<th scope="row"><label for="mtp_tournament_id">' . __('Tournament ID', 'meinturnierplan-wp') . '</label></th>';
+    echo '<td>';
+    echo '<input type="text" id="mtp_tournament_id" name="mtp_tournament_id" value="' . esc_attr($tournament_id) . '" class="regular-text" />';
+    echo '<p class="description">' . __('Enter the tournament ID from meinturnierplan.de (e.g., 1753883027)', 'meinturnierplan-wp') . '</p>';
+    echo '</td>';
+    echo '</tr>';
     echo '<tr>';
     echo '<th scope="row"><label for="mtp_table_width">' . __('Table Width (px)', 'meinturnierplan-wp') . '</label></th>';
     echo '<td>';
@@ -160,18 +168,31 @@ class MeinTurnierplanWP {
     // Preview section
     echo '<h3>' . __('Preview', 'meinturnierplan-wp') . '</h3>';
     echo '<div id="mtp-table-preview" style="border: 1px solid #ddd; padding: 10px; background: #f9f9f9;">';
-    echo $this->render_table_html($post->ID, array('width' => $width));
+    // Always show a table - either with data (if ID provided) or empty (if no ID)
+    echo $this->render_table_html($post->ID, array('id' => $tournament_id, 'width' => $width));
     echo '</div>';
     
     // Add JavaScript for live preview
     echo '<script>
     jQuery(document).ready(function($) {
-      $("#mtp_table_width").on("input", function() {
-        var width = $(this).val();
-        var preview = $("#mtp-table-preview table");
-        if (preview.length) {
-          preview.css("width", width + "px");
-        }
+      $("#mtp_tournament_id, #mtp_table_width").on("input", function() {
+        var tournamentId = $("#mtp_tournament_id").val();
+        var width = $("#mtp_table_width").val();
+        var preview = $("#mtp-table-preview");
+        
+        // Always update preview - either with data or empty table
+        var postId = ' . intval($post->ID) . ';
+        $.post(ajaxurl, {
+          action: "mtp_preview_table",
+          post_id: postId,
+          tournament_id: tournamentId,
+          width: width,
+          nonce: "' . wp_create_nonce('mtp_preview_nonce') . '"
+        }, function(response) {
+          if (response.success) {
+            preview.html(response.data);
+          }
+        });
       });
     });
     </script>';
@@ -182,13 +203,19 @@ class MeinTurnierplanWP {
    */
   public function shortcode_meta_box_callback($post) {
     // Get current values
+    $tournament_id = get_post_meta($post->ID, '_mtp_tournament_id', true);
     $width = get_post_meta($post->ID, '_mtp_table_width', true);
     if (empty($width)) {
       $width = '300'; // Default width
     }
     
+    // Use empty string if no tournament ID, but still generate shortcode
+    if (empty($tournament_id)) {
+      $tournament_id = '';
+    }
+    
     // Generate the shortcode
-    $shortcode = '[mtp-table id="' . $post->ID . '" lang="en" s-size="9" s-sizeheader="10" s-color="000000" s-maincolor="173f75" s-padding="2" s-innerpadding="5" s-bgcolor="00000000" s-logosize="20" s-bcolor="bbbbbb" s-bsizeh="1" s-bsizev="1" s-bsizeoh="1" s-bsizeov="1" s-bbcolor="bbbbbb" s-bbsize="2" s-bgeven="f0f8ffb0" s-bgodd="ffffffb0" s-bgover="eeeeffb0" s-bghead="eeeeffff" width="' . esc_attr($width) . '" height="152"]';
+    $shortcode = '[mtp-table id="' . esc_attr($tournament_id) . '" post_id="' . $post->ID . '" lang="en" s-size="9" s-sizeheader="10" s-color="000000" s-maincolor="173f75" s-padding="2" s-innerpadding="5" s-bgcolor="00000000" s-logosize="20" s-bcolor="bbbbbb" s-bsizeh="1" s-bsizev="1" s-bsizeoh="1" s-bsizeov="1" s-bbcolor="bbbbbb" s-bbsize="2" s-bgeven="f0f8ffb0" s-bgodd="ffffffb0" s-bgover="eeeeffb0" s-bghead="eeeeffff" width="' . esc_attr($width) . '" height="152"]';
     
     echo '<div style="margin-bottom: 15px;">';
     echo '<label for="mtp_shortcode_field" style="display: block; margin-bottom: 5px; font-weight: bold;">' . __('Generated Shortcode:', 'meinturnierplan-wp') . '</label>';
@@ -205,6 +232,13 @@ class MeinTurnierplanWP {
     echo __('Shortcode copied to clipboard!', 'meinturnierplan-wp');
     echo '</div>';
     
+    if (empty($tournament_id)) {
+      echo '<div style="margin-top: 10px; padding: 8px; background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; border-radius: 3px;">';
+      echo '<strong>' . __('Note:', 'meinturnierplan-wp') . '</strong> ';
+      echo __('Enter a Tournament ID above to display live tournament data. Without an ID, an empty table will be shown.', 'meinturnierplan-wp');
+      echo '</div>';
+    }
+    
     // Add JavaScript for copy functionality and live update
     echo '<script>
     jQuery(document).ready(function($) {
@@ -217,11 +251,14 @@ class MeinTurnierplanWP {
         $("#mtp_copy_success").fadeIn().delay(2000).fadeOut();
       });
       
-      // Update shortcode when width changes
-      $("#mtp_table_width").on("input", function() {
-        var width = $(this).val();
+      // Update shortcode when tournament ID or width changes
+      $("#mtp_tournament_id, #mtp_table_width").on("input", function() {
+        var tournamentId = $("#mtp_tournament_id").val();
+        var width = $("#mtp_table_width").val();
         var postId = ' . intval($post->ID) . ';
-        var newShortcode = "[mtp-table id=\"" + postId + "\" lang=\"en\" s-size=\"9\" s-sizeheader=\"10\" s-color=\"000000\" s-maincolor=\"173f75\" s-padding=\"2\" s-innerpadding=\"5\" s-bgcolor=\"00000000\" s-logosize=\"20\" s-bcolor=\"bbbbbb\" s-bsizeh=\"1\" s-bsizev=\"1\" s-bsizeoh=\"1\" s-bsizeov=\"1\" s-bbcolor=\"bbbbbb\" s-bbsize=\"2\" s-bgeven=\"f0f8ffb0\" s-bgodd=\"ffffffb0\" s-bgover=\"eeeeffb0\" s-bghead=\"eeeeffff\" width=\"" + width + "\" height=\"152\"]";
+        
+        // Always generate shortcode, even with empty tournament ID
+        var newShortcode = "[mtp-table id=\"" + tournamentId + "\" post_id=\"" + postId + "\" lang=\"en\" s-size=\"9\" s-sizeheader=\"10\" s-color=\"000000\" s-maincolor=\"173f75\" s-padding=\"2\" s-innerpadding=\"5\" s-bgcolor=\"00000000\" s-logosize=\"20\" s-bcolor=\"bbbbbb\" s-bsizeh=\"1\" s-bsizev=\"1\" s-bsizeoh=\"1\" s-bsizeov=\"1\" s-bbcolor=\"bbbbbb\" s-bbsize=\"2\" s-bgeven=\"f0f8ffb0\" s-bgodd=\"ffffffb0\" s-bgover=\"eeeeffb0\" s-bghead=\"eeeeffff\" width=\"" + width + "\" height=\"152\"]";
         $("#mtp_shortcode_field").val(newShortcode);
       });
     });
@@ -253,6 +290,12 @@ class MeinTurnierplanWP {
       return;
     }
     
+    // Save tournament ID
+    if (isset($_POST['mtp_tournament_id'])) {
+      $tournament_id = sanitize_text_field($_POST['mtp_tournament_id']);
+      update_post_meta($post_id, '_mtp_tournament_id', $tournament_id);
+    }
+    
     // Save width
     if (isset($_POST['mtp_table_width'])) {
       $width = sanitize_text_field($_POST['mtp_table_width']);
@@ -273,6 +316,7 @@ class MeinTurnierplanWP {
   public function shortcode_callback($atts) {
     $atts = shortcode_atts(array(
       'id' => '',
+      'post_id' => '', // Internal WordPress post ID (optional)
       'lang' => 'en',
       's-size' => '9',
       's-sizeheader' => '10',
@@ -298,10 +342,13 @@ class MeinTurnierplanWP {
     ), $atts, 'mtp-table');
     
     if (empty($atts['id'])) {
-      return '<p>' . __('Tournament table ID is required.', 'meinturnierplan-wp') . '</p>';
+      return '<p>' . __('Tournament ID is required.', 'meinturnierplan-wp') . '</p>';
     }
     
-    return $this->render_table_html($atts['id'], $atts);
+    // Use post_id if provided for getting width from meta, otherwise use null
+    $post_id = !empty($atts['post_id']) ? $atts['post_id'] : null;
+    
+    return $this->render_table_html($post_id, $atts);
   }
   
   /**
@@ -360,20 +407,38 @@ class MeinTurnierplanWP {
    * Block render callback
    */
   public function block_render_callback($attributes) {
-    return $this->render_table_html($attributes['tableId'] ?? '', $attributes);
+    $table_id = $attributes['tableId'] ?? '';
+    if (empty($table_id)) {
+      return '<p>' . __('No tournament table specified.', 'meinturnierplan-wp') . '</p>';
+    }
+    
+    // Get tournament ID from post meta
+    $tournament_id = get_post_meta($table_id, '_mtp_tournament_id', true);
+    if (empty($tournament_id)) {
+      return '<p>' . __('Tournament ID not configured for this table.', 'meinturnierplan-wp') . '</p>';
+    }
+    
+    // Create attributes array with tournament ID
+    $atts = array_merge($attributes, array('id' => $tournament_id));
+    
+    return $this->render_table_html($table_id, $atts);
   }
   
   /**
    * Render table HTML
    */
   public function render_table_html($table_id, $atts = array()) {
-    if (empty($table_id)) {
-      return '<p>' . __('No tournament table specified.', 'meinturnierplan-wp') . '</p>';
+    // Get tournament ID from attributes or post meta
+    $tournament_id = '';
+    if (!empty($atts['id'])) {
+      $tournament_id = $atts['id'];
+    } elseif (!empty($table_id)) {
+      $tournament_id = get_post_meta($table_id, '_mtp_tournament_id', true);
     }
     
-    $post = get_post($table_id);
-    if (!$post || $post->post_type !== 'mtp_table') {
-      return '<p>' . __('Tournament table not found.', 'meinturnierplan-wp') . '</p>';
+    // If no tournament ID, show empty static table
+    if (empty($tournament_id)) {
+      return $this->render_empty_table($atts);
     }
     
     // Get width from shortcode attribute or post meta
@@ -383,6 +448,65 @@ class MeinTurnierplanWP {
     }
     
     // Get height
+    $height = !empty($atts['height']) ? $atts['height'] : '152';
+    
+    // Build URL parameters array
+    $params = array();
+    $params['id'] = $tournament_id;
+    
+    // Map shortcode styling parameters to URL parameters
+    if (!empty($atts['s-size'])) $params['s[size]'] = $atts['s-size'];
+    if (!empty($atts['s-sizeheader'])) $params['s[sizeheader]'] = $atts['s-sizeheader'];
+    if (!empty($atts['s-color'])) $params['s[color]'] = $atts['s-color'];
+    if (!empty($atts['s-maincolor'])) $params['s[maincolor]'] = $atts['s-maincolor'];
+    if (!empty($atts['s-padding'])) $params['s[padding]'] = $atts['s-padding'];
+    if (!empty($atts['s-innerpadding'])) $params['s[innerpadding]'] = $atts['s-innerpadding'];
+    if (!empty($atts['s-bgcolor'])) $params['s[bgcolor]'] = $atts['s-bgcolor'];
+    if (!empty($atts['s-logosize'])) $params['s[logosize]'] = $atts['s-logosize'];
+    if (!empty($atts['s-bcolor'])) $params['s[bcolor]'] = $atts['s-bcolor'];
+    if (!empty($atts['s-bsizeh'])) $params['s[bsizeh]'] = $atts['s-bsizeh'];
+    if (!empty($atts['s-bsizev'])) $params['s[bsizev]'] = $atts['s-bsizev'];
+    if (!empty($atts['s-bsizeoh'])) $params['s[bsizeoh]'] = $atts['s-bsizeoh'];
+    if (!empty($atts['s-bsizeov'])) $params['s[bsizeov]'] = $atts['s-bsizeov'];
+    if (!empty($atts['s-bbcolor'])) $params['s[bbcolor]'] = $atts['s-bbcolor'];
+    if (!empty($atts['s-bbsize'])) $params['s[bbsize]'] = $atts['s-bbsize'];
+    if (!empty($atts['s-bgeven'])) $params['s[bgeven]'] = $atts['s-bgeven'];
+    if (!empty($atts['s-bgodd'])) $params['s[bgodd]'] = $atts['s-bgodd'];
+    if (!empty($atts['s-bgover'])) $params['s[bgover]'] = $atts['s-bgover'];
+    if (!empty($atts['s-bghead'])) $params['s[bghead]'] = $atts['s-bghead'];
+    
+    // Add wrap=false parameter
+    $params['s[wrap]'] = 'false';
+    
+    // Build the iframe URL
+    $iframe_url = 'https://www.meinturnierplan.de/displayTable.php?' . http_build_query($params);
+    
+    // Generate unique ID for this iframe instance
+    $iframe_id = 'mtp-table-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
+    
+    // Build the iframe HTML
+    $iframe_html = sprintf(
+      '<iframe id="%s" src="%s" style="overflow:hidden;" allowtransparency="true" frameborder="0" width="%s" height="%s">
+        <p>%s <a href="https://www.meinturnierplan.de/showit.php?id=%s">%s</a></p>
+      </iframe>',
+      esc_attr($iframe_id),
+      esc_url($iframe_url),
+      esc_attr($width),
+      esc_attr($height),
+      __('Your browser does not support the tournament widget.', 'meinturnierplan-wp'),
+      esc_attr($tournament_id),
+      __('Go to Tournament.', 'meinturnierplan-wp')
+    );
+    
+    return $iframe_html;
+  }
+  
+  /**
+   * Render empty static table when no tournament ID is provided
+   */
+  private function render_empty_table($atts = array()) {
+    // Get width from shortcode attributes
+    $width = !empty($atts['width']) ? $atts['width'] : '300';
     $height = !empty($atts['height']) ? $atts['height'] : '152';
     
     // Parse styling parameters with defaults
@@ -404,11 +528,11 @@ class MeinTurnierplanWP {
     $bghead = !empty($atts['s-bghead']) ? $this->hex_to_rgba($atts['s-bghead']) : 'rgba(238, 238, 255, 1)';
     
     // Generate unique ID for this table instance
-    $table_id_unique = 'mtp-table-' . $table_id . '-' . substr(md5(serialize($atts)), 0, 8);
+    $table_id_unique = 'mtp-table-empty-' . substr(md5(serialize($atts)), 0, 8);
     
     // Build inline styles
     $table_style = sprintf(
-      'width: %spx; height: %spx; font-size: %spt; color: %s; padding: %spx; background-color: %s; border: %spx solid %s;',
+      'width: %spx !important; height: %spx; font-size: %spt; color: %s; padding: %spx; background-color: %s; border: %spx solid %s;',
       esc_attr($width),
       esc_attr($height),
       esc_attr($size),
@@ -422,6 +546,10 @@ class MeinTurnierplanWP {
     // Generate CSS for this specific table
     $css = sprintf('
     <style>
+    #%s {
+      width: %spx !important;
+      max-width: %spx !important;
+    }
     #%s th {
       font-size: %spt !important;
       color: %s !important;
@@ -448,6 +576,9 @@ class MeinTurnierplanWP {
       color: %s !important;
     }
     </style>',
+      esc_attr($table_id_unique),
+      esc_attr($width),
+      esc_attr($width),
       esc_attr($table_id_unique),
       esc_attr($sizeheader),
       esc_attr($maincolor),
@@ -476,7 +607,7 @@ class MeinTurnierplanWP {
       esc_attr($color)
     );
     
-    // Generate the tournament table HTML
+    // Generate the empty tournament table HTML
     $html = $css;
     $html .= '<table id="' . esc_attr($table_id_unique) . '" class="width100 centered mtp-tournament-table" name="RankTable" style="' . esc_attr($table_style) . '">';
     $html .= '<thead>';
@@ -494,18 +625,18 @@ class MeinTurnierplanWP {
     $html .= '</thead>';
     $html .= '<tbody>';
     
-    // Generate 4 empty rows for demo (this would be dynamic in a real implementation)
-    for ($i = 0; $i < 4; $i++) {
+    // Generate 5 empty rows
+    for ($i = 0; $i < 5; $i++) {
       $html .= '<tr>';
-      $html .= '<td class="tdRank">  &nbsp;  </td>';
+      $html .= '<td class="tdRank">&nbsp;</td>';
       $html .= '<td class="tdRankTeamName"><div></div></td>';
-      $html .= '<td class="tdNumGames"></td>';
-      $html .= '<td class="tdNumWins"></td>';
-      $html .= '<td class="tdNumEquals"></td>';
-      $html .= '<td class="tdNumLosts"></td>';
-      $html .= '<td class="tdGoals">:</td>';
-      $html .= '<td class="tdGoalDiff"></td>';
-      $html .= '<td class="tdPoints"></td>';
+      $html .= '<td class="tdNumGames">&nbsp;</td>';
+      $html .= '<td class="tdNumWins">&nbsp;</td>';
+      $html .= '<td class="tdNumEquals">&nbsp;</td>';
+      $html .= '<td class="tdNumLosts">&nbsp;</td>';
+      $html .= '<td class="tdGoals">&nbsp;</td>';
+      $html .= '<td class="tdGoalDiff">&nbsp;</td>';
+      $html .= '<td class="tdPoints">&nbsp;</td>';
       $html .= '</tr>';
     }
     
