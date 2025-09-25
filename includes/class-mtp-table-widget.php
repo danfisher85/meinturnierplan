@@ -37,7 +37,12 @@ class MTP_Table_Widget extends WP_Widget {
             $mtp_plugin = new MeinTurnierplanWP();
             echo $mtp_plugin->render_table_html($instance['table_id'], $attributes);
         } else {
-            echo '<p>' . __('Please select a tournament table.', 'meinturnierplan-wp') . '</p>';
+            // Show empty table when no table selected
+            $width = !empty($instance['width']) ? $instance['width'] : '';
+            $attributes = array('width' => $width);
+            
+            $mtp_plugin = new MeinTurnierplanWP();
+            echo $mtp_plugin->render_table_html(null, $attributes);
         }
         
         echo $args['after_widget'];

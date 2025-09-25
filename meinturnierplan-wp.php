@@ -341,13 +341,10 @@ class MeinTurnierplanWP {
       'height' => '152'
     ), $atts, 'mtp-table');
     
-    if (empty($atts['id'])) {
-      return '<p>' . __('Tournament ID is required.', 'meinturnierplan-wp') . '</p>';
-    }
-    
     // Use post_id if provided for getting width from meta, otherwise use null
     $post_id = !empty($atts['post_id']) ? $atts['post_id'] : null;
     
+    // Always render table - empty if no ID, with data if ID provided
     return $this->render_table_html($post_id, $atts);
   }
   
