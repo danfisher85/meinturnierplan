@@ -59,6 +59,7 @@ class MTP_Table_Widget extends WP_Widget {
         $width = !empty($instance['width']) ? $instance['width'] : '';
         $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '';
         $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '';
+        $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '';
         
         // Get all tournament tables
         $tables = get_posts(array(
@@ -101,6 +102,12 @@ class MTP_Table_Widget extends WP_Widget {
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('header_font_size')); ?>" name="<?php echo esc_attr($this->get_field_name('header_font_size')); ?>" type="number" value="<?php echo esc_attr($header_font_size); ?>" min="6" max="24" step="1">
             <small><?php _e('Leave empty to use table default header font size. 10pt is the default value.', 'meinturnierplan-wp'); ?></small>
         </p>
+        
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('table_padding')); ?>"><?php _e('Table Padding (px):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('table_padding')); ?>" name="<?php echo esc_attr($this->get_field_name('table_padding')); ?>" type="number" value="<?php echo esc_attr($table_padding); ?>" min="0" max="50" step="1">
+            <small><?php _e('Leave empty to use table default padding. 2px is the default value.', 'meinturnierplan-wp'); ?></small>
+        </p>
         <?php
     }
     
@@ -114,6 +121,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['width'] = (!empty($new_instance['width'])) ? sanitize_text_field($new_instance['width']) : '';
         $instance['font_size'] = (!empty($new_instance['font_size'])) ? sanitize_text_field($new_instance['font_size']) : '';
         $instance['header_font_size'] = (!empty($new_instance['header_font_size'])) ? sanitize_text_field($new_instance['header_font_size']) : '';
+        $instance['table_padding'] = (!empty($new_instance['table_padding'])) ? sanitize_text_field($new_instance['table_padding']) : '';
         
         return $instance;
     }
