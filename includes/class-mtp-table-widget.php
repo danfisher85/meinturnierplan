@@ -31,7 +31,8 @@ class MTP_Table_Widget extends WP_Widget {
         
         if (!empty($instance['table_id'])) {
             $width = !empty($instance['width']) ? $instance['width'] : '';
-            $attributes = array('width' => $width);
+            $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
+            $attributes = array('width' => $width, 's-size' => $font_size);
             
             // Get the main plugin instance to render table
             $mtp_plugin = new MeinTurnierplanWP();
@@ -39,7 +40,8 @@ class MTP_Table_Widget extends WP_Widget {
         } else {
             // Show empty table when no table selected
             $width = !empty($instance['width']) ? $instance['width'] : '';
-            $attributes = array('width' => $width);
+            $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
+            $attributes = array('width' => $width, 's-size' => $font_size);
             
             $mtp_plugin = new MeinTurnierplanWP();
             echo $mtp_plugin->render_table_html(null, $attributes);
@@ -55,6 +57,7 @@ class MTP_Table_Widget extends WP_Widget {
         $title = !empty($instance['title']) ? $instance['title'] : __('Tournament Table', 'meinturnierplan-wp');
         $table_id = !empty($instance['table_id']) ? $instance['table_id'] : '';
         $width = !empty($instance['width']) ? $instance['width'] : '';
+        $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '';
         
         // Get all tournament tables
         $tables = get_posts(array(
@@ -85,6 +88,12 @@ class MTP_Table_Widget extends WP_Widget {
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('width')); ?>" name="<?php echo esc_attr($this->get_field_name('width')); ?>" type="number" value="<?php echo esc_attr($width); ?>" min="100" max="2000" step="1">
             <small><?php _e('Leave empty to use table default width.', 'meinturnierplan-wp'); ?></small>
         </p>
+        
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('font_size')); ?>"><?php _e('Content Font Size (pt):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('font_size')); ?>" name="<?php echo esc_attr($this->get_field_name('font_size')); ?>" type="number" value="<?php echo esc_attr($font_size); ?>" min="6" max="24" step="1">
+            <small><?php _e('Leave empty to use table default font size. 9pt is the default value.', 'meinturnierplan-wp'); ?></small>
+        </p>
         <?php
     }
     
@@ -96,6 +105,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['title'] = (!empty($new_instance['title'])) ? sanitize_text_field($new_instance['title']) : '';
         $instance['table_id'] = (!empty($new_instance['table_id'])) ? absint($new_instance['table_id']) : '';
         $instance['width'] = (!empty($new_instance['width'])) ? sanitize_text_field($new_instance['width']) : '';
+        $instance['font_size'] = (!empty($new_instance['font_size'])) ? sanitize_text_field($new_instance['font_size']) : '';
         
         return $instance;
     }
