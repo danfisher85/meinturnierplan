@@ -32,7 +32,16 @@ class MTP_Table_Widget extends WP_Widget {
         if (!empty($instance['table_id'])) {
             $width = !empty($instance['width']) ? $instance['width'] : '';
             $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
-            $attributes = array('width' => $width, 's-size' => $font_size);
+            $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '10';
+            $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '2';
+            $inner_padding = !empty($instance['inner_padding']) ? $instance['inner_padding'] : '5';
+            $attributes = array(
+                'width' => $width, 
+                's-size' => $font_size,
+                's-sizeheader' => $header_font_size,
+                's-padding' => $table_padding,
+                's-innerpadding' => $inner_padding
+            );
             
             // Get the main plugin instance to render table
             $mtp_plugin = new MeinTurnierplanWP();
@@ -41,7 +50,16 @@ class MTP_Table_Widget extends WP_Widget {
             // Show empty table when no table selected
             $width = !empty($instance['width']) ? $instance['width'] : '';
             $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
-            $attributes = array('width' => $width, 's-size' => $font_size);
+            $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '10';
+            $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '2';
+            $inner_padding = !empty($instance['inner_padding']) ? $instance['inner_padding'] : '5';
+            $attributes = array(
+                'width' => $width, 
+                's-size' => $font_size,
+                's-sizeheader' => $header_font_size,
+                's-padding' => $table_padding,
+                's-innerpadding' => $inner_padding
+            );
             
             $mtp_plugin = new MeinTurnierplanWP();
             echo $mtp_plugin->render_table_html(null, $attributes);
@@ -60,6 +78,7 @@ class MTP_Table_Widget extends WP_Widget {
         $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '';
         $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '';
         $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '';
+        $inner_padding = !empty($instance['inner_padding']) ? $instance['inner_padding'] : '';
         
         // Get all tournament tables
         $tables = get_posts(array(
@@ -108,6 +127,12 @@ class MTP_Table_Widget extends WP_Widget {
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('table_padding')); ?>" name="<?php echo esc_attr($this->get_field_name('table_padding')); ?>" type="number" value="<?php echo esc_attr($table_padding); ?>" min="0" max="50" step="1">
             <small><?php _e('Leave empty to use table default padding. 2px is the default value.', 'meinturnierplan-wp'); ?></small>
         </p>
+        
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('inner_padding')); ?>"><?php _e('Inner Padding (px):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('inner_padding')); ?>" name="<?php echo esc_attr($this->get_field_name('inner_padding')); ?>" type="number" value="<?php echo esc_attr($inner_padding); ?>" min="0" max="20" step="1">
+            <small><?php _e('Leave empty to use table default inner padding. 5px is the default value.', 'meinturnierplan-wp'); ?></small>
+        </p>
         <?php
     }
     
@@ -122,6 +147,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['font_size'] = (!empty($new_instance['font_size'])) ? sanitize_text_field($new_instance['font_size']) : '';
         $instance['header_font_size'] = (!empty($new_instance['header_font_size'])) ? sanitize_text_field($new_instance['header_font_size']) : '';
         $instance['table_padding'] = (!empty($new_instance['table_padding'])) ? sanitize_text_field($new_instance['table_padding']) : '';
+        $instance['inner_padding'] = (!empty($new_instance['inner_padding'])) ? sanitize_text_field($new_instance['inner_padding']) : '';
         
         return $instance;
     }
