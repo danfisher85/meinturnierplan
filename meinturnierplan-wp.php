@@ -57,6 +57,10 @@ class MeinTurnierplanWP {
     // Add meta boxes
     add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
     add_action('save_post', array($this, 'save_meta_boxes'));
+    
+    // Add AJAX handlers
+    add_action('wp_ajax_mtp_preview_table', array($this, 'ajax_preview_table'));
+    add_action('wp_ajax_mtp_block_preview', array($this, 'ajax_block_preview'));
   }
   
   /**
@@ -369,7 +373,7 @@ class MeinTurnierplanWP {
         wp_register_script(
           'mtp-table-block',
           MTP_PLUGIN_URL . 'assets/js/block.js',
-          array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor'),
+          array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-data'),
           MTP_PLUGIN_VERSION
         );
         
@@ -389,7 +393,9 @@ class MeinTurnierplanWP {
         }
         
         wp_localize_script('mtp-table-block', 'mtpBlockData', array(
-          'tables' => $table_data
+          'tables' => $table_data,
+          'ajaxUrl' => admin_url('admin-ajax.php'),
+          'nonce' => wp_create_nonce('mtp_block_preview_nonce')
         ));
         
         register_block_type('meinturnierplan/table', array(
@@ -419,6 +425,66 @@ class MeinTurnierplanWP {
     $atts = array_merge($attributes, array('id' => $tournament_id));
     
     return $this->render_table_html($table_id, $atts);
+  }
+  
+  /**
+   * AJAX handler for block preview
+   */
+  public function ajax_block_preview() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_block_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+    
+    $table_id = sanitize_text_field($_POST['table_id']);
+    $width = sanitize_text_field($_POST['width']);
+    
+    if (empty($table_id)) {
+      wp_send_json_error('No table selected');
+      return;
+    }
+    
+    // Get tournament ID from post meta
+    $tournament_id = get_post_meta($table_id, '_mtp_tournament_id', true);
+    
+    if (empty($tournament_id)) {
+      wp_send_json_error('Tournament ID not configured for this table');
+      return;
+    }
+    
+    // Create attributes for rendering
+    $atts = array(
+      'id' => $tournament_id,
+      'width' => $width ? $width : '300'
+    );
+    
+    $html = $this->render_table_html($table_id, $atts);
+    
+    wp_send_json_success($html);
+  }
+  
+  /**
+   * AJAX handler for table preview (existing one for admin)
+   */
+  public function ajax_preview_table() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+    
+    $post_id = absint($_POST['post_id']);
+    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $width = sanitize_text_field($_POST['width']);
+    
+    // Create attributes for rendering
+    $atts = array(
+      'id' => $tournament_id,
+      'width' => $width ? $width : '300'
+    );
+    
+    $html = $this->render_table_html($post_id, $atts);
+    
+    wp_send_json_success($html);
   }
   
   /**
