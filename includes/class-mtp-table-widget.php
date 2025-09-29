@@ -38,6 +38,7 @@ class MTP_Table_Widget extends WP_Widget {
             $text_color = !empty($instance['text_color']) ? $instance['text_color'] : '000000';
             $main_color = !empty($instance['main_color']) ? $instance['main_color'] : '173f75';
             $bg_color = !empty($instance['bg_color']) ? $instance['bg_color'] : '00000000';
+            $border_color = !empty($instance['border_color']) ? $instance['border_color'] : 'bbbbbb';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -46,7 +47,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-innerpadding' => $inner_padding,
                 's-color' => $text_color,
                 's-maincolor' => $main_color,
-                's-bgcolor' => $bg_color
+                's-bgcolor' => $bg_color,
+                's-bcolor' => $border_color
             );
             
             // Get the main plugin instance to render table
@@ -62,6 +64,7 @@ class MTP_Table_Widget extends WP_Widget {
             $text_color = !empty($instance['text_color']) ? $instance['text_color'] : '000000';
             $main_color = !empty($instance['main_color']) ? $instance['main_color'] : '173f75';
             $bg_color = !empty($instance['bg_color']) ? $instance['bg_color'] : '00000000';
+            $border_color = !empty($instance['border_color']) ? $instance['border_color'] : 'bbbbbb';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -70,7 +73,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-innerpadding' => $inner_padding,
                 's-color' => $text_color,
                 's-maincolor' => $main_color,
-                's-bgcolor' => $bg_color
+                's-bgcolor' => $bg_color,
+                's-bcolor' => $border_color
             );
             
             $mtp_plugin = new MeinTurnierplanWP();
@@ -94,6 +98,7 @@ class MTP_Table_Widget extends WP_Widget {
         $text_color = !empty($instance['text_color']) ? $instance['text_color'] : '';
         $main_color = !empty($instance['main_color']) ? $instance['main_color'] : '';
         $bg_color = !empty($instance['bg_color']) ? $instance['bg_color'] : '';
+        $border_color = !empty($instance['border_color']) ? $instance['border_color'] : '';
         
         // Get all tournament tables
         $tables = get_posts(array(
@@ -166,6 +171,12 @@ class MTP_Table_Widget extends WP_Widget {
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('bg_color')); ?>" name="<?php echo esc_attr($this->get_field_name('bg_color')); ?>" type="text" value="<?php echo esc_attr($bg_color); ?>" placeholder="00000000">
             <small><?php _e('Leave empty to use table default background color. Enter hex color without # (e.g., 00000000 for a transparent black).', 'meinturnierplan-wp'); ?></small>
         </p>
+
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('border_color')); ?>"><?php _e('Border Color:', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('border_color')); ?>" name="<?php echo esc_attr($this->get_field_name('border_color')); ?>" type="text" value="<?php echo esc_attr($border_color); ?>" placeholder="bbbbbb">
+            <small><?php _e('Leave empty to use table default border color. Enter hex color without # (e.g., bbbbbb for light gray).', 'meinturnierplan-wp'); ?></small>
+        </p>
         <?php
     }
     
@@ -184,6 +195,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['text_color'] = (!empty($new_instance['text_color'])) ? sanitize_text_field($new_instance['text_color']) : '';
         $instance['main_color'] = (!empty($new_instance['main_color'])) ? sanitize_text_field($new_instance['main_color']) : '';
         $instance['bg_color'] = (!empty($new_instance['bg_color'])) ? sanitize_text_field($new_instance['bg_color']) : '';
+        $instance['border_color'] = (!empty($new_instance['border_color'])) ? sanitize_text_field($new_instance['border_color']) : '';
 
         return $instance;
     }
