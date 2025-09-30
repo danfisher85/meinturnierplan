@@ -42,6 +42,7 @@ class MTP_Table_Widget extends WP_Widget {
             $head_bottom_border_color = !empty($instance['head_bottom_border_color']) ? $instance['head_bottom_border_color'] : 'bbbbbb';
             $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : 'f0f8ffb0';
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
+            $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -54,7 +55,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bcolor' => $border_color,
                 's-bbcolor' => $head_bottom_border_color,
                 's-bgeven' => $even_bg_color,
-                's-bgodd' => $odd_bg_color
+                's-bgodd' => $odd_bg_color,
+                's-bgover' => $over_bg_color
             );
             
             // Get the main plugin instance to render table
@@ -74,6 +76,7 @@ class MTP_Table_Widget extends WP_Widget {
             $head_bottom_border_color = !empty($instance['head_bottom_border_color']) ? $instance['head_bottom_border_color'] : 'bbbbbb';
             $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : 'f0f8ffb0';
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
+            $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -86,7 +89,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bcolor' => $border_color,
                 's-bbcolor' => $head_bottom_border_color,
                 's-bgeven' => $even_bg_color,
-                's-bgodd' => $odd_bg_color
+                's-bgodd' => $odd_bg_color,
+                's-bgover' => $over_bg_color
             );
             
             $mtp_plugin = new MeinTurnierplanWP();
@@ -114,6 +118,7 @@ class MTP_Table_Widget extends WP_Widget {
         $head_bottom_border_color = !empty($instance['head_bottom_border_color']) ? $instance['head_bottom_border_color'] : '';
         $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : '';
         $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : '';
+        $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : '';
 
         // Get all tournament tables
         $tables = get_posts(array(
@@ -207,8 +212,14 @@ class MTP_Table_Widget extends WP_Widget {
 
         <p>
             <label for="<?php echo esc_attr($this->get_field_id('odd_bg_color')); ?>"><?php _e('Odd Rows Background Color:', 'meinturnierplan-wp'); ?></label>
-            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('odd_bg_color')); ?>" name="<?php echo esc_attr($this->get_field_name('odd_bg_color')); ?>" type="text" value="<?php echo esc_attr($odd_bg_color); ?>" placeholder="f0f8ffb0">
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('odd_bg_color')); ?>" name="<?php echo esc_attr($this->get_field_name('odd_bg_color')); ?>" type="text" value="<?php echo esc_attr($odd_bg_color); ?>" placeholder="ffffffb0">
             <small><?php _e('Leave empty to use table default odd rows background color. Enter hex color with opacity without # (e.g., ffffffb0 for white with transparency).', 'meinturnierplan-wp'); ?></small>
+        </p>
+
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('over_bg_color')); ?>"><?php _e('Hover Rows Background Color:', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('over_bg_color')); ?>" name="<?php echo esc_attr($this->get_field_name('over_bg_color')); ?>" type="text" value="<?php echo esc_attr($over_bg_color); ?>" placeholder="eeeeffb0">
+            <small><?php _e('Leave empty to use table default hover rows background color. Enter hex color with opacity without # (e.g., eeeeffb0 for light purple with transparency).', 'meinturnierplan-wp'); ?></small>
         </p>
         <?php
     }
@@ -232,6 +243,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['head_bottom_border_color'] = (!empty($new_instance['head_bottom_border_color'])) ? sanitize_text_field($new_instance['head_bottom_border_color']) : '';
         $instance['even_bg_color'] = (!empty($new_instance['even_bg_color'])) ? sanitize_text_field($new_instance['even_bg_color']) : '';
         $instance['odd_bg_color'] = (!empty($new_instance['odd_bg_color'])) ? sanitize_text_field($new_instance['odd_bg_color']) : '';
+        $instance['hover_bg_color'] = (!empty($new_instance['hover_bg_color'])) ? sanitize_text_field($new_instance['hover_bg_color']) : '';
 
         return $instance;
     }
