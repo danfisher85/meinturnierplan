@@ -48,6 +48,7 @@ class MTP_Table_Widget extends WP_Widget {
             $bsizeh = !empty($instance['bsizeh']) ? $instance['bsizeh'] : '1';
             $bsizev = !empty($instance['bsizev']) ? $instance['bsizev'] : '1';
             $bsizeoh = !empty($instance['bsizeoh']) ? $instance['bsizeoh'] : '1';
+            $bsizeov = !empty($instance['bsizeov']) ? $instance['bsizeov'] : '1';
             $attributes = array(
                 'width' => $width,
                 's-size' => $font_size,
@@ -67,6 +68,7 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bsizeh' => $bsizeh,
                 's-bsizev' => $bsizev,
                 's-bsizeoh' => $bsizeoh,
+                's-bsizeov' => $bsizeov,
             );
             
             // Get the main plugin instance to render table
@@ -92,6 +94,7 @@ class MTP_Table_Widget extends WP_Widget {
             $bsizeh = !empty($instance['bsizeh']) ? $instance['bsizeh'] : '1';
             $bsizev = !empty($instance['bsizev']) ? $instance['bsizev'] : '1';
             $bsizeoh = !empty($instance['bsizeoh']) ? $instance['bsizeoh'] : '1';
+            $bsizeov = !empty($instance['bsizeov']) ? $instance['bsizeov'] : '1';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -111,6 +114,7 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bsizeh' => $bsizeh,
                 's-bsizev' => $bsizev,
                 's-bsizeoh' => $bsizeoh,
+                's-bsizeov' => $bsizeov,
             );
             
             $mtp_plugin = new MeinTurnierplanWP();
@@ -143,6 +147,7 @@ class MTP_Table_Widget extends WP_Widget {
         $bsizeh = !empty($instance['bsizeh']) ? $instance['bsizeh'] : '1';
         $bsizev = !empty($instance['bsizev']) ? $instance['bsizev'] : '1';
         $bsizeoh = !empty($instance['bsizeoh']) ? $instance['bsizeoh'] : '1';
+        $bsizeov = !empty($instance['bsizeov']) ? $instance['bsizeov'] : '1';
 
         // Get all tournament tables
         $tables = get_posts(array(
@@ -265,9 +270,15 @@ class MTP_Table_Widget extends WP_Widget {
         </p>
 
         <p>
-            <label for="<?php echo esc_attr($this->get_field_id('bsizeoh')); ?>"><?php _e('Table Top Border Size (px):', 'meinturnierplan-wp'); ?></label>
+            <label for="<?php echo esc_attr($this->get_field_id('bsizeoh')); ?>"><?php _e('Table Block Border Size (px):', 'meinturnierplan-wp'); ?></label>
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('bsizeoh')); ?>" name="<?php echo esc_attr($this->get_field_name('bsizeoh')); ?>" type="number" value="<?php echo esc_attr($bsizeoh); ?>" min="1" max="80" step="1">
-            <small><?php _e('Leave empty to use table default top border size. 1px is the default value.', 'meinturnierplan-wp'); ?></small>
+            <small><?php _e('Leave empty to use table default block border size. 1px is the default value.', 'meinturnierplan-wp'); ?></small>
+        </p>
+
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('bsizeov')); ?>"><?php _e('Table Inline Border Size (px):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('bsizeov')); ?>" name="<?php echo esc_attr($this->get_field_name('bsizeov')); ?>" type="number" value="<?php echo esc_attr($bsizeov); ?>" min="1" max="80" step="1">
+            <small><?php _e('Leave empty to use table default inline border size. 1px is the default value.', 'meinturnierplan-wp'); ?></small>
         </p>
         <?php
     }
@@ -296,6 +307,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['bsizeh'] = (!empty($new_instance['bsizeh'])) ? sanitize_text_field($new_instance['bsizeh']) : '';
         $instance['bsizev'] = (!empty($new_instance['bsizev'])) ? sanitize_text_field($new_instance['bsizev']) : '';
         $instance['bsizeoh'] = (!empty($new_instance['bsizeoh'])) ? sanitize_text_field($new_instance['bsizeoh']) : '';
+        $instance['bsizeov'] = (!empty($new_instance['bsizeov'])) ? sanitize_text_field($new_instance['bsizeov']) : '';
 
         return $instance;
     }
