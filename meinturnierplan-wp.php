@@ -406,7 +406,7 @@ class MeinTurnierplanWP {
         $("#mtp_tournament_id").trigger("input");
       });
       
-      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color").on("input", function() {
+      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity").on("input", function() {
         var tournamentId = $("#mtp_tournament_id").val();
         var width = $("#mtp_table_width").val();
         var fontSize = $("#mtp_font_size").val();
@@ -602,7 +602,7 @@ class MeinTurnierplanWP {
       });
       
       // Update shortcode when tournament ID or width changes
-      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color").on("input", function() {
+      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity").on("input", function() {
         var tournamentId = $("#mtp_tournament_id").val();
         var width = $("#mtp_table_width").val();
         var fontSize = $("#mtp_font_size").val();
@@ -614,9 +614,9 @@ class MeinTurnierplanWP {
         var bgColor = $("#mtp_bg_color").val().replace("#", "");
         var bgOpacity = $("#mtp_bg_opacity").val();
         var evenBgColor = $("#mtp_even_bg_color").val().replace("#", "");
-        var evenBgOpacity = $("#mtp_even_bg_opacity").val().replace("#", "");
+        var evenBgOpacity = $("#mtp_even_bg_opacity").val();
         var oddBgColor = $("#mtp_odd_bg_color").val().replace("#", "");
-        var oddBgOpacity = $("#mtp_odd_bg_opacity").val().replace("#", "");
+        var oddBgOpacity = $("#mtp_odd_bg_opacity").val();
         var borderColor = $("#mtp_border_color").val().replace("#", "");
         var headBottomBorderColor = $("#mtp_head_bottom_border_color").val().replace("#", "");
         var postId = ' . intval($post->ID) . ';
@@ -892,7 +892,7 @@ class MeinTurnierplanWP {
       's-bcolor' => $border_color ? $border_color : 'bbbbbb',
       's-bbcolor' => $head_bottom_border_color ? $head_bottom_border_color : 'bbbbbb',
       's-bgeven' => $even_bg_color ? $even_bg_color : 'f0f8ffb0',
-      's-bgodden' => $odd_bg_color ? $odd_bg_color : 'ffffffb0',
+      's-bgodd' => $odd_bg_color ? $odd_bg_color : 'ffffffb0',
     );
     
     $html = $this->render_table_html($post_id, $atts);
