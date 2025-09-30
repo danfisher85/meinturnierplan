@@ -43,8 +43,9 @@ class MTP_Table_Widget extends WP_Widget {
             $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : 'f0f8ffb0';
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
             $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
+            $head_bg_color = !empty($instance['head_bg_color']) ? $instance['head_bg_color'] : 'eeeeffff';
             $attributes = array(
-                'width' => $width, 
+                'width' => $width,
                 's-size' => $font_size,
                 's-sizeheader' => $header_font_size,
                 's-padding' => $table_padding,
@@ -56,7 +57,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bbcolor' => $head_bottom_border_color,
                 's-bgeven' => $even_bg_color,
                 's-bgodd' => $odd_bg_color,
-                's-bgover' => $over_bg_color
+                's-bgover' => $over_bg_color,
+                's-bghead' => $head_bg_color
             );
             
             // Get the main plugin instance to render table
@@ -77,6 +79,7 @@ class MTP_Table_Widget extends WP_Widget {
             $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : 'f0f8ffb0';
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
             $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
+            $head_bg_color = !empty($instance['head_bg_color']) ? $instance['head_bg_color'] : 'eeeeffff';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -90,7 +93,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bbcolor' => $head_bottom_border_color,
                 's-bgeven' => $even_bg_color,
                 's-bgodd' => $odd_bg_color,
-                's-bgover' => $over_bg_color
+                's-bgover' => $over_bg_color,
+                's-bghead' => $head_bg_color
             );
             
             $mtp_plugin = new MeinTurnierplanWP();
