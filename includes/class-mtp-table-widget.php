@@ -44,6 +44,7 @@ class MTP_Table_Widget extends WP_Widget {
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
             $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
             $head_bg_color = !empty($instance['head_bg_color']) ? $instance['head_bg_color'] : 'eeeeffff';
+            $logo_size = !empty($instance['logo_size']) ? $instance['logo_size'] : '20';
             $attributes = array(
                 'width' => $width,
                 's-size' => $font_size,
@@ -58,7 +59,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bgeven' => $even_bg_color,
                 's-bgodd' => $odd_bg_color,
                 's-bgover' => $over_bg_color,
-                's-bghead' => $head_bg_color
+                's-bghead' => $head_bg_color,
+                's-logosize' => $logo_size
             );
             
             // Get the main plugin instance to render table
@@ -80,6 +82,7 @@ class MTP_Table_Widget extends WP_Widget {
             $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : 'ffffffb0';
             $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : 'eeeeffb0';
             $head_bg_color = !empty($instance['head_bg_color']) ? $instance['head_bg_color'] : 'eeeeffff';
+            $logo_size = !empty($instance['logo_size']) ? $instance['logo_size'] : '20';
             $attributes = array(
                 'width' => $width, 
                 's-size' => $font_size,
@@ -94,7 +97,8 @@ class MTP_Table_Widget extends WP_Widget {
                 's-bgeven' => $even_bg_color,
                 's-bgodd' => $odd_bg_color,
                 's-bgover' => $over_bg_color,
-                's-bghead' => $head_bg_color
+                's-bghead' => $head_bg_color,
+                's-logosize' => $logo_size
             );
             
             $mtp_plugin = new MeinTurnierplanWP();
@@ -123,6 +127,7 @@ class MTP_Table_Widget extends WP_Widget {
         $even_bg_color = !empty($instance['even_bg_color']) ? $instance['even_bg_color'] : '';
         $odd_bg_color = !empty($instance['odd_bg_color']) ? $instance['odd_bg_color'] : '';
         $over_bg_color = !empty($instance['over_bg_color']) ? $instance['over_bg_color'] : '';
+        $logo_size = !empty($instance['logo_size']) ? $instance['logo_size'] : '20';
 
         // Get all tournament tables
         $tables = get_posts(array(
@@ -225,6 +230,12 @@ class MTP_Table_Widget extends WP_Widget {
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('over_bg_color')); ?>" name="<?php echo esc_attr($this->get_field_name('over_bg_color')); ?>" type="text" value="<?php echo esc_attr($over_bg_color); ?>" placeholder="eeeeffb0">
             <small><?php _e('Leave empty to use table default hover rows background color. Enter hex color with opacity without # (e.g., eeeeffb0 for light purple with transparency).', 'meinturnierplan-wp'); ?></small>
         </p>
+
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('logo_size')); ?>"><?php _e('Logo Size (pt):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('logo_size')); ?>" name="<?php echo esc_attr($this->get_field_name('logo_size')); ?>" type="number" value="<?php echo esc_attr($logo_size); ?>" min="10" max="80" step="1">
+            <small><?php _e('Leave empty to use table default logo size. 20pt is the default value.', 'meinturnierplan-wp'); ?></small>
+        </p>
         <?php
     }
     
@@ -248,6 +259,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['even_bg_color'] = (!empty($new_instance['even_bg_color'])) ? sanitize_text_field($new_instance['even_bg_color']) : '';
         $instance['odd_bg_color'] = (!empty($new_instance['odd_bg_color'])) ? sanitize_text_field($new_instance['odd_bg_color']) : '';
         $instance['hover_bg_color'] = (!empty($new_instance['hover_bg_color'])) ? sanitize_text_field($new_instance['hover_bg_color']) : '';
+        $instance['logo_size'] = (!empty($new_instance['logo_size'])) ? sanitize_text_field($new_instance['logo_size']) : '';
 
         return $instance;
     }
