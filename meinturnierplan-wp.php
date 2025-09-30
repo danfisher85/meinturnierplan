@@ -498,7 +498,7 @@ class MeinTurnierplanWP {
         $("#mtp_tournament_id").trigger("input");
       });
       
-      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity").on("input", function() {
+      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_hover_bg_color, #mtp_hover_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity").on("input", function() {
         var tournamentId = $("#mtp_tournament_id").val();
         var width = $("#mtp_table_width").val();
         var fontSize = $("#mtp_font_size").val();
@@ -1135,7 +1135,8 @@ class MeinTurnierplanWP {
       's-bghead' => $head_bg_color ? $head_bg_color : 'eeeeffff',
       's-logosize' => $logo_size ? $logo_size : '20',
       's-bsizeh' => $bsizeh ? $bsizeh : '1',
-      's-bsizev' => $bsizev ? $bsizev : '1'
+      's-bsizev' => $bsizev ? $bsizev : '1',
+      's-bsizeoh' => $bsizeoh ? $bsizeoh : '1'
     );
     
     $html = $this->render_table_html($post_id, $atts);
