@@ -67,7 +67,8 @@ class MTP_Shortcode {
       'height' => '',
       'sw' => '0', // Suppress wins, losses, etc.
       'sl' => '0', // Suppress logos
-      'sn' => '0'  // Suppress num matches
+      'sn' => '0', // Suppress num matches
+      'bm' => '0'  // Projector presentation
     ), $atts, 'mtp-table');
     
     // Use post_id if provided for getting width from meta, otherwise use null

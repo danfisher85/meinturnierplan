@@ -134,6 +134,18 @@ class MTP_Table_Renderer {
       $params['sn'] = '1';
     }
     
+    // Add bm parameter if projector_presentation is enabled
+    $projector_presentation = '';
+    if (!empty($atts['bm'])) {
+      $projector_presentation = $atts['bm'];
+    } elseif ($table_id) {
+      $projector_presentation = get_post_meta($table_id, '_mtp_projector_presentation', true);
+    }
+    
+    if (!empty($projector_presentation) && $projector_presentation === '1') {
+      $params['bm'] = '1';
+    }
+    
     return $params;
   }
   

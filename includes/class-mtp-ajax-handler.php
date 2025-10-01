@@ -89,6 +89,11 @@ class MTP_Ajax_Handler {
       $atts['sn'] = '1';
     }
     
+    // Add bm parameter if projector_presentation is enabled
+    if (!empty($data['projector_presentation']) && $data['projector_presentation'] === '1') {
+      $atts['bm'] = '1';
+    }
+    
     $html = $this->table_renderer->render_table_html($post_id, $atts);
     
     wp_send_json_success($html);
@@ -124,6 +129,7 @@ class MTP_Ajax_Handler {
       'suppress_wins' => isset($data['suppress_wins']) ? sanitize_text_field($data['suppress_wins']) : '0',
       'suppress_logos' => isset($data['suppress_logos']) ? sanitize_text_field($data['suppress_logos']) : '0',
       'suppress_num_matches' => isset($data['suppress_num_matches']) ? sanitize_text_field($data['suppress_num_matches']) : '0',
+      'projector_presentation' => isset($data['projector_presentation']) ? sanitize_text_field($data['projector_presentation']) : '0',
     );
   }
 }
