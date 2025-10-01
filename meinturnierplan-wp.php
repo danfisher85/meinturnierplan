@@ -169,7 +169,7 @@ class MeinTurnierplanWP {
    */
   public function enqueue_styles() {
     if ($this->plugin && $this->plugin->assets) {
-      return $this->plugin->assets->enqueue_styles();
+      return $this->plugin->assets->enqueue_frontend_styles();
     }
   }
   
