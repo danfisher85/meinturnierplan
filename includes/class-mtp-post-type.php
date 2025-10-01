@@ -42,10 +42,6 @@ class MTP_Post_Type {
       'parent_item_colon'     => __('Parent Tournament Tables:', 'meinturnierplan-wp'),
       'not_found'             => __('No tournament tables found.', 'meinturnierplan-wp'),
       'not_found_in_trash'    => __('No tournament tables found in Trash.', 'meinturnierplan-wp'),
-      'featured_image'        => _x('Tournament Table Image', 'Overrides the "Featured Image" phrase', 'meinturnierplan-wp'),
-      'set_featured_image'    => _x('Set tournament table image', 'Overrides the "Set featured image" phrase', 'meinturnierplan-wp'),
-      'remove_featured_image' => _x('Remove tournament table image', 'Overrides the "Remove featured image" phrase', 'meinturnierplan-wp'),
-      'use_featured_image'    => _x('Use as tournament table image', 'Overrides the "Use as featured image" phrase', 'meinturnierplan-wp'),
       'archives'              => _x('Tournament Table archives', 'The post type archive label', 'meinturnierplan-wp'),
       'insert_into_item'      => _x('Insert into tournament table', 'Overrides the "Insert into post"/"Insert into page" phrase', 'meinturnierplan-wp'),
       'uploaded_to_this_item' => _x('Uploaded to this tournament table', 'Overrides the "Uploaded to this post"/"Uploaded to this page" phrase', 'meinturnierplan-wp'),
@@ -68,7 +64,7 @@ class MTP_Post_Type {
       'menu_position'      => null,
       'menu_icon'          => 'dashicons-editor-table',
       'show_in_rest'       => false, // Disable Gutenberg editor
-      'supports'           => array('title', 'thumbnail')
+      'supports'           => array('title')
     );
     
     register_post_type('mtp_table', $args);
