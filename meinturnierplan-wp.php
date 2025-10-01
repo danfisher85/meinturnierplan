@@ -148,6 +148,10 @@ class MeinTurnierplanWP {
     if (empty($width)) {
       $width = '300'; // Default width
     }
+    $height = get_post_meta($post->ID, '_mtp_table_height', true);
+    if (empty($height)) {
+      $height = '152'; // Default height
+    }
     $font_size = get_post_meta($post->ID, '_mtp_font_size', true);
     if (empty($font_size)) {
       $font_size = '9'; // Default font size
@@ -259,6 +263,13 @@ class MeinTurnierplanWP {
     echo '<td>';
     echo '<input type="number" id="mtp_table_width" name="mtp_table_width" value="' . esc_attr($width) . '" min="100" max="2000" step="1" />';
     echo '<p class="description">' . __('Set the width of the tournament table in pixels.', 'meinturnierplan-wp') . '</p>';
+    echo '</td>';
+    echo '</tr>';
+    echo '<tr>';
+    echo '<th scope="row"><label for="mtp_table_height">' . __('Table Height (px)', 'meinturnierplan-wp') . '</label></th>';
+    echo '<td>';
+    echo '<input type="number" id="mtp_table_height" name="mtp_table_height" value="' . esc_attr($height) . '" min="100" max="2000" step="1" />';
+    echo '<p class="description">' . __('Set the height of the tournament table in pixels.', 'meinturnierplan-wp') . '</p>';
     echo '</td>';
     echo '</tr>';
     echo '<tr>';
@@ -467,7 +478,7 @@ class MeinTurnierplanWP {
       $combined_head_bg_color = $head_bg_color . $opacity_hex;
     }
 
-    echo $this->render_table_html($post->ID, array('id' => $tournament_id, 'width' => $width, 's-size' => $font_size, 's-sizeheader' => $header_font_size, 's-padding' => $table_padding, 's-innerpadding' => $inner_padding, 's-color' => $text_color, 's-maincolor' => $main_color, 's-bgcolor' => $combined_bg_color, 's-logosize' => $logo_size, 's-bcolor' => $border_color, 's-bbcolor' => $head_bottom_border_color, 's-bgeven' => $combined_even_bg_color, 's-bgodd' => $combined_odd_bg_color, 's-bgover' => $combined_hover_bg_color, 's-bghead' => $combined_head_bg_color, 's-bsizeh' => $bsizeh, 's-bsizev' => $bsizev, 's-bsizeoh' => $bsizeoh, 's-bsizeov' => $bsizeov, 's-bbsize' => $bbsize));
+    echo $this->render_table_html($post->ID, array('id' => $tournament_id, 'width' => $width, 'height' => $height, 's-size' => $font_size, 's-sizeheader' => $header_font_size, 's-padding' => $table_padding, 's-innerpadding' => $inner_padding, 's-color' => $text_color, 's-maincolor' => $main_color, 's-bgcolor' => $combined_bg_color, 's-logosize' => $logo_size, 's-bcolor' => $border_color, 's-bbcolor' => $head_bottom_border_color, 's-bgeven' => $combined_even_bg_color, 's-bgodd' => $combined_odd_bg_color, 's-bgover' => $combined_hover_bg_color, 's-bghead' => $combined_head_bg_color, 's-bsizeh' => $bsizeh, 's-bsizev' => $bsizev, 's-bsizeoh' => $bsizeoh, 's-bsizeov' => $bsizeov, 's-bbsize' => $bbsize));
     echo '</div>';
     
     // Add JavaScript for live preview
@@ -520,9 +531,10 @@ class MeinTurnierplanWP {
         $("#mtp_tournament_id").trigger("input");
       });
       
-      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_bsizeov, #mtp_bbsize, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_hover_bg_color, #mtp_hover_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity").on("input", function() {
+      $("#mtp_tournament_id, #mtp_table_width, #mtp_table_height, #mtp_font_size, #mtp_header_font_size, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_bsizeov, #mtp_bbsize, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_hover_bg_color, #mtp_hover_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity").on("input", function() {
         var tournamentId = $("#mtp_tournament_id").val();
         var width = $("#mtp_table_width").val();
+        var height = $("#mtp_table_height").val();
         var fontSize = $("#mtp_font_size").val();
         var headerFontSize = $("#mtp_header_font_size").val();
         var bsizeh = $("#mtp_bsizeh").val();
@@ -577,6 +589,7 @@ class MeinTurnierplanWP {
           post_id: postId,
           tournament_id: tournamentId,
           width: width,
+          height: height,
           font_size: fontSize,
           header_font_size: headerFontSize,
           bsizeh: bsizeh,
@@ -616,6 +629,10 @@ class MeinTurnierplanWP {
     $width = get_post_meta($post->ID, '_mtp_table_width', true);
     if (empty($width)) {
       $width = '300'; // Default width
+    }
+    $height = get_post_meta($post->ID, '_mtp_table_height', true);
+    if (empty($height)) {
+      $height = '152'; // Default height
     }
     $font_size = get_post_meta($post->ID, '_mtp_font_size', true);
     if (empty($font_size)) {
@@ -761,7 +778,7 @@ class MeinTurnierplanWP {
     }
     
     // Generate the shortcode
-    $shortcode = '[mtp-table id="' . esc_attr($tournament_id) . '" post_id="' . $post->ID . '" lang="en" s-size="' . esc_attr($font_size) . '" s-sizeheader="' . esc_attr($header_font_size) . '" s-color="' . esc_attr($text_color) . '" s-maincolor="' . esc_attr($main_color) . '" s-padding="' . esc_attr($table_padding) . '" s-innerpadding="' . esc_attr($inner_padding) . '" s-bgcolor="' . esc_attr($combined_bg_color). '" s-bcolor="' . esc_attr($border_color) . '" s-bbcolor="' . esc_attr($head_bottom_border_color) . '" s-bgeven="' . esc_attr($combined_even_bg_color) . '" s-logosize="' . esc_attr($logo_size) . '" s-bsizeh="' . esc_attr($bsizeh) . '" s-bsizev="' . esc_attr($bsizev) . '" s-bsizeoh="' . esc_attr($bsizeoh) . '" s-bsizeov="' . esc_attr($bsizeov) . '" s-bbsize="' . esc_attr($bbsize) . '" s-bgodd="' . esc_attr($combined_odd_bg_color) . '" s-bgover="' . esc_attr($combined_hover_bg_color) . '" s-bghead="' . esc_attr($combined_head_bg_color) . '" width="' . esc_attr($width) . '" height="152"]';
+    $shortcode = '[mtp-table id="' . esc_attr($tournament_id) . '" post_id="' . $post->ID . '" lang="en" s-size="' . esc_attr($font_size) . '" s-sizeheader="' . esc_attr($header_font_size) . '" s-color="' . esc_attr($text_color) . '" s-maincolor="' . esc_attr($main_color) . '" s-padding="' . esc_attr($table_padding) . '" s-innerpadding="' . esc_attr($inner_padding) . '" s-bgcolor="' . esc_attr($combined_bg_color). '" s-bcolor="' . esc_attr($border_color) . '" s-bbcolor="' . esc_attr($head_bottom_border_color) . '" s-bgeven="' . esc_attr($combined_even_bg_color) . '" s-logosize="' . esc_attr($logo_size) . '" s-bsizeh="' . esc_attr($bsizeh) . '" s-bsizev="' . esc_attr($bsizev) . '" s-bsizeoh="' . esc_attr($bsizeoh) . '" s-bsizeov="' . esc_attr($bsizeov) . '" s-bbsize="' . esc_attr($bbsize) . '" s-bgodd="' . esc_attr($combined_odd_bg_color) . '" s-bgover="' . esc_attr($combined_hover_bg_color) . '" s-bghead="' . esc_attr($combined_head_bg_color) . '" width="' . esc_attr($width) . '" height="' . esc_attr($height) . '"]';
 
     echo '<div style="margin-bottom: 15px;">';
     echo '<label for="mtp_shortcode_field" style="display: block; margin-bottom: 5px; font-weight: bold;">' . __('Generated Shortcode:', 'meinturnierplan-wp') . '</label>';
@@ -798,9 +815,10 @@ class MeinTurnierplanWP {
       });
       
       // Update shortcode when tournament ID or width changes
-      $("#mtp_tournament_id, #mtp_table_width, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_hover_bg_color, #mtp_hover_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_bsizeov, #mtp_bbsize").on("input", function() {
+      $("#mtp_tournament_id, #mtp_table_width, #mtp_table_height, #mtp_font_size, #mtp_header_font_size, #mtp_table_padding, #mtp_inner_padding, #mtp_text_color, #mtp_main_color, #mtp_bg_color, #mtp_logo_size, #mtp_bg_opacity, #mtp_border_color, #mtp_head_bottom_border_color, #mtp_even_bg_color, #mtp_even_bg_opacity, #mtp_odd_bg_color, #mtp_odd_bg_opacity, #mtp_hover_bg_color, #mtp_hover_bg_opacity, #mtp_head_bg_color, #mtp_head_bg_opacity, #mtp_bsizeh, #mtp_bsizev, #mtp_bsizeoh, #mtp_bsizeov, #mtp_bbsize").on("input", function() {
         var tournamentId = $("#mtp_tournament_id").val();
         var width = $("#mtp_table_width").val();
+        var height = $("#mtp_table_height").val();
         var fontSize = $("#mtp_font_size").val();
         var headerFontSize = $("#mtp_header_font_size").val();
         var tablePadding = $("#mtp_table_padding").val();
@@ -840,7 +858,7 @@ class MeinTurnierplanWP {
         var headBgColorWithOpacity = headBgColor + headBgOpacityHex;
 
         // Always generate shortcode, even with empty tournament ID
-        var newShortcode = "[mtp-table id=\"" + tournamentId + "\" post_id=\"" + postId + "\" lang=\"en\" s-size=\"" + fontSize + "\" s-sizeheader=\"" + headerFontSize + "\" s-color=\"" + textColor + "\" s-maincolor=\"" + mainColor + "\" s-padding=\"" + tablePadding + "\" s-innerpadding=\"" + innerPadding + "\" s-bgcolor=\"" + bgColorWithOpacity + "\" s-bcolor=\"" + borderColor + "\" s-bbcolor=\"" + headBottomBorderColor + "\" s-logosize=\"" + logoSize + "\" s-bsizeh=\"" + bsizeh + "\" s-bsizev=\"" + bsizev + "\" s-bsizeoh=\"" + bsizeoh + "\" s-bsizeov=\"" + bsizeov + "\" s-bbsize=\"" + bbsize + "\" s-bgeven=\"" + evenBgColorWithOpacity + "\" s-bgodd=\"" + oddBgColorWithOpacity + "\" s-bgover=\"" + hoverBgColorWithOpacity + "\" s-bghead=\"" + headBgColorWithOpacity + "\" width=\"" + width + "\" height=\"152\"]";
+        var newShortcode = "[mtp-table id=\"" + tournamentId + "\" post_id=\"" + postId + "\" lang=\"en\" s-size=\"" + fontSize + "\" s-sizeheader=\"" + headerFontSize + "\" s-color=\"" + textColor + "\" s-maincolor=\"" + mainColor + "\" s-padding=\"" + tablePadding + "\" s-innerpadding=\"" + innerPadding + "\" s-bgcolor=\"" + bgColorWithOpacity + "\" s-bcolor=\"" + borderColor + "\" s-bbcolor=\"" + headBottomBorderColor + "\" s-logosize=\"" + logoSize + "\" s-bsizeh=\"" + bsizeh + "\" s-bsizev=\"" + bsizev + "\" s-bsizeoh=\"" + bsizeoh + "\" s-bsizeov=\"" + bsizeov + "\" s-bbsize=\"" + bbsize + "\" s-bgeven=\"" + evenBgColorWithOpacity + "\" s-bgodd=\"" + oddBgColorWithOpacity + "\" s-bgover=\"" + hoverBgColorWithOpacity + "\" s-bghead=\"" + headBgColorWithOpacity + "\" width=\"" + width + "\" height=\"" + height + "\"]";
         $("#mtp_shortcode_field").val(newShortcode);
       });
     });
@@ -882,6 +900,12 @@ class MeinTurnierplanWP {
     if (isset($_POST['mtp_table_width'])) {
       $width = sanitize_text_field($_POST['mtp_table_width']);
       update_post_meta($post_id, '_mtp_table_width', $width);
+    }
+
+    // Save height
+    if (isset($_POST['mtp_table_height'])) {
+      $height = sanitize_text_field($_POST['mtp_table_height']);
+      update_post_meta($post_id, '_mtp_table_height', $height);
     }
     
     // Save font size
@@ -1106,7 +1130,7 @@ class MeinTurnierplanWP {
       's-bgover' => 'eeeeffb0',
       's-bghead' => 'eeeeffff',
       'width' => '',
-      'height' => '152'
+      'height' => ''
     ), $atts, 'mtp-table');
     
     // Use post_id if provided for getting width from meta, otherwise use null
@@ -1146,6 +1170,7 @@ class MeinTurnierplanWP {
     $post_id = absint($_POST['post_id']);
     $tournament_id = sanitize_text_field($_POST['tournament_id']);
     $width = sanitize_text_field($_POST['width']);
+    $height = sanitize_text_field($_POST['height']);
     $font_size = sanitize_text_field($_POST['font_size']);
     $header_font_size = sanitize_text_field($_POST['header_font_size']);
     $bsizeh = sanitize_text_field($_POST['bsizeh']);
@@ -1170,6 +1195,7 @@ class MeinTurnierplanWP {
     $atts = array(
       'id' => $tournament_id,
       'width' => $width ? $width : '300',
+      'height' => $height ? $height : '152',
       's-size' => $font_size ? $font_size : '9',
       's-sizeheader' => $header_font_size ? $header_font_size : '10',
       's-padding' => $table_padding ? $table_padding : '2',
@@ -1262,6 +1288,12 @@ class MeinTurnierplanWP {
     $width = !empty($atts['width']) ? $atts['width'] : get_post_meta($table_id, '_mtp_table_width', true);
     if (empty($width)) {
       $width = '300'; // Default width
+    }
+
+    // Get height from shortcode attribute or post meta
+    $height = !empty($atts['height']) ? $atts['height'] : get_post_meta($table_id, '_mtp_table_height', true);
+    if (empty($height)) {
+      $height = '152'; // Default height
     }
     
     // Get font size from shortcode attribute or post meta

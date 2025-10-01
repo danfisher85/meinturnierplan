@@ -31,6 +31,7 @@ class MTP_Table_Widget extends WP_Widget {
         
         if (!empty($instance['table_id'])) {
             $width = !empty($instance['width']) ? $instance['width'] : '';
+            $height = !empty($instance['height']) ? $instance['height'] : '';
             $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
             $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '10';
             $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '2';
@@ -52,6 +53,7 @@ class MTP_Table_Widget extends WP_Widget {
             $bbsize = !empty($instance['bbsize']) ? $instance['bbsize'] : '2';
             $attributes = array(
                 'width' => $width,
+                'height' => $height,
                 's-size' => $font_size,
                 's-sizeheader' => $header_font_size,
                 's-padding' => $table_padding,
@@ -79,6 +81,7 @@ class MTP_Table_Widget extends WP_Widget {
         } else {
             // Show empty table when no table selected
             $width = !empty($instance['width']) ? $instance['width'] : '';
+            $height = !empty($instance['height']) ? $instance['height'] : '';
             $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '9';
             $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '10';
             $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '2';
@@ -99,7 +102,8 @@ class MTP_Table_Widget extends WP_Widget {
             $bsizeov = !empty($instance['bsizeov']) ? $instance['bsizeov'] : '1';
             $bbsize = !empty($instance['bbsize']) ? $instance['bbsize'] : '2';
             $attributes = array(
-                'width' => $width, 
+                'width' => $width,
+                'height' => $height,
                 's-size' => $font_size,
                 's-sizeheader' => $header_font_size,
                 's-padding' => $table_padding,
@@ -135,6 +139,7 @@ class MTP_Table_Widget extends WP_Widget {
         $title = !empty($instance['title']) ? $instance['title'] : __('Tournament Table', 'meinturnierplan-wp');
         $table_id = !empty($instance['table_id']) ? $instance['table_id'] : '';
         $width = !empty($instance['width']) ? $instance['width'] : '';
+        $height = !empty($instance['height']) ? $instance['height'] : '';
         $font_size = !empty($instance['font_size']) ? $instance['font_size'] : '';
         $header_font_size = !empty($instance['header_font_size']) ? $instance['header_font_size'] : '';
         $table_padding = !empty($instance['table_padding']) ? $instance['table_padding'] : '';
@@ -182,6 +187,12 @@ class MTP_Table_Widget extends WP_Widget {
             <label for="<?php echo esc_attr($this->get_field_id('width')); ?>"><?php _e('Custom Width (px):', 'meinturnierplan-wp'); ?></label>
             <input class="widefat" id="<?php echo esc_attr($this->get_field_id('width')); ?>" name="<?php echo esc_attr($this->get_field_name('width')); ?>" type="number" value="<?php echo esc_attr($width); ?>" min="100" max="2000" step="1">
             <small><?php _e('Leave empty to use table default width.', 'meinturnierplan-wp'); ?></small>
+        </p>
+
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('height')); ?>"><?php _e('Custom height (px):', 'meinturnierplan-wp'); ?></label>
+            <input class="widefat" id="<?php echo esc_attr($this->get_field_id('height')); ?>" name="<?php echo esc_attr($this->get_field_name('height')); ?>" type="number" value="<?php echo esc_attr($height); ?>" min="100" max="2000" step="1">
+            <small><?php _e('Leave empty to use table default height.', 'meinturnierplan-wp'); ?></small>
         </p>
         
         <p>
@@ -302,6 +313,7 @@ class MTP_Table_Widget extends WP_Widget {
         $instance['title'] = (!empty($new_instance['title'])) ? sanitize_text_field($new_instance['title']) : '';
         $instance['table_id'] = (!empty($new_instance['table_id'])) ? absint($new_instance['table_id']) : '';
         $instance['width'] = (!empty($new_instance['width'])) ? sanitize_text_field($new_instance['width']) : '';
+        $instance['height'] = (!empty($new_instance['height'])) ? sanitize_text_field($new_instance['height']) : '';
         $instance['font_size'] = (!empty($new_instance['font_size'])) ? sanitize_text_field($new_instance['font_size']) : '';
         $instance['header_font_size'] = (!empty($new_instance['header_font_size'])) ? sanitize_text_field($new_instance['header_font_size']) : '';
         $instance['table_padding'] = (!empty($new_instance['table_padding'])) ? sanitize_text_field($new_instance['table_padding']) : '';
