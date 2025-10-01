@@ -94,6 +94,11 @@ class MTP_Ajax_Handler {
       $atts['bm'] = '1';
     }
     
+    // Add nav parameter if navigation_for_groups is enabled
+    if (!empty($data['navigation_for_groups']) && $data['navigation_for_groups'] === '1') {
+      $atts['nav'] = '1';
+    }
+    
     $html = $this->table_renderer->render_table_html($post_id, $atts);
     
     wp_send_json_success($html);
@@ -130,6 +135,7 @@ class MTP_Ajax_Handler {
       'suppress_logos' => isset($data['suppress_logos']) ? sanitize_text_field($data['suppress_logos']) : '0',
       'suppress_num_matches' => isset($data['suppress_num_matches']) ? sanitize_text_field($data['suppress_num_matches']) : '0',
       'projector_presentation' => isset($data['projector_presentation']) ? sanitize_text_field($data['projector_presentation']) : '0',
+      'navigation_for_groups' => isset($data['navigation_for_groups']) ? sanitize_text_field($data['navigation_for_groups']) : '0',
     );
   }
 }

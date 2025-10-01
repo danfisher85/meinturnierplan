@@ -146,6 +146,18 @@ class MTP_Table_Renderer {
       $params['bm'] = '1';
     }
     
+    // Add nav parameter if navigation_for_groups is enabled
+    $navigation_for_groups = '';
+    if (!empty($atts['nav'])) {
+      $navigation_for_groups = $atts['nav'];
+    } elseif ($table_id) {
+      $navigation_for_groups = get_post_meta($table_id, '_mtp_navigation_for_groups', true);
+    }
+    
+    if (!empty($navigation_for_groups) && $navigation_for_groups === '1') {
+      $params['nav'] = '1';
+    }
+    
     return $params;
   }
   

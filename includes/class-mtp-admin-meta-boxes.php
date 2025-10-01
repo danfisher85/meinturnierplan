@@ -128,6 +128,7 @@ class MTP_Admin_Meta_Boxes {
       'suppress_logos' => '0',
       'suppress_num_matches' => '0',
       'projector_presentation' => '0',
+      'navigation_for_groups' => '0',
     );
     
     $meta_values = array();
@@ -193,6 +194,7 @@ class MTP_Admin_Meta_Boxes {
     $this->render_checkbox_field('suppress_logos', __('Suppress Logos', 'meinturnierplan-wp'), $meta_values['suppress_logos'], __('Hide the logos from the tournament table.', 'meinturnierplan-wp'));
     $this->render_checkbox_field('suppress_num_matches', __('Suppress Num Matches', 'meinturnierplan-wp'), $meta_values['suppress_num_matches'], __('Hide the number of matches from the tournament table.', 'meinturnierplan-wp'));
     $this->render_checkbox_field('projector_presentation', __('Projector Presentation', 'meinturnierplan-wp'), $meta_values['projector_presentation'], __('Enable projector presentation mode for the tournament table.', 'meinturnierplan-wp'));
+    $this->render_checkbox_field('navigation_for_groups', __('Navigation for Groups', 'meinturnierplan-wp'), $meta_values['navigation_for_groups'], __('Enable navigation for groups in the tournament table.', 'meinturnierplan-wp'));
     
     echo '</table>';
   }
@@ -352,6 +354,11 @@ class MTP_Admin_Meta_Boxes {
       $atts_array['bm'] = '1';
     }
     
+    // Add nav parameter if navigation_for_groups is enabled
+    if (!empty($meta_values['navigation_for_groups']) && $meta_values['navigation_for_groups'] === '1') {
+      $atts_array['nav'] = '1';
+    }
+    
     return $atts_array;
   }
   
@@ -377,7 +384,7 @@ class MTP_Admin_Meta_Boxes {
       'mtp_bg_color', 'mtp_logo_size', 'mtp_bg_opacity', 'mtp_border_color',
       'mtp_head_bottom_border_color', 'mtp_even_bg_color', 'mtp_even_bg_opacity',
       'mtp_odd_bg_color', 'mtp_odd_bg_opacity', 'mtp_hover_bg_color', 'mtp_hover_bg_opacity',
-      'mtp_head_bg_color', 'mtp_head_bg_opacity', 'mtp_suppress_wins', 'mtp_suppress_logos', 'mtp_suppress_num_matches', 'mtp_projector_presentation'
+      'mtp_head_bg_color', 'mtp_head_bg_opacity', 'mtp_suppress_wins', 'mtp_suppress_logos', 'mtp_suppress_num_matches', 'mtp_projector_presentation', 'mtp_navigation_for_groups'
     );
     ?>
     <script>
@@ -440,6 +447,7 @@ class MTP_Admin_Meta_Boxes {
           suppress_logos: $("#mtp_suppress_logos").is(":checked") ? "1" : "0",
           suppress_num_matches: $("#mtp_suppress_num_matches").is(":checked") ? "1" : "0",
           projector_presentation: $("#mtp_projector_presentation").is(":checked") ? "1" : "0",
+          navigation_for_groups: $("#mtp_navigation_for_groups").is(":checked") ? "1" : "0",
           action: "mtp_preview_table",
           nonce: "<?php echo wp_create_nonce('mtp_preview_nonce'); ?>"
         };
@@ -503,6 +511,11 @@ class MTP_Admin_Meta_Boxes {
     // Add bm parameter if projector_presentation is enabled
     if (!empty($meta_values['projector_presentation']) && $meta_values['projector_presentation'] === '1') {
       $shortcode .= ' bm="1"';
+    }
+    
+    // Add nav parameter if navigation_for_groups is enabled
+    if (!empty($meta_values['navigation_for_groups']) && $meta_values['navigation_for_groups'] === '1') {
+      $shortcode .= ' nav="1"';
     }
     
     $shortcode .= ']';
@@ -637,6 +650,11 @@ class MTP_Admin_Meta_Boxes {
           newShortcode += ' bm="1"';
         }
         
+        // Add nav parameter if navigation_for_groups checkbox is checked
+        if ($("#mtp_navigation_for_groups").is(":checked")) {
+          newShortcode += ' nav="1"';
+        }
+        
         newShortcode += ']';
         
         $("#mtp_shortcode_field").val(newShortcode);
@@ -684,14 +702,14 @@ class MTP_Admin_Meta_Boxes {
       'inner_padding', 'text_color', 'main_color', 'bg_color', 'bg_opacity',
       'border_color', 'head_bottom_border_color', 'even_bg_color', 'even_bg_opacity',
       'odd_bg_color', 'odd_bg_opacity', 'hover_bg_color', 'hover_bg_opacity',
-      'head_bg_color', 'head_bg_opacity', 'logo_size', 'suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation'
+      'head_bg_color', 'head_bg_opacity', 'logo_size', 'suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation', 'navigation_for_groups'
     );
     
     foreach ($meta_fields as $field) {
       $post_field = 'mtp_' . $field;
       $meta_key = '_mtp_' . $field;
       
-      if (in_array($field, array('suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation'))) {
+      if (in_array($field, array('suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation', 'navigation_for_groups'))) {
         // Handle checkbox: if not checked, it won't be in $_POST
         $value = isset($_POST[$post_field]) ? '1' : '0';
         update_post_meta($post_id, $meta_key, $value);
@@ -707,7 +725,7 @@ class MTP_Admin_Meta_Boxes {
    */
   private function sanitize_meta_value($field, $value) {
     // Checkbox fields
-    if (in_array($field, array('suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation'))) {
+    if (in_array($field, array('suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation', 'navigation_for_groups'))) {
       return $value === '1' ? '1' : '0';
     }
     
