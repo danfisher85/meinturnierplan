@@ -31,6 +31,7 @@ class MTP_Plugin {
   public $ajax_handler;
   public $assets;
   public $installer;
+  public $gutenberg_block;
   
   /**
    * Main Plugin Instance
@@ -78,6 +79,9 @@ class MTP_Plugin {
     
     // Widget class
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-widget.php';
+    
+    // Gutenberg block class
+    include_once MTP_PLUGIN_PATH . 'includes/class-mtp-gutenberg-block.php';
   }
   
   /**
@@ -92,6 +96,7 @@ class MTP_Plugin {
     $this->admin_meta_boxes = new MTP_Admin_Meta_Boxes($this->table_renderer);
     $this->ajax_handler = new MTP_Ajax_Handler($this->table_renderer);
     $this->assets = new MTP_Assets();
+    $this->gutenberg_block = new MTP_Gutenberg_Block($this->table_renderer);
     
     // Initialize widget
     add_action('widgets_init', function() {

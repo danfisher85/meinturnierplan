@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "meinturnierplan/tournament-table",
+  "version": "1.0.0",
+  "title": "Tournament Table",
+  "category": "widgets",
+  "icon": "editor-table",
+  "description": "Display a tournament table from your custom post types.",
+  "supports": {
+    "html": false,
+    "align": ["left", "center", "right", "wide", "full"]
+  },
+  "textdomain": "meinturnierplan-wp",
+  "attributes": {
+    "tableId": {
+      "type": "string",
+      "default": ""
+    },
+    "tableName": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "mtp-tournament-table-block"
+}

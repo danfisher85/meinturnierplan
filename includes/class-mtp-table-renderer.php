@@ -41,13 +41,13 @@ class MTP_Table_Renderer {
     }
     
     // Get width from shortcode attribute or post meta
-    $width = !empty($atts['width']) ? $atts['width'] : get_post_meta($table_id, '_mtp_table_width', true);
+    $width = !empty($atts['width']) ? $atts['width'] : get_post_meta($table_id, '_mtp_width', true);
     if (empty($width)) {
       $width = '300'; // Default width
     }
 
     // Get height from shortcode attribute or post meta
-    $height = !empty($atts['height']) ? $atts['height'] : get_post_meta($table_id, '_mtp_table_height', true);
+    $height = !empty($atts['height']) ? $atts['height'] : get_post_meta($table_id, '_mtp_height', true);
     if (empty($height)) {
       $height = '152'; // Default height
     }
