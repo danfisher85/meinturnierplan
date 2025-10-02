@@ -153,7 +153,6 @@ class MTP_Admin_Meta_Boxes {
     $this->render_group_header(__('Basic Settings', 'meinturnierplan-wp'));
     $this->render_text_field('tournament_id', __('Tournament ID', 'meinturnierplan-wp'), $meta_values['tournament_id'], __('Enter the tournament ID from meinturnierplan.de (e.g., 1753883027)', 'meinturnierplan-wp'));
     $this->render_select_field('language', __('Language', 'meinturnierplan-wp'), $meta_values['language'], $this->get_language_options(), __('Select the language for the tournament table display.', 'meinturnierplan-wp'));
-    $this->render_conditional_group_field($meta_values);
     
     // Dimensions Group
     $this->render_group_header(__('Dimensions', 'meinturnierplan-wp'));
@@ -162,6 +161,7 @@ class MTP_Admin_Meta_Boxes {
 
     // Display Options Group
     $this->render_group_header(__('Display Options', 'meinturnierplan-wp'));
+    $this->render_conditional_group_field($meta_values);
     $this->render_checkbox_field('suppress_wins', __('Suppress Num Wins, Losses, etc.', 'meinturnierplan-wp'), $meta_values['suppress_wins'], __('Hide the number of wins, losses, and other statistical columns from the tournament table.', 'meinturnierplan-wp'));
     $this->render_checkbox_field('suppress_logos', __('Suppress Logos', 'meinturnierplan-wp'), $meta_values['suppress_logos'], __('Hide the logos from the tournament table.', 'meinturnierplan-wp'));
     $this->render_checkbox_field('suppress_num_matches', __('Suppress Num Matches', 'meinturnierplan-wp'), $meta_values['suppress_num_matches'], __('Hide the number of matches from the tournament table.', 'meinturnierplan-wp'));
