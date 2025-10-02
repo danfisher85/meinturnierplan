@@ -400,18 +400,30 @@ class MTP_Admin_Meta_Boxes {
     echo '<td>';
     echo '<div style="display: flex; align-items: center; gap: 10px;">';
     echo '<select id="mtp_group" name="mtp_group" class="regular-text">';
-    echo '<option value="">' . esc_html(__('All Groups', 'meinturnierplan-wp')) . '</option>';
     
     if (!empty($groups)) {
-      // Populate with actual groups
+      // Populate with actual groups - never show "All Groups" option
       foreach ($groups as $index => $group) {
         $group_number = $index + 1;
-        $selected = selected($saved_group, $group_number, false);
+        $is_selected = false;
+        
+        if (!empty($saved_group)) {
+          // Use saved selection
+          $is_selected = ($saved_group == $group_number);
+        } else if ($index == 0) {
+          // Auto-select first group as default (both single and multiple group cases)
+          $is_selected = true;
+        }
+        
+        $selected = $is_selected ? ' selected' : '';
         echo '<option value="' . esc_attr($group_number) . '"' . $selected . '>' . esc_html(sprintf(__('Group %s', 'meinturnierplan-wp'), $group['displayId'])) . '</option>';
       }
     } else if (!empty($saved_group) && !empty($tournament_id)) {
       // Show a placeholder for the saved group if groups haven't loaded yet
       echo '<option value="' . esc_attr($saved_group) . '" selected>' . esc_html(sprintf(__('Group %s (saved)', 'meinturnierplan-wp'), $saved_group)) . '</option>';
+    } else {
+      // No groups available - show default option
+      echo '<option value="">' . esc_html(__('Default', 'meinturnierplan-wp')) . '</option>';
     }
     
     echo '</select>';
@@ -419,7 +431,15 @@ class MTP_Admin_Meta_Boxes {
     echo '<span class="dashicons dashicons-update-alt" style="vertical-align: middle;"></span>';
     echo '</button>';
     echo '</div>';
-    echo '<p class="description">' . esc_html(__('Select a specific group to display, or leave as "All Groups" to show all. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
+    
+    // Update description based on group availability
+    if (!empty($groups) && count($groups) > 1) {
+      echo '<p class="description">' . esc_html(__('Select a specific group to display. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
+    } else if (!empty($groups) && count($groups) == 1) {
+      echo '<p class="description">' . esc_html(__('This tournament has only one group. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
+    } else {
+      echo '<p class="description">' . esc_html(__('No groups found for this tournament. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
+    }
     
     // Add hidden field to store the initially saved value for JavaScript
     echo '<input type="hidden" id="mtp_group_saved_value" value="' . esc_attr($saved_group) . '" />';
@@ -703,17 +723,25 @@ class MTP_Admin_Meta_Boxes {
           if (response.success && response.data.groups.length > 0) {
             // Populate group dropdown
             $groupSelect.prop("disabled", false).empty();
-            $groupSelect.append('<option value="">All Groups</option>');
             
             $.each(response.data.groups, function(index, group) {
               var groupNumber = index + 1;
               var groupLabel = "Group " + group.displayId;
-              $groupSelect.append('<option value="' + groupNumber + '">' + groupLabel + '</option>');
+              var isSelected = false;
+              
+              // Auto-select first group as default if no previous selection
+              if (!currentSelection && index === 0) {
+                isSelected = true;
+              } else if (currentSelection && currentSelection == groupNumber) {
+                isSelected = true;
+              }
+              
+              $groupSelect.append('<option value="' + groupNumber + '"' + (isSelected ? ' selected' : '') + '>' + groupLabel + '</option>');
             });
             
-            // Restore previous selection if it still exists in the new options
-            if (currentSelection && $groupSelect.find('option[value="' + currentSelection + '"]').length > 0) {
-              $groupSelect.val(currentSelection);
+            // If we had a previous selection but it's not in the new list, select the first group
+            if (currentSelection && $groupSelect.find('option[value="' + currentSelection + '"]').length === 0) {
+              $groupSelect.find('option:first').prop('selected', true);
             }
             
             // Enable refresh button
@@ -726,7 +754,7 @@ class MTP_Admin_Meta_Boxes {
           } else {
             // No groups found, but keep the field visible with saved value if it exists
             $groupSelect.prop("disabled", false).empty();
-            $groupSelect.append('<option value="">All Groups</option>');
+            $groupSelect.append('<option value="">Default</option>');
             
             // If there was a saved value, show it as an option even if groups aren't available
             if (currentSelection && currentSelection !== '') {
@@ -746,7 +774,7 @@ class MTP_Admin_Meta_Boxes {
           
           // On error, restore the field with saved value if available
           $groupSelect.prop("disabled", false).empty();
-          $groupSelect.append('<option value="">All Groups</option>');
+          $groupSelect.append('<option value="">Default</option>');
           
           if (currentSelection && currentSelection !== '') {
             $groupSelect.append('<option value="' + currentSelection + '" selected>Group ' + currentSelection + ' (saved)</option>');
