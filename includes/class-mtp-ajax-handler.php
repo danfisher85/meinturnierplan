@@ -34,6 +34,8 @@ class MTP_Ajax_Handler {
    */
   public function init() {
     add_action('wp_ajax_mtp_preview_table', array($this, 'ajax_preview_table'));
+    add_action('wp_ajax_mtp_get_groups', array($this, 'ajax_get_groups'));
+    add_action('wp_ajax_mtp_refresh_groups', array($this, 'ajax_refresh_groups'));
   }
   
   /**
@@ -75,6 +77,11 @@ class MTP_Ajax_Handler {
       'setlang' => $data['language'] ? $data['language'] : 'en'
     );
     
+    // Add group parameter if specified
+    if (!empty($data['group'])) {
+      $atts['group'] = $data['group'];
+    }
+    
     // Add sw parameter if suppress_wins is enabled
     if (!empty($data['suppress_wins']) && $data['suppress_wins'] === '1') {
       $atts['sw'] = '1';
@@ -103,6 +110,103 @@ class MTP_Ajax_Handler {
     $html = $this->table_renderer->render_table_html($post_id, $atts);
     
     wp_send_json_success($html);
+  }
+  
+  /**
+   * AJAX handler for fetching tournament groups
+   */
+  public function ajax_get_groups() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+    
+    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $force_refresh = isset($_POST['force_refresh']) ? (bool)$_POST['force_refresh'] : false;
+    
+    if (empty($tournament_id)) {
+      wp_send_json_success(array('groups' => array()));
+      return;
+    }
+    
+    // Fetch groups from external API (with caching)
+    $groups = $this->fetch_tournament_groups($tournament_id, $force_refresh);
+    
+    wp_send_json_success(array('groups' => $groups));
+  }
+  
+  /**
+   * AJAX handler for refreshing tournament groups (force refresh)
+   */
+  public function ajax_refresh_groups() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+    
+    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    
+    if (empty($tournament_id)) {
+      wp_send_json_success(array('groups' => array()));
+      return;
+    }
+    
+    // Force refresh groups from external API
+    $groups = $this->fetch_tournament_groups($tournament_id, true);
+    
+    wp_send_json_success(array('groups' => $groups, 'refreshed' => true));
+  }
+  
+  /**
+   * Fetch tournament groups from external API
+   */
+  private function fetch_tournament_groups($tournament_id, $force_refresh = false) {
+    if (empty($tournament_id)) {
+      return array();
+    }
+    
+    $cache_key = 'mtp_groups_' . $tournament_id;
+    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
+    
+    // Try to get cached data first (unless force refresh is requested)
+    if (!$force_refresh) {
+      $cached_groups = get_transient($cache_key);
+      if ($cached_groups !== false) {
+        return $cached_groups;
+      }
+    }
+    
+    // Use WordPress HTTP API to fetch the JSON
+    $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
+    $response = wp_remote_get($url, array(
+      'timeout' => 10,
+      'sslverify' => true
+    ));
+    
+    // Check for errors
+    if (is_wp_error($response)) {
+      // Return cached data if available, even if expired
+      $cached_groups = get_transient($cache_key);
+      if ($cached_groups !== false) {
+        return $cached_groups;
+      }
+      return array();
+    }
+    
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+    
+    $groups = array();
+    
+    // Check if groups exist and are not empty
+    if (isset($data['groups']) && is_array($data['groups']) && !empty($data['groups'])) {
+      $groups = $data['groups'];
+    }
+    
+    // Cache the result (even if empty)
+    set_transient($cache_key, $groups, $cache_expiry);
+    
+    return $groups;
   }
   
   /**
@@ -138,6 +242,7 @@ class MTP_Ajax_Handler {
       'projector_presentation' => isset($data['projector_presentation']) ? sanitize_text_field($data['projector_presentation']) : '0',
       'navigation_for_groups' => isset($data['navigation_for_groups']) ? sanitize_text_field($data['navigation_for_groups']) : '0',
       'language' => isset($data['language']) ? sanitize_text_field($data['language']) : 'en',
+      'group' => isset($data['group']) ? sanitize_text_field($data['group']) : '',
     );
   }
 }

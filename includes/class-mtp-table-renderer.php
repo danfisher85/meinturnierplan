@@ -170,6 +170,18 @@ class MTP_Table_Renderer {
       $params['setlang'] = $language;
     }
     
+    // Add gr parameter if group is specified
+    $group = '';
+    if (!empty($atts['group'])) {
+      $group = $atts['group'];
+    } elseif ($table_id) {
+      $group = get_post_meta($table_id, '_mtp_group', true);
+    }
+    
+    if (!empty($group)) {
+      $params['gr'] = $group;
+    }
+    
     return $params;
   }
   

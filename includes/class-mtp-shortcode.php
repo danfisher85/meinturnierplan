@@ -44,6 +44,7 @@ class MTP_Shortcode {
       'id' => '',
       'post_id' => '', // Internal WordPress post ID (optional)
       'lang' => 'en',
+      'group' => '',
       's-size' => '9',
       's-sizeheader' => '10',
       's-color' => '000000',
