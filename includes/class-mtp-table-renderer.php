@@ -158,6 +158,18 @@ class MTP_Table_Renderer {
       $params['nav'] = '1';
     }
     
+    // Add setlang parameter if language is specified
+    $language = '';
+    if (!empty($atts['setlang'])) {
+      $language = $atts['setlang'];
+    } elseif ($table_id) {
+      $language = get_post_meta($table_id, '_mtp_language', true);
+    }
+    
+    if (!empty($language) && $language !== 'en') {
+      $params['setlang'] = $language;
+    }
+    
     return $params;
   }
   

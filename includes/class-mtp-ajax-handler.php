@@ -71,7 +71,8 @@ class MTP_Ajax_Handler {
       's-bsizev' => $data['bsizev'] ? $data['bsizev'] : '1',
       's-bsizeoh' => $data['bsizeoh'] ? $data['bsizeoh'] : '1',
       's-bsizeov' => $data['bsizeov'] ? $data['bsizeov'] : '1',
-      's-bbsize' => $data['bbsize'] ? $data['bbsize'] : '2'
+      's-bbsize' => $data['bbsize'] ? $data['bbsize'] : '2',
+      'setlang' => $data['language'] ? $data['language'] : 'en'
     );
     
     // Add sw parameter if suppress_wins is enabled
@@ -136,6 +137,7 @@ class MTP_Ajax_Handler {
       'suppress_num_matches' => isset($data['suppress_num_matches']) ? sanitize_text_field($data['suppress_num_matches']) : '0',
       'projector_presentation' => isset($data['projector_presentation']) ? sanitize_text_field($data['projector_presentation']) : '0',
       'navigation_for_groups' => isset($data['navigation_for_groups']) ? sanitize_text_field($data['navigation_for_groups']) : '0',
+      'language' => isset($data['language']) ? sanitize_text_field($data['language']) : 'en',
     );
   }
 }

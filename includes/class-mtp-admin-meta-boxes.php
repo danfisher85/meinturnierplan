@@ -129,6 +129,7 @@ class MTP_Admin_Meta_Boxes {
       'suppress_num_matches' => '0',
       'projector_presentation' => '0',
       'navigation_for_groups' => '0',
+      'language' => 'en',
     );
     
     $meta_values = array();
@@ -150,6 +151,7 @@ class MTP_Admin_Meta_Boxes {
     // Basic Settings Group
     $this->render_group_header(__('Basic Settings', 'meinturnierplan-wp'));
     $this->render_text_field('tournament_id', __('Tournament ID', 'meinturnierplan-wp'), $meta_values['tournament_id'], __('Enter the tournament ID from meinturnierplan.de (e.g., 1753883027)', 'meinturnierplan-wp'));
+    $this->render_select_field('language', __('Language', 'meinturnierplan-wp'), $meta_values['language'], $this->get_language_options(), __('Select the language for the tournament table display.', 'meinturnierplan-wp'));
     
     // Dimensions Group
     $this->render_group_header(__('Dimensions', 'meinturnierplan-wp'));
@@ -298,6 +300,42 @@ class MTP_Admin_Meta_Boxes {
   }
   
   /**
+   * Render select field
+   */
+  private function render_select_field($field_name, $label, $value, $options, $description = '') {
+    echo '<tr>';
+    echo '<th scope="row"><label for="mtp_' . esc_attr($field_name) . '">' . esc_html($label) . '</label></th>';
+    echo '<td>';
+    echo '<select id="mtp_' . esc_attr($field_name) . '" name="mtp_' . esc_attr($field_name) . '" class="regular-text">';
+    foreach ($options as $option_value => $option_label) {
+      echo '<option value="' . esc_attr($option_value) . '"' . selected($value, $option_value, false) . '>' . esc_html($option_label) . '</option>';
+    }
+    echo '</select>';
+    if ($description) {
+      echo '<p class="description">' . esc_html($description) . '</p>';
+    }
+    echo '</td>';
+    echo '</tr>';
+  }
+  
+  /**
+   * Get available language options
+   */
+  private function get_language_options() {
+    return array(
+      'en' => __('English', 'meinturnierplan-wp'),
+      'de' => __('Deutsch / German', 'meinturnierplan-wp'),
+      'es' => __('Español / Spanish', 'meinturnierplan-wp'),
+      'fr' => __('Français / French', 'meinturnierplan-wp'),
+      'hr' => __('Hrvatski / Croatian', 'meinturnierplan-wp'),
+      'it' => __('Italiano / Italian', 'meinturnierplan-wp'),
+      'pl' => __('Polski / Polish', 'meinturnierplan-wp'),
+      'sl' => __('Slovenščina / Slovenian', 'meinturnierplan-wp'),
+      'tr' => __('Türkçe / Turkish', 'meinturnierplan-wp'),
+    );
+  }
+  
+  /**
    * Render preview section
    */
   private function render_preview_section($post, $meta_values) {
@@ -344,7 +382,8 @@ class MTP_Admin_Meta_Boxes {
       's-bsizev' => $meta_values['bsizev'],
       's-bsizeoh' => $meta_values['bsizeoh'],
       's-bsizeov' => $meta_values['bsizeov'],
-      's-bbsize' => $meta_values['bbsize']
+      's-bbsize' => $meta_values['bbsize'],
+      'setlang' => $meta_values['language']
     );
     
     // Add sw parameter if suppress_wins is enabled
@@ -397,7 +436,7 @@ class MTP_Admin_Meta_Boxes {
       'mtp_bg_color', 'mtp_logo_size', 'mtp_bg_opacity', 'mtp_border_color',
       'mtp_head_bottom_border_color', 'mtp_even_bg_color', 'mtp_even_bg_opacity',
       'mtp_odd_bg_color', 'mtp_odd_bg_opacity', 'mtp_hover_bg_color', 'mtp_hover_bg_opacity',
-      'mtp_head_bg_color', 'mtp_head_bg_opacity', 'mtp_suppress_wins', 'mtp_suppress_logos', 'mtp_suppress_num_matches', 'mtp_projector_presentation', 'mtp_navigation_for_groups'
+      'mtp_head_bg_color', 'mtp_head_bg_opacity', 'mtp_suppress_wins', 'mtp_suppress_logos', 'mtp_suppress_num_matches', 'mtp_projector_presentation', 'mtp_navigation_for_groups', 'mtp_language'
     );
     ?>
     <script>
@@ -425,7 +464,12 @@ class MTP_Admin_Meta_Boxes {
         $("#mtp_tournament_id").trigger("input");
       });
       
-      $("#<?php echo implode(', #', $field_list); ?>").on("input", function() {
+      // Handle select dropdown changes (specifically for language field)
+      $("select[id^='mtp_']").on("change", function() {
+        $("#mtp_tournament_id").trigger("input");
+      });
+      
+      $("#<?php echo implode(', #', $field_list); ?>").on("input change", function() {
         // Get all field values
         var data = {
           post_id: <?php echo intval($post_id); ?>,
@@ -461,6 +505,7 @@ class MTP_Admin_Meta_Boxes {
           suppress_num_matches: $("#mtp_suppress_num_matches").is(":checked") ? "1" : "0",
           projector_presentation: $("#mtp_projector_presentation").is(":checked") ? "1" : "0",
           navigation_for_groups: $("#mtp_navigation_for_groups").is(":checked") ? "1" : "0",
+          language: $("#mtp_language").val(),
           action: "mtp_preview_table",
           nonce: "<?php echo wp_create_nonce('mtp_preview_nonce'); ?>"
         };
@@ -504,7 +549,7 @@ class MTP_Admin_Meta_Boxes {
     $combined_hover_bg_color = $this->combine_color_opacity($meta_values['hover_bg_color'], $meta_values['hover_bg_opacity']);
     $combined_head_bg_color = $this->combine_color_opacity($meta_values['head_bg_color'], $meta_values['head_bg_opacity']);
     
-    $shortcode = '[mtp-table id="' . esc_attr($meta_values['tournament_id']) . '" post_id="' . $post_id . '" lang="en" s-size="' . esc_attr($meta_values['font_size']) . '" s-sizeheader="' . esc_attr($meta_values['header_font_size']) . '" s-color="' . esc_attr($meta_values['text_color']) . '" s-maincolor="' . esc_attr($meta_values['main_color']) . '" s-padding="' . esc_attr($meta_values['table_padding']) . '" s-innerpadding="' . esc_attr($meta_values['inner_padding']) . '" s-bgcolor="' . esc_attr($combined_bg_color). '" s-bcolor="' . esc_attr($meta_values['border_color']) . '" s-bbcolor="' . esc_attr($meta_values['head_bottom_border_color']) . '" s-bgeven="' . esc_attr($combined_even_bg_color) . '" s-logosize="' . esc_attr($meta_values['logo_size']) . '" s-bsizeh="' . esc_attr($meta_values['bsizeh']) . '" s-bsizev="' . esc_attr($meta_values['bsizev']) . '" s-bsizeoh="' . esc_attr($meta_values['bsizeoh']) . '" s-bsizeov="' . esc_attr($meta_values['bsizeov']) . '" s-bbsize="' . esc_attr($meta_values['bbsize']) . '" s-bgodd="' . esc_attr($combined_odd_bg_color) . '" s-bgover="' . esc_attr($combined_hover_bg_color) . '" s-bghead="' . esc_attr($combined_head_bg_color) . '" width="' . esc_attr($meta_values['width']) . '" height="' . esc_attr($meta_values['height']) . '"';
+    $shortcode = '[mtp-table id="' . esc_attr($meta_values['tournament_id']) . '" post_id="' . $post_id . '" lang="' . esc_attr($meta_values['language']) . '" s-size="' . esc_attr($meta_values['font_size']) . '" s-sizeheader="' . esc_attr($meta_values['header_font_size']) . '" s-color="' . esc_attr($meta_values['text_color']) . '" s-maincolor="' . esc_attr($meta_values['main_color']) . '" s-padding="' . esc_attr($meta_values['table_padding']) . '" s-innerpadding="' . esc_attr($meta_values['inner_padding']) . '" s-bgcolor="' . esc_attr($combined_bg_color). '" s-bcolor="' . esc_attr($meta_values['border_color']) . '" s-bbcolor="' . esc_attr($meta_values['head_bottom_border_color']) . '" s-bgeven="' . esc_attr($combined_even_bg_color) . '" s-logosize="' . esc_attr($meta_values['logo_size']) . '" s-bsizeh="' . esc_attr($meta_values['bsizeh']) . '" s-bsizev="' . esc_attr($meta_values['bsizev']) . '" s-bsizeoh="' . esc_attr($meta_values['bsizeoh']) . '" s-bsizeov="' . esc_attr($meta_values['bsizeov']) . '" s-bbsize="' . esc_attr($meta_values['bbsize']) . '" s-bgodd="' . esc_attr($combined_odd_bg_color) . '" s-bgover="' . esc_attr($combined_hover_bg_color) . '" s-bghead="' . esc_attr($combined_head_bg_color) . '" width="' . esc_attr($meta_values['width']) . '" height="' . esc_attr($meta_values['height']) . '"';
     
     // Add sw parameter if suppress_wins is enabled
     if (!empty($meta_values['suppress_wins']) && $meta_values['suppress_wins'] === '1') {
@@ -583,7 +628,7 @@ class MTP_Admin_Meta_Boxes {
       });
       
       // Update shortcode when fields change
-      $("input[id^='mtp_'], .mtp-color-picker").on("input change", function() {
+      $("input[id^='mtp_'], .mtp-color-picker, select[id^='mtp_']").on("input change", function() {
         updateShortcode();
       });
       
@@ -611,6 +656,7 @@ class MTP_Admin_Meta_Boxes {
         var bsizeoh = $("#mtp_bsizeoh").val() || "1";
         var bsizeov = $("#mtp_bsizeov").val() || "1";
         var bbsize = $("#mtp_bbsize").val() || "2";
+        var language = $("#mtp_language").val() || "en";
         
         // Combine colors with opacity (convert opacity percentage to hex)
         var bgColor = $("#mtp_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_bg_opacity").val() / 100) * 255));
@@ -620,7 +666,7 @@ class MTP_Admin_Meta_Boxes {
         var headBgColor = $("#mtp_head_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_head_bg_opacity").val() / 100) * 255));
         
         // Build complete shortcode
-        var newShortcode = '[mtp-table id="' + tournamentId + '" post_id="' + postId + '" lang="en"' +
+        var newShortcode = '[mtp-table id="' + tournamentId + '" post_id="' + postId + '" lang="' + language + '"' +
                           ' s-size="' + fontSize + '"' +
                           ' s-sizeheader="' + headerFontSize + '"' +
                           ' s-color="' + textColor + '"' +
@@ -715,7 +761,7 @@ class MTP_Admin_Meta_Boxes {
       'inner_padding', 'text_color', 'main_color', 'bg_color', 'bg_opacity',
       'border_color', 'head_bottom_border_color', 'even_bg_color', 'even_bg_opacity',
       'odd_bg_color', 'odd_bg_opacity', 'hover_bg_color', 'hover_bg_opacity',
-      'head_bg_color', 'head_bg_opacity', 'logo_size', 'suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation', 'navigation_for_groups'
+      'head_bg_color', 'head_bg_opacity', 'logo_size', 'suppress_wins', 'suppress_logos', 'suppress_num_matches', 'projector_presentation', 'navigation_for_groups', 'language'
     );
     
     foreach ($meta_fields as $field) {
@@ -757,6 +803,12 @@ class MTP_Admin_Meta_Boxes {
     // Number fields
     if (in_array($field, array('width', 'height', 'font_size', 'header_font_size', 'bsizeh', 'bsizev', 'bsizeoh', 'bsizeov', 'bbsize', 'table_padding', 'inner_padding', 'logo_size'))) {
       return absint($value);
+    }
+    
+    // Language field - validate against allowed languages
+    if ($field === 'language') {
+      $allowed_languages = array('en', 'de', 'es', 'fr', 'hr', 'it', 'pl', 'sl', 'tr');
+      return in_array($value, $allowed_languages) ? $value : 'en';
     }
     
     // Text fields

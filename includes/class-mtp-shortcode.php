@@ -72,9 +72,12 @@ class MTP_Shortcode {
       'nav' => '0' // Navigation for groups
     ), $atts, 'mtp-table');
     
+    // Map lang to setlang for internal processing
+    $atts['setlang'] = $atts['lang'];
+
     // Use post_id if provided for getting width from meta, otherwise use null
     $post_id = !empty($atts['post_id']) ? $atts['post_id'] : null;
-    
+
     // Always render table - empty if no ID, with data if ID provided
     return $this->table_renderer->render_table_html($post_id, $atts);
   }
