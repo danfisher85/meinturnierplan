@@ -687,6 +687,31 @@ class MTP_Admin_Meta_Boxes {
         }
       });
 
+      // Lightweight polling solution: Check less frequently but add immediate triggers
+      $(".mtp-color-picker").each(function() {
+        var input = this;
+        var lastValue = input.value;
+
+        // Lightweight polling every 500ms for any missed changes
+        setInterval(function() {
+          if (input.value !== lastValue) {
+            lastValue = input.value;
+            updatePreview();
+          }
+        }, 500);
+      });
+
+      // Immediate response for color picker interactions
+      $(document).on('click', '.iris-palette', function() {
+        var $input = $(this).closest('.wp-picker-container').find('.mtp-color-picker');
+        var currentValue = $input.val();
+
+        // Check for value change multiple times with short intervals
+        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 50);
+        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 100);
+        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 200);
+      });
+
       // Handle opacity sliders
       $("input[type='range']").on("input", function() {
         var fieldId = $(this).attr('id');
