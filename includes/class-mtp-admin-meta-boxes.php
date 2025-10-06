@@ -453,14 +453,8 @@ class MTP_Admin_Meta_Boxes {
     echo '</button>';
     echo '</div>';
 
-    // Update description based on group availability
-    if (!empty($groups) && count($groups) > 1) {
-      echo '<p class="description">' . esc_html(__('Select a specific group to display. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
-    } else if (!empty($groups) && count($groups) == 1) {
-      echo '<p class="description">' . esc_html(__('This tournament has only one group. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
-    } else {
-      echo '<p class="description">' . esc_html(__('No groups found for this tournament. Click refresh to update groups from server.', 'meinturnierplan-wp')) . '</p>';
-    }
+    // Static description that covers all scenarios
+    echo '<p class="description">' . esc_html(__('Select a group to display from this tournament. Click refresh to update groups from server. Note, some tournaments don\'t have groups.', 'meinturnierplan-wp')) . '</p>';
 
     // Add hidden field to store the initially saved value for JavaScript
     echo '<input type="hidden" id="mtp_group_saved_value" value="' . esc_attr($saved_group) . '" />';
