@@ -242,4 +242,69 @@ class MTP_Admin_Utilities {
     }
     return $color;
   }
+
+  /**
+   * Get available language options for the plugin
+   *
+   * @return array Array of language code => language name pairs
+   */
+  public static function get_language_options() {
+    return array(
+      'en' => __('English', 'meinturnierplan'),
+      'de' => __('Deutsch / German', 'meinturnierplan'),
+      'es' => __('Español / Spanish', 'meinturnierplan'),
+      'fr' => __('Français / French', 'meinturnierplan'),
+      'hr' => __('Hrvatski / Croatian', 'meinturnierplan'),
+      'it' => __('Italiano / Italian', 'meinturnierplan'),
+      'pl' => __('Polski / Polish', 'meinturnierplan'),
+      'sl' => __('Slovenščina / Slovenian', 'meinturnierplan'),
+      'tr' => __('Türkçe / Turkish', 'meinturnierplan'),
+    );
+  }
+
+  /**
+   * Get default language based on WordPress locale
+   *
+   * @return string The default language code
+   */
+  public static function get_default_language() {
+    // First, try to get the current user's language preference
+    $user_locale = '';
+    if (is_user_logged_in()) {
+      $user_id = get_current_user_id();
+      $user_locale = get_user_meta($user_id, 'locale', true);
+    }
+
+    // Use user locale if available, otherwise fall back to site locale
+    $wp_locale = !empty($user_locale) ? $user_locale : get_locale();
+
+    // Define supported languages with their WordPress locale mappings
+    $supported_languages = array(
+      'en' => array('en_US', 'en_GB', 'en_CA', 'en_AU', 'en_NZ', 'en_ZA'),
+      'de' => array('de_DE', 'de_AT', 'de_CH', 'de_DE_formal'),
+      'es' => array('es_ES', 'es_MX', 'es_AR', 'es_CL', 'es_CO', 'es_PE', 'es_VE'),
+      'fr' => array('fr_FR', 'fr_BE', 'fr_CA', 'fr_CH'),
+      'hr' => array('hr', 'hr_HR'),
+      'it' => array('it_IT'),
+      'pl' => array('pl_PL'),
+      'sl' => array('sl_SI'),
+      'tr' => array('tr_TR'),
+    );
+
+    // Check if current locale matches any supported language
+    foreach ($supported_languages as $lang_code => $locales) {
+      if (in_array($wp_locale, $locales)) {
+        return $lang_code;
+      }
+    }
+
+    // Check for partial matches (e.g., 'de' from 'de_DE_formal')
+    $wp_lang_code = substr($wp_locale, 0, 2);
+    if (array_key_exists($wp_lang_code, $supported_languages)) {
+      return $wp_lang_code;
+    }
+
+    // Default to English if no match found
+    return 'en';
+  }
 }
