@@ -225,11 +225,11 @@ class MTP_Admin_Meta_Boxes {
    */
   private function build_preview_attributes($meta_values) {
     // Combine colors with opacity
-    $combined_bg_color = $this->combine_color_opacity($meta_values['bg_color'], $meta_values['bg_opacity']);
-    $combined_even_bg_color = $this->combine_color_opacity($meta_values['even_bg_color'], $meta_values['even_bg_opacity']);
-    $combined_odd_bg_color = $this->combine_color_opacity($meta_values['odd_bg_color'], $meta_values['odd_bg_opacity']);
-    $combined_hover_bg_color = $this->combine_color_opacity($meta_values['hover_bg_color'], $meta_values['hover_bg_opacity']);
-    $combined_head_bg_color = $this->combine_color_opacity($meta_values['head_bg_color'], $meta_values['head_bg_opacity']);
+    $combined_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['bg_color'], $meta_values['bg_opacity']);
+    $combined_even_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['even_bg_color'], $meta_values['even_bg_opacity']);
+    $combined_odd_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['odd_bg_color'], $meta_values['odd_bg_opacity']);
+    $combined_hover_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['hover_bg_color'], $meta_values['hover_bg_opacity']);
+    $combined_head_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['head_bg_color'], $meta_values['head_bg_opacity']);
 
     $atts_array = array(
       'id' => $meta_values['tournament_id'],
@@ -288,13 +288,6 @@ class MTP_Admin_Meta_Boxes {
     }
 
     return $atts_array;
-  }
-
-  /**
-   * Combine color and opacity
-   */
-  private function combine_color_opacity($color, $opacity) {
-    return MTP_Admin_Utilities::combine_color_opacity($color, $opacity);
   }
 
   /**
@@ -641,11 +634,11 @@ class MTP_Admin_Meta_Boxes {
    */
   private function generate_shortcode($post_id, $meta_values) {
     // Combine colors with opacity
-    $combined_bg_color = $this->combine_color_opacity($meta_values['bg_color'], $meta_values['bg_opacity']);
-    $combined_even_bg_color = $this->combine_color_opacity($meta_values['even_bg_color'], $meta_values['even_bg_opacity']);
-    $combined_odd_bg_color = $this->combine_color_opacity($meta_values['odd_bg_color'], $meta_values['odd_bg_opacity']);
-    $combined_hover_bg_color = $this->combine_color_opacity($meta_values['hover_bg_color'], $meta_values['hover_bg_opacity']);
-    $combined_head_bg_color = $this->combine_color_opacity($meta_values['head_bg_color'], $meta_values['head_bg_opacity']);
+    $combined_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['bg_color'], $meta_values['bg_opacity']);
+    $combined_even_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['even_bg_color'], $meta_values['even_bg_opacity']);
+    $combined_odd_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['odd_bg_color'], $meta_values['odd_bg_opacity']);
+    $combined_hover_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['hover_bg_color'], $meta_values['hover_bg_opacity']);
+    $combined_head_bg_color = MTP_Admin_Utilities::combine_color_opacity($meta_values['head_bg_color'], $meta_values['head_bg_opacity']);
 
     $shortcode = '[mtp-table id="' . esc_attr($meta_values['tournament_id']) . '" post_id="' . $post_id . '" lang="' . esc_attr($meta_values['language']) . '" s-size="' . esc_attr($meta_values['font_size']) . '" s-sizeheader="' . esc_attr($meta_values['header_font_size']) . '" s-color="' . esc_attr($meta_values['text_color']) . '" s-maincolor="' . esc_attr($meta_values['main_color']) . '" s-padding="' . esc_attr($meta_values['table_padding']) . '" s-innerpadding="' . esc_attr($meta_values['inner_padding']) . '" s-bgcolor="' . esc_attr($combined_bg_color). '" s-bcolor="' . esc_attr($meta_values['border_color']) . '" s-bbcolor="' . esc_attr($meta_values['head_bottom_border_color']) . '" s-bgeven="' . esc_attr($combined_even_bg_color) . '" s-logosize="' . esc_attr($meta_values['logo_size']) . '" s-bsizeh="' . esc_attr($meta_values['bsizeh']) . '" s-bsizev="' . esc_attr($meta_values['bsizev']) . '" s-bsizeoh="' . esc_attr($meta_values['bsizeoh']) . '" s-bsizeov="' . esc_attr($meta_values['bsizeov']) . '" s-bbsize="' . esc_attr($meta_values['bbsize']) . '" s-bgodd="' . esc_attr($combined_odd_bg_color) . '" s-bgover="' . esc_attr($combined_hover_bg_color) . '" s-bghead="' . esc_attr($combined_head_bg_color) . '" width="' . esc_attr($meta_values['width']) . '" height="' . esc_attr($meta_values['height']) . '"';
 
