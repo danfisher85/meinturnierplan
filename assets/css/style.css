@@ -49,7 +49,7 @@
 }
 
 /* Responsive design for admin layout */
-@media (max-width: 1200px) {
+@media (max-width: 1366px) {
   .mtp-admin-two-column-layout {
     flex-direction: column;
     gap: 15px;

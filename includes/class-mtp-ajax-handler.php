@@ -15,12 +15,12 @@ if (!defined('ABSPATH')) {
  * AJAX Handler Class
  */
 class MTP_Ajax_Handler {
-  
+
   /**
    * Table renderer instance
    */
   private $table_renderer;
-  
+
   /**
    * Constructor
    */
@@ -28,7 +28,7 @@ class MTP_Ajax_Handler {
     $this->table_renderer = $table_renderer;
     $this->init();
   }
-  
+
   /**
    * Initialize AJAX handlers
    */
@@ -37,7 +37,7 @@ class MTP_Ajax_Handler {
     add_action('wp_ajax_mtp_get_groups', array($this, 'ajax_get_groups'));
     add_action('wp_ajax_mtp_refresh_groups', array($this, 'ajax_refresh_groups'));
   }
-  
+
   /**
    * AJAX handler for table preview (existing one for admin)
    */
@@ -46,10 +46,10 @@ class MTP_Ajax_Handler {
     if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
-    
+
     $post_id = absint($_POST['post_id']);
     $data = $this->sanitize_ajax_data($_POST);
-    
+
     // Create attributes for rendering
     $atts = array(
       'id' => $data['tournament_id'],
@@ -76,42 +76,42 @@ class MTP_Ajax_Handler {
       's-bbsize' => $data['bbsize'] ? $data['bbsize'] : '2',
       'setlang' => $data['language'] ? $data['language'] : 'en'
     );
-    
+
     // Add group parameter if specified
     if (!empty($data['group'])) {
       $atts['group'] = $data['group'];
     }
-    
+
     // Add sw parameter if suppress_wins is enabled
     if (!empty($data['suppress_wins']) && $data['suppress_wins'] === '1') {
       $atts['sw'] = '1';
     }
-    
+
     // Add sl parameter if suppress_logos is enabled
     if (!empty($data['suppress_logos']) && $data['suppress_logos'] === '1') {
       $atts['sl'] = '1';
     }
-    
+
     // Add sn parameter if suppress_num_matches is enabled
     if (!empty($data['suppress_num_matches']) && $data['suppress_num_matches'] === '1') {
       $atts['sn'] = '1';
     }
-    
+
     // Add bm parameter if projector_presentation is enabled
     if (!empty($data['projector_presentation']) && $data['projector_presentation'] === '1') {
       $atts['bm'] = '1';
     }
-    
+
     // Add nav parameter if navigation_for_groups is enabled
     if (!empty($data['navigation_for_groups']) && $data['navigation_for_groups'] === '1') {
       $atts['nav'] = '1';
     }
-    
+
     $html = $this->table_renderer->render_table_html($post_id, $atts);
-    
+
     wp_send_json_success($html);
   }
-  
+
   /**
    * AJAX handler for fetching tournament groups
    */
@@ -120,21 +120,21 @@ class MTP_Ajax_Handler {
     if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
-    
+
     $tournament_id = sanitize_text_field($_POST['tournament_id']);
     $force_refresh = isset($_POST['force_refresh']) ? (bool)$_POST['force_refresh'] : false;
-    
+
     if (empty($tournament_id)) {
       wp_send_json_success(array('groups' => array(), 'hasFinalRound' => false));
       return;
     }
-    
+
     // Fetch groups from external API (with caching)
-    $groups_data = $this->fetch_tournament_groups($tournament_id, $force_refresh);
-    
+    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, $force_refresh);
+
     wp_send_json_success($groups_data);
   }
-  
+
   /**
    * AJAX handler for refreshing tournament groups (force refresh)
    */
@@ -143,99 +143,22 @@ class MTP_Ajax_Handler {
     if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
-    
+
     $tournament_id = sanitize_text_field($_POST['tournament_id']);
-    
+
     if (empty($tournament_id)) {
       wp_send_json_success(array('groups' => array(), 'hasFinalRound' => false));
       return;
     }
-    
+
     // Force refresh groups from external API
-    $groups_data = $this->fetch_tournament_groups($tournament_id, true);
-    
+    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, true);
+
     // Add refreshed flag to the response
     $groups_data['refreshed'] = true;
     wp_send_json_success($groups_data);
   }
-  
-  /**
-   * Fetch tournament groups from external API
-   */
-  private function fetch_tournament_groups($tournament_id, $force_refresh = false) {
-    if (empty($tournament_id)) {
-      return array();
-    }
-    
-    $cache_key = 'mtp_groups_' . $tournament_id;
-    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
-    
-    // Try to get cached data first (unless force refresh is requested)
-    if (!$force_refresh) {
-      $cached_data = get_transient($cache_key);
-      if ($cached_data !== false) {
-        // Handle backwards compatibility - if cached data is old format (just array of groups)
-        if (is_array($cached_data) && !isset($cached_data['groups'])) {
-          // Old format - convert to new format
-          return array(
-            'groups' => $cached_data,
-            'hasFinalRound' => false
-          );
-        }
-        return $cached_data;
-      }
-    }
-    
-    // Use WordPress HTTP API to fetch the JSON
-    $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
-    $response = wp_remote_get($url, array(
-      'timeout' => 10,
-      'sslverify' => true
-    ));
-    
-    // Check for errors
-    if (is_wp_error($response)) {
-      // Return cached data if available, even if expired
-      $cached_data = get_transient($cache_key);
-      if ($cached_data !== false) {
-        // Handle backwards compatibility
-        if (is_array($cached_data) && !isset($cached_data['groups'])) {
-          return array(
-            'groups' => $cached_data,
-            'hasFinalRound' => false
-          );
-        }
-        return $cached_data;
-      }
-      return array('groups' => array(), 'hasFinalRound' => false);
-    }
-    
-    $body = wp_remote_retrieve_body($response);
-    $data = json_decode($body, true);
-    
-    $groups = array();
-    $has_final_round = false;
-    
-    // Check if groups exist and are not empty
-    if (isset($data['groups']) && is_array($data['groups']) && !empty($data['groups'])) {
-      $groups = $data['groups'];
-    }
-    
-    // Check if finalRankTable exists and is not empty
-    if (isset($data['finalRankTable']) && is_array($data['finalRankTable']) && !empty($data['finalRankTable'])) {
-      $has_final_round = true;
-    }
-    
-    // Cache the result (even if empty)
-    $result = array(
-      'groups' => $groups,
-      'hasFinalRound' => $has_final_round
-    );
-    set_transient($cache_key, $result, $cache_expiry);
-    
-    return $result;
-  }
-  
+
   /**
    * Sanitize AJAX data
    */

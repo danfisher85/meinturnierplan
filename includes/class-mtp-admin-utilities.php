@@ -307,4 +307,187 @@ class MTP_Admin_Utilities {
     // Default to English if no match found
     return 'en';
   }
+
+  /**
+   * Fetch tournament groups from external API
+   *
+   * @param string $tournament_id The tournament ID
+   * @param bool $force_refresh Whether to force refresh the cache
+   * @return array Array containing groups and hasFinalRound data
+   */
+  public static function fetch_tournament_groups($tournament_id, $force_refresh = false) {
+    if (empty($tournament_id)) {
+      return array('groups' => array(), 'hasFinalRound' => false);
+    }
+
+    $cache_key = 'mtp_groups_' . $tournament_id;
+    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
+
+    // Try to get cached data first (unless force refresh is requested)
+    if (!$force_refresh) {
+      $cached_data = get_transient($cache_key);
+      if ($cached_data !== false) {
+        // Handle backwards compatibility - if cached data is old format (just array of groups)
+        if (is_array($cached_data) && !isset($cached_data['groups'])) {
+          // Old format - convert to new format
+          return array(
+            'groups' => $cached_data,
+            'hasFinalRound' => false
+          );
+        }
+        return $cached_data;
+      }
+    } else {
+      // Force refresh - clear the cache first
+      delete_transient($cache_key);
+    }
+
+    // Use WordPress HTTP API to fetch the JSON
+    $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
+    $response = wp_remote_get($url, array(
+      'timeout' => 10,
+      'sslverify' => true
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+      // Return cached data if available, even if expired
+      $cached_data = get_transient($cache_key);
+      if ($cached_data !== false) {
+        // Handle backwards compatibility
+        if (is_array($cached_data) && !isset($cached_data['groups'])) {
+          return array(
+            'groups' => $cached_data,
+            'hasFinalRound' => false
+          );
+        }
+        return $cached_data;
+      }
+      return array('groups' => array(), 'hasFinalRound' => false);
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    $groups = array();
+    $has_final_round = false;
+
+    // Check if groups exist and are not empty
+    if (isset($data['groups']) && is_array($data['groups']) && !empty($data['groups'])) {
+      $groups = $data['groups'];
+    }
+
+    // Check if finalRankTable exists and has valid final ranking data
+    if (isset($data['finalRankTable']) && is_array($data['finalRankTable']) && count($data['finalRankTable']) > 0) {
+      // Verify it contains valid ranking objects with rank and teamId
+      $first_entry = $data['finalRankTable'][0];
+      if (is_array($first_entry) && isset($first_entry['rank']) && isset($first_entry['teamId'])) {
+        $has_final_round = true;
+      }
+    }
+
+    // Cache the result (even if empty)
+    $result = array(
+      'groups' => $groups,
+      'hasFinalRound' => $has_final_round
+    );
+    set_transient($cache_key, $result, $cache_expiry);
+
+    return $result;
+  }
+
+  /**
+   * Render conditional group field for tournament selection
+   *
+   * @param array $meta_values Array containing tournament_id and group values
+   * @param string $field_prefix Optional. Prefix for field names. Default 'mtp_'.
+   */
+  public static function render_conditional_group_field($meta_values, $field_prefix = 'mtp_') {
+    $tournament_id = $meta_values['tournament_id'];
+    $saved_group = $meta_values['group'];
+    $groups = array();
+    $has_final_round = false;
+
+    // Only fetch groups if tournament ID is provided
+    if (!empty($tournament_id)) {
+      $tournament_data = self::fetch_tournament_groups($tournament_id);
+      $groups = $tournament_data['groups'];
+      $has_final_round = $tournament_data['hasFinalRound'];
+    }
+
+    $group_field_id = $field_prefix . 'group';
+    $refresh_button_id = $field_prefix . 'refresh_groups';
+    $group_field_row_id = $field_prefix . 'group_field_row';
+    $saved_value_field_id = $field_prefix . 'group_saved_value';
+
+    // Always render the field, but populate it based on available groups
+    echo '<tr id="' . esc_attr($group_field_row_id) . '">';
+    echo '<th scope="row"><label for="' . esc_attr($group_field_id) . '">' . esc_html(__('Group', 'meinturnierplan')) . '</label></th>';
+    echo '<td>';
+    echo '<div style="display: flex; align-items: center; gap: 10px;">';
+    echo '<select id="' . esc_attr($group_field_id) . '" name="' . esc_attr($group_field_id) . '" class="regular-text">';
+
+    if (!empty($groups)) {
+      // Populate with actual groups - never show "All Groups" option
+      foreach ($groups as $index => $group) {
+        $group_number = $index + 1;
+        $is_selected = false;
+
+        if (!empty($saved_group)) {
+          // Use saved selection
+          $is_selected = ($saved_group == $group_number);
+        } else if ($index == 0) {
+          // Auto-select first group as default (both single and multiple group cases)
+          $is_selected = true;
+        }
+
+        $selected = $is_selected ? ' selected' : '';
+        echo '<option value="' . esc_attr($group_number) . '"' . $selected . '>' . esc_html(sprintf(__('Group %s', 'meinturnierplan'), $group['displayId'])) . '</option>';
+      }
+
+      // Add Final Round option if it exists
+      if ($has_final_round) {
+        $is_final_selected = (!empty($saved_group) && $saved_group == '90');
+        $final_selected = $is_final_selected ? ' selected' : '';
+        echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
+      }
+    } else if (!empty($saved_group) && !empty($tournament_id)) {
+      // Show a placeholder for the saved group if groups haven't loaded yet
+      if ($saved_group == '90') {
+        echo '<option value="90" selected>' . esc_html(__('Final Round (saved)', 'meinturnierplan')) . '</option>';
+      } else {
+        echo '<option value="' . esc_attr($saved_group) . '" selected>' . esc_html(sprintf(__('Group %s (saved)', 'meinturnierplan'), $saved_group)) . '</option>';
+      }
+    } else {
+      // No groups available - check for Final Round only
+      if ($has_final_round) {
+        $is_final_selected = (!empty($saved_group) && $saved_group == '90');
+        $final_selected = $is_final_selected ? ' selected' : '';
+        echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
+      } else {
+        // No groups and no final round - show default option
+        echo '<option value="">' . esc_html(__('Default', 'meinturnierplan')) . '</option>';
+      }
+    }
+
+    echo '</select>';
+    echo '<button type="button" id="' . esc_attr($refresh_button_id) . '" class="button button-secondary" title="' . esc_attr(__('Refresh Groups', 'meinturnierplan')) . '">';
+    echo '<span class="dashicons dashicons-update-alt" style="vertical-align: middle;"></span>';
+    echo '</button>';
+    echo '</div>';
+
+    // Static description that covers all scenarios
+    echo '<p class="description">' . esc_html(__('Select a group to display from this tournament. Click refresh to update groups from server. Please note that some tournaments do not have groups.', 'meinturnierplan')) . '</p>';
+
+    // Add hidden field to store the initially saved value for JavaScript
+    echo '<input type="hidden" id="' . esc_attr($saved_value_field_id) . '" value="' . esc_attr($saved_group) . '" />';
+
+    echo '</td>';
+    echo '</tr>';
+
+    // Show/hide the field based on whether we have a tournament ID
+    if (empty($tournament_id)) {
+      echo '<style>#' . esc_attr($group_field_row_id) . ' { display: none; }</style>';
+    }
+  }
 }
