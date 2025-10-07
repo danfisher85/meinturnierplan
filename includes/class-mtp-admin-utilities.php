@@ -682,6 +682,95 @@ class MTP_Admin_Utilities {
   }
 
   /**
+   * Render shortcode generator interface
+   *
+   * This creates a reusable shortcode generator UI with copy functionality,
+   * success messaging, and optional warning messages.
+   *
+   * @param string $shortcode The generated shortcode string
+   * @param string $tournament_id Optional. Tournament ID for validation messaging
+   * @param array $config Optional configuration array with keys:
+   *   - 'field_id': ID for the textarea field (default: 'mtp_shortcode_field')
+   *   - 'copy_button_id': ID for the copy button (default: 'mtp_copy_shortcode')
+   *   - 'success_message_id': ID for success message (default: 'mtp_copy_success')
+   *   - 'field_prefix': Prefix for field selectors (default: 'mtp_')
+   *   - 'shortcode_updater_callback': Name of JavaScript function to call for live updates
+   */
+  public static function render_shortcode_generator($shortcode, $tournament_id = '', $config = array()) {
+    $defaults = array(
+      'field_id' => 'mtp_shortcode_field',
+      'copy_button_id' => 'mtp_copy_shortcode',
+      'success_message_id' => 'mtp_copy_success',
+      'field_prefix' => 'mtp_',
+      'shortcode_updater_callback' => 'updateShortcode'
+    );
+    $config = array_merge($defaults, $config);
+
+    echo '<div class="mtp-generated-shortcode-wrapper">';
+    echo '<label class="mtp-generated-shortcode__label" for="' . esc_attr($config['field_id']) . '">' . __('Generated Shortcode:', 'meinturnierplan') . '</label>';
+    echo '<textarea class="mtp-generated-shortcode__field" id="' . esc_attr($config['field_id']) . '" readonly>' . esc_textarea($shortcode) . '</textarea>';
+    echo '</div>';
+
+    echo '<button type="button" id="' . esc_attr($config['copy_button_id']) . '" class="mtp-generated-shortcode__btn button button-secondary">';
+    echo '<span class="mtp-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
+    echo __('Copy Shortcode', 'meinturnierplan');
+    echo '</button>';
+
+    echo '<div id="' . esc_attr($config['success_message_id']) . '" class="mtp-generated-shortcode__copy-success" style="display: none;">';
+    echo '<span class="mtp-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
+    echo __('Shortcode copied to clipboard!', 'meinturnierplan');
+    echo '</div>';
+
+    if (empty($tournament_id)) {
+      echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
+      echo '<strong>' . __('Note:', 'meinturnierplan') . '</strong> ';
+      echo __('Enter a Tournament ID above to display live tournament data. Without an ID, a placeholder will be shown.', 'meinturnierplan');
+      echo '</div>';
+    }
+
+    // Add reusable JavaScript for copy functionality and field listeners
+    self::render_shortcode_javascript($config);
+  }
+
+  /**
+   * Render JavaScript for shortcode generator functionality
+   *
+   * This provides the basic copy-to-clipboard functionality and form field listeners
+   * that can be extended with custom shortcode update logic.
+   *
+   * @param array $config Configuration array from render_shortcode_generator
+   */
+  public static function render_shortcode_javascript($config) {
+    ?>
+    <script>
+    jQuery(document).ready(function($) {
+      // Copy shortcode to clipboard functionality
+      $("#<?php echo esc_js($config['copy_button_id']); ?>").on("click", function() {
+        var shortcodeField = $("#<?php echo esc_js($config['field_id']); ?>");
+        shortcodeField.select();
+        document.execCommand("copy");
+
+        $("#<?php echo esc_js($config['success_message_id']); ?>").fadeIn().delay(2000).fadeOut();
+      });
+
+      // Form field change listeners - calls custom update function if it exists
+      if (typeof <?php echo esc_js($config['shortcode_updater_callback']); ?> === 'function') {
+        // Input and select field changes
+        $("input[id^='<?php echo esc_js($config['field_prefix']); ?>'], .mtp-color-picker, select[id^='<?php echo esc_js($config['field_prefix']); ?>']").on("input change", function() {
+          <?php echo esc_js($config['shortcode_updater_callback']); ?>();
+        });
+
+        // Opacity slider changes
+        $("input[type='range'][id^='<?php echo esc_js($config['field_prefix']); ?>']").on("input", function() {
+          <?php echo esc_js($config['shortcode_updater_callback']); ?>();
+        });
+      }
+    });
+    </script>
+    <?php
+  }
+
+  /**
    * Render conditional group field for tournament selection
    *
    * @param array $meta_values Array containing tournament_id and group values

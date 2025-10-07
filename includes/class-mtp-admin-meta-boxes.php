@@ -458,59 +458,24 @@ class MTP_Admin_Meta_Boxes {
    * Render shortcode generator
    */
   private function render_shortcode_generator($shortcode, $tournament_id) {
-    echo '<div class="mtp-generated-shortcode-wrapper">';
-    echo '<label class="mtp-generated-shortcode__label" for="mtp_shortcode_field">' . __('Generated Shortcode:', 'meinturnierplan') . '</label>';
-    echo '<textarea class="mtp-generated-shortcode__field" id="mtp_shortcode_field" readonly>' . esc_textarea($shortcode) . '</textarea>';
-    echo '</div>';
+    // First define the update function, then use shared utilities
+    $this->add_shortcode_update_javascript();
 
-    echo '<button type="button" id="mtp_copy_shortcode" class="mtp-generated-shortcode__btn button button-secondary">';
-    echo '<span class="mtp-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
-    echo __('Copy Shortcode', 'meinturnierplan');
-    echo '</button>';
-
-    echo '<div id="mtp_copy_success" class="mtp-generated-shortcode__copy-success" style="display: none;">';
-    echo '<span class="mtp-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
-    echo __('Shortcode copied to clipboard!', 'meinturnierplan');
-    echo '</div>';
-
-    if (empty($tournament_id)) {
-      echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
-      echo '<strong>' . __('Note:', 'meinturnierplan') . '</strong> ';
-      echo __('Enter a Tournament ID above to display live tournament data. Without an ID, a placeholder will be shown.', 'meinturnierplan');
-      echo '</div>';
-    }
-
-    // Add JavaScript for copy functionality and live update
-    $this->add_shortcode_javascript();
-  }
-
-  /**
-   * Add shortcode JavaScript
+    // Use shared utilities for the shortcode generator UI - but disable automatic field listeners
+    // since we need to ensure updateShortcode is defined first
+    $config = array(
+      'shortcode_updater_callback' => 'updateShortcode' // This will be checked after our function is defined
+    );
+    MTP_Admin_Utilities::render_shortcode_generator($shortcode, $tournament_id, $config);
+  }  /**
+   * Add tournament table specific shortcode update JavaScript
    */
-  private function add_shortcode_javascript() {
+  private function add_shortcode_update_javascript() {
     ?>
     <script>
     jQuery(document).ready(function($) {
-      // Copy shortcode to clipboard
-      $("#mtp_copy_shortcode").on("click", function() {
-        var shortcodeField = $("#mtp_shortcode_field");
-        shortcodeField.select();
-        document.execCommand("copy");
-
-        $("#mtp_copy_success").fadeIn().delay(2000).fadeOut();
-      });
-
-      // Update shortcode when fields change
-      $("input[id^='mtp_'], .mtp-color-picker, select[id^='mtp_']").on("input change", function() {
-        updateShortcode();
-      });
-
-      // Opacity sliders
-      $("input[type='range'][id^='mtp_']").on("input", function() {
-        updateShortcode();
-      });
-
-      function updateShortcode() {
+      // Define updateShortcode function globally so shared utilities can call it
+      window.updateShortcode = function() {
         var postId = <?php echo intval(get_the_ID()); ?>;
         var tournamentId = $("#mtp_tournament_id").val() || "";
         var width = $("#mtp_width").val() || "300";
@@ -596,12 +561,17 @@ class MTP_Admin_Meta_Boxes {
         newShortcode += ']';
 
         $("#mtp_shortcode_field").val(newShortcode);
-      }
+      };
 
       // Convert decimal opacity to hex (match PHP behavior)
       function opacityToHex(opacity) {
         var hex = Math.round(opacity).toString(16);
         return hex.length === 1 ? "0" + hex : hex;
+      }
+
+      // Call updateShortcode initially to populate the field
+      if (typeof window.updateShortcode === 'function') {
+        window.updateShortcode();
       }
     });
     </script>
