@@ -4,11 +4,11 @@
  */
 
 /* Admin preview styles */
-#mtp-table-preview {
+#mtp-preview {
   overflow-x: auto;
 }
 
-#mtp-table-preview .mtp-tournament-table {
+#mtp-preview .mtp-tournament-table {
   margin: 10px 0;
 }
 
@@ -96,17 +96,17 @@ input[type="number"].regular-text {
 }
 
 /* Preview section styling */
-.mtp-admin-column-right #mtp-table-preview {
+.mtp-admin-column-right #mtp-preview {
   border: 1px solid #ddd;
   padding: 15px;
-  background: #f9f9fa;
+  background-color: #f9f9fa;
   border-radius: 4px;
   min-height: 200px;
 }
 
 /* Adjust preview for smaller screens within the column */
 @media (max-width: 1400px) {
-  .mtp-admin-column-right #mtp-table-preview {
+  .mtp-admin-column-right #mtp-preview {
     overflow-x: auto;
   }
 
@@ -117,5 +117,19 @@ input[type="number"].regular-text {
   .mtp-admin-column-right .mtp-tournament-table th,
   .mtp-admin-column-right .mtp-tournament-table td {
     padding: 3px 5px;
+  }
+}
+
+/* Rotating animation for update icon */
+.dashicons-update-alt-rotating {
+  animation: rotation 1s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
   }
 }

@@ -211,7 +211,7 @@ class MTP_Admin_Meta_Boxes {
    */
   private function render_preview_section($post, $meta_values) {
     echo '<h3>' . __('Preview', 'meinturnierplan') . '</h3>';
-    echo '<div id="mtp-table-preview" style="border: 1px solid #ddd; padding: 10px; background: #f9f9fa;">';
+    echo '<div id="mtp-preview">';
 
     // Create attributes for preview
     $atts = $this->build_preview_attributes($meta_values);
@@ -303,257 +303,34 @@ class MTP_Admin_Meta_Boxes {
       'mtp_odd_bg_color', 'mtp_odd_bg_opacity', 'mtp_hover_bg_color', 'mtp_hover_bg_opacity',
       'mtp_head_bg_color', 'mtp_head_bg_opacity', 'mtp_suppress_wins', 'mtp_suppress_logos', 'mtp_suppress_num_matches', 'mtp_projector_presentation', 'mtp_navigation_for_groups', 'mtp_language', 'mtp_group'
     );
-    ?>
-    <style>
-    .dashicons-update-alt-rotating {
-      animation: rotation 1s infinite linear;
-    }
 
-    @keyframes rotation {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(359deg);
-      }
-    }
-    </style>
+    // Include reusable admin JavaScript utilities
+    MTP_Admin_Utilities::render_admin_javascript_utilities();
+    ?>
     <script>
     jQuery(document).ready(function($) {
-      // Initialize color picker
-      $(".mtp-color-picker").wpColorPicker({
-        change: function(event, ui) {
-          updatePreview();
-        },
-        clear: function() {
-          updatePreview();
-        }
+      // Initialize reusable utilities with preview update callback
+      MTPAdminUtils.initColorPickers(updatePreview);
+      MTPAdminUtils.initOpacitySliders(updatePreview);
+      MTPAdminUtils.initFormFieldListeners('mtp_', updatePreview);
+
+      // Initialize tournament ID field with group loading
+      MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
+        MTPAdminUtils.loadTournamentGroups(tournamentId);
       });
 
-      // Lightweight polling solution: Check less frequently but add immediate triggers
-      $(".mtp-color-picker").each(function() {
-        var input = this;
-        var lastValue = input.value;
-
-        // Lightweight polling every 500ms for any missed changes
-        setInterval(function() {
-          if (input.value !== lastValue) {
-            lastValue = input.value;
-            updatePreview();
-          }
-        }, 500);
-      });
-
-      // Immediate response for color picker interactions
-      $(document).on('click', '.iris-palette', function() {
-        var $input = $(this).closest('.wp-picker-container').find('.mtp-color-picker');
-        var currentValue = $input.val();
-
-        // Check for value change multiple times with short intervals
-        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 50);
-        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 100);
-        setTimeout(function() { if ($input.val() !== currentValue) updatePreview(); }, 200);
-      });
-
-      // Handle opacity sliders
-      $("input[type='range']").on("input", function() {
-        var fieldId = $(this).attr('id');
-        var opacity = $(this).val();
-        $("#" + fieldId + "_value").text(opacity + "%");
-        updatePreview();
-      });
-
-      // Handle checkbox changes
-      $("input[type='checkbox'][id^='mtp_']").on("change", function() {
-        updatePreview();
-      });
-
-      // Handle select dropdown changes (specifically for language field)
-      $("select[id^='mtp_']").on("change", function() {
-        updatePreview();
-      });
-
-      // Handle tournament ID changes to load groups dynamically AND update preview
-      var tournamentIdChangeTimeout;
-      var previewUpdateTimeout;
-      $("#mtp_tournament_id").on("input", function() {
-        var tournamentId = $(this).val();
-
-        // Clear previous timeouts to avoid multiple calls
-        clearTimeout(tournamentIdChangeTimeout);
-        clearTimeout(previewUpdateTimeout);
-
-        // Only load groups after user stops typing for 500ms
-        tournamentIdChangeTimeout = setTimeout(function() {
-          loadGroupsForTournament(tournamentId);
-        }, 500);
-
-        // Update preview after user stops typing for 300ms (faster than group loading)
-        previewUpdateTimeout = setTimeout(function() {
-          updatePreview();
-        }, 300);
-      });
-
-      // Function to load groups for a tournament
-      function loadGroupsForTournament(tournamentId, preserveSelection, forceRefresh) {
-        var $groupRow = $("#mtp_group_field_row");
-        var $groupSelect = $("#mtp_group, #mtp_group_select");
-        var $refreshButton = $("#mtp_refresh_groups");
-        var currentSelection = preserveSelection !== false ? $groupSelect.val() : '';
-        var savedValue = $("#mtp_group_saved_value").val(); // Get the initially saved value
-
-        // Use saved value if no current selection and this isn't a forced refresh
-        if (!currentSelection && savedValue && !forceRefresh) {
-          currentSelection = savedValue;
-        }
-
-        if (!tournamentId) {
-          // Hide group field if no tournament ID
-          $groupRow.hide();
-          $groupSelect.prop("disabled", true).empty().append('<option value="">No groups available</option>');
-          $refreshButton.prop("disabled", true);
-          return;
-        }
-
-        // Show the group row
-        $groupRow.show();
-
-        // Show loading state
-        $groupSelect.prop("disabled", true);
-        $refreshButton.prop("disabled", true);
-
-        if (forceRefresh) {
-          $groupSelect.empty().append('<option value="">Refreshing groups...</option>');
-          $refreshButton.find('.dashicons').addClass('dashicons-update-alt-rotating');
-        } else {
-          $groupSelect.empty().append('<option value="">Loading groups...</option>');
-        }
-
-        // Choose the appropriate AJAX action
-        var ajaxAction = forceRefresh ? "mtp_refresh_groups" : "mtp_get_groups";
-
-        // Make AJAX call to get groups
-        $.post(ajaxurl, {
-          action: ajaxAction,
-          tournament_id: tournamentId,
-          force_refresh: forceRefresh,
-          nonce: "<?php echo wp_create_nonce('mtp_preview_nonce'); ?>"
-        }, function(response) {
-          // Remove loading animation
-          $refreshButton.find('.dashicons').removeClass('dashicons-update-alt-rotating');
-
-          if (response.success && response.data.groups.length > 0) {
-            // Populate group dropdown
-            $groupSelect.prop("disabled", false).empty();
-
-            $.each(response.data.groups, function(index, group) {
-              var groupNumber = index + 1;
-              var groupLabel = "Group " + group.displayId;
-              var isSelected = false;
-
-              // Auto-select first group as default if no previous selection
-              if (!currentSelection && index === 0) {
-                isSelected = true;
-              } else if (currentSelection && currentSelection == groupNumber) {
-                isSelected = true;
-              }
-
-              $groupSelect.append('<option value="' + groupNumber + '"' + (isSelected ? ' selected' : '') + '>' + groupLabel + '</option>');
-            });
-
-            // Add Final Round option if it exists
-            if (response.data.hasFinalRound) {
-              var finalRoundSelected = (currentSelection && currentSelection == '90') ? ' selected' : '';
-              $groupSelect.append('<option value="90"' + finalRoundSelected + '>Final Round</option>');
-            }
-
-            // If we had a previous selection but it's not in the new list, select the first available option
-            if (currentSelection && $groupSelect.find('option[value="' + currentSelection + '"]').length === 0) {
-              $groupSelect.find('option:first').prop('selected', true);
-            }
-
-            // Enable refresh button
-            $refreshButton.prop("disabled", false);
-
-            // Show success message for manual refresh
-            if (forceRefresh && response.data.refreshed) {
-              showTemporaryMessage("Groups refreshed successfully!", "success");
-            }
-          } else {
-            // No groups found, but check for Final Round
-            $groupSelect.prop("disabled", false).empty();
-
-            if (response.data.hasFinalRound) {
-              // If only Final Round is available
-              var finalRoundSelected = (currentSelection && currentSelection == '90') ? ' selected' : '';
-              $groupSelect.append('<option value="90"' + finalRoundSelected + '>Final Round</option>');
-            } else {
-              // No groups and no final round
-              $groupSelect.append('<option value="">Default</option>');
-            }
-
-            // If there was a saved value, show it as an option even if groups aren't available
-            if (currentSelection && currentSelection !== '' && currentSelection !== '90' && !response.data.hasFinalRound) {
-              $groupSelect.append('<option value="' + currentSelection + '" selected>Group ' + currentSelection + ' (saved)</option>');
-            }
-
-            $refreshButton.prop("disabled", false);
-
-            // Show message for manual refresh with no groups
-            if (forceRefresh) {
-              showTemporaryMessage("No groups found for this tournament.", "info");
-            }
-          }
-        }).fail(function() {
-          // Remove loading animation on error
-          $refreshButton.find('.dashicons').removeClass('dashicons-update-alt-rotating');
-
-          // On error, restore the field with saved value if available
-          $groupSelect.prop("disabled", false).empty();
-          $groupSelect.append('<option value="">Default</option>');
-
-          if (currentSelection && currentSelection !== '') {
-            var label = currentSelection == '90' ? 'Final Round (saved)' : 'Group ' + currentSelection + ' (saved)';
-            $groupSelect.append('<option value="' + currentSelection + '" selected>' + label + '</option>');
-          }
-
-          $refreshButton.prop("disabled", false);
-
-          if (forceRefresh) {
-            showTemporaryMessage("Error refreshing groups. Please try again.", "error");
-          }
-        });
-      }
-
-      // Function to show temporary messages
-      function showTemporaryMessage(message, type) {
-        var messageClass = type === 'success' ? 'notice-success' : type === 'error' ? 'notice-error' : 'notice-info';
-        var $message = $('<div class="notice ' + messageClass + ' is-dismissible" style="margin: 10px 0;"><p>' + message + '</p></div>');
-        $("#mtp_group_field_row").after($message);
-
-        // Auto-dismiss after 3 seconds
-        setTimeout(function() {
-          $message.fadeOut(function() {
-            $message.remove();
-          });
-        }, 3000);
-      }
-
-      // Handle refresh button click
-      $(document).on("click", "#mtp_refresh_groups", function(e) {
-        e.preventDefault();
-        var tournamentId = $("#mtp_tournament_id").val();
-        if (tournamentId) {
-          loadGroupsForTournament(tournamentId, true, true); // Preserve selection, force refresh
-        }
+      // Initialize group refresh button
+      MTPAdminUtils.initGroupRefreshButton('#mtp_refresh_groups', '#mtp_tournament_id', function(tournamentId, options) {
+        MTPAdminUtils.loadTournamentGroups(tournamentId, options);
       });
 
       // Load groups on page load if tournament ID exists
       var initialTournamentId = $("#mtp_tournament_id").val();
       if (initialTournamentId) {
-        loadGroupsForTournament(initialTournamentId, false); // Don't preserve selection on initial load
+        MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false});
       }
 
+      // Add specific field listeners for all form fields
       $("#<?php echo implode(', #', $field_list); ?>").on("input change", function() {
         updatePreview();
       });
@@ -610,7 +387,7 @@ class MTP_Admin_Meta_Boxes {
 
         $.post(ajaxurl, data, function(response) {
           if (response.success) {
-            $("#mtp-table-preview").html(response.data);
+            $("#mtp-preview").html(response.data);
           }
         });
       }
