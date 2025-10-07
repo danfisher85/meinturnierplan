@@ -111,7 +111,7 @@ class MTP_Plugin {
     load_plugin_textdomain(
       'meinturnierplan',
       false,
-      dirname(plugin_basename(MTP_PLUGIN_FILE)) . '/languages'
+      dirname(plugin_basename(MTP_PLUGIN_FILE)) . '/languages/'
     );
   }
 
