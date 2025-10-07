@@ -458,23 +458,23 @@ class MTP_Admin_Meta_Boxes {
    * Render shortcode generator
    */
   private function render_shortcode_generator($shortcode, $tournament_id) {
-    echo '<div style="margin-bottom: 15px;">';
-    echo '<label for="mtp_shortcode_field" style="display: block; margin-bottom: 5px; font-weight: bold;">' . __('Generated Shortcode:', 'meinturnierplan') . '</label>';
-    echo '<textarea id="mtp_shortcode_field" readonly style="width: 100%; height: 80px; font-family: monospace; font-size: 12px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">' . esc_textarea($shortcode) . '</textarea>';
+    echo '<div class="mtp-generated-shortcode-wrapper">';
+    echo '<label class="mtp-generated-shortcode__label" for="mtp_shortcode_field">' . __('Generated Shortcode:', 'meinturnierplan') . '</label>';
+    echo '<textarea class="mtp-generated-shortcode__field" id="mtp_shortcode_field" readonly>' . esc_textarea($shortcode) . '</textarea>';
     echo '</div>';
 
-    echo '<button type="button" id="mtp_copy_shortcode" class="button button-secondary" style="width: 100%; margin-bottom: 10px;">';
-    echo '<span class="dashicons dashicons-admin-page" style="vertical-align: middle; margin-right: 5px;"></span>';
+    echo '<button type="button" id="mtp_copy_shortcode" class="mtp-generated-shortcode__btn button button-secondary">';
+    echo '<span class="mtp-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
     echo __('Copy Shortcode', 'meinturnierplan');
     echo '</button>';
 
-    echo '<div id="mtp_copy_success" style="display: none; color: #46b450; margin-top: 8px; text-align: center;">';
-    echo '<span class="dashicons dashicons-yes-alt" style="vertical-align: middle;"></span> ';
+    echo '<div id="mtp_copy_success" class="mtp-generated-shortcode__copy-success" style="display: none;">';
+    echo '<span class="mtp-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
     echo __('Shortcode copied to clipboard!', 'meinturnierplan');
     echo '</div>';
 
     if (empty($tournament_id)) {
-      echo '<div style="margin-top: 10px; padding: 8px; background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; border-radius: 3px;">';
+      echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
       echo '<strong>' . __('Note:', 'meinturnierplan') . '</strong> ';
       echo __('Enter a Tournament ID above to display live tournament data. Without an ID, a placeholder will be shown.', 'meinturnierplan');
       echo '</div>';
