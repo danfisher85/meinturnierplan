@@ -7,10 +7,15 @@
 
   registerBlockType('meinturnierplan/tournament-table', {
     title: __('Tournament Table', 'meinturnierplan'),
-    icon: 'editor-table',
+    icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+      el('path', {
+        d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+        fill: 'currentColor'
+      })
+    ),
     category: 'widgets',
     description: __('Display a tournament table from your custom post types.', 'meinturnierplan'),
-    
+
     attributes: {
       tableId: {
         type: 'string',
@@ -63,7 +68,12 @@
         return el(
           Placeholder,
           {
-            icon: 'editor-table',
+            icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+              el('path', {
+                d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+                fill: 'currentColor'
+              })
+            ),
             label: __('Tournament Table', 'meinturnierplan')
           },
           el(Spinner)
@@ -76,9 +86,14 @@
         el(
           Placeholder,
           {
-            icon: 'editor-table',
+            icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+              el('path', {
+                d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+                fill: 'currentColor'
+              })
+            ),
             label: __('Tournament Table', 'meinturnierplan'),
-            instructions: tableId 
+            instructions: tableId
               ? __('Tournament table selected: ', 'meinturnierplan') + tableName
               : __('Choose a tournament table to display.', 'meinturnierplan')
           },
