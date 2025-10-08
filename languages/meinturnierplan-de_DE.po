@@ -1,9 +1,10 @@
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: MeinTurnierplan\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-07 18:15+0000\n"
-"PO-Revision-Date: 2025-10-07 20:18+0200\n"
+"PO-Revision-Date: 2025-10-08 14:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,49 +17,47 @@ msgstr ""
 
 #: includes/class-mtp-table-widget.php:86
 msgid "-- Select Table --"
-msgstr "- Tabelle Wählen -"
+msgstr ""
 
 #. Description of the plugin
 msgid ""
 "A WordPress plugin to display tournament tables using custom post types, "
 "shortcodes, and widgets."
 msgstr ""
-"Ein WordPress-Plugin zur Anzeige von Turniertabellen mithilfe von "
-"benutzerdefinierten Beitragstypen, Shortcodes und Widgets."
 
 #: includes/class-mtp-post-type.php:35
 msgid "Add New"
-msgstr "Neu hinzufügen"
+msgstr ""
 
 #: includes/class-mtp-post-type.php:34
 msgctxt "Add New on Toolbar"
 msgid "Tournament Table"
-msgstr "Turnier-Tabelle"
+msgstr ""
 
 #: includes/class-mtp-post-type.php:36
 msgid "Add New Tournament Table"
-msgstr "Neue Turniertabelle hinzufügen"
+msgstr ""
 
 #: includes/class-mtp-post-type.php:33
 msgctxt "Admin Menu text"
 msgid "Tournament Tables"
-msgstr "Turnier-Tische"
+msgstr "Turniertabelle"
 
 #: includes/class-mtp-post-type.php:40
 msgid "All Tournament Tables"
-msgstr "Alle Turniertische"
+msgstr "Turniertabelle"
 
 #: includes/class-mtp-admin-meta-boxes.php:198
 msgid "Background Color"
-msgstr "Hintergrundfarbe"
+msgstr ""
 
 #: includes/class-mtp-admin-meta-boxes.php:197
 msgid "Background Colors"
-msgstr "Hintergrundfarben"
+msgstr ""
 
 #: includes/class-mtp-admin-meta-boxes.php:152
 msgid "Basic Settings"
-msgstr "Grundeinstellungen"
+msgstr ""
 
 #: blocks/tournament-table/block.json:1
 msgctxt "block description"
@@ -300,7 +299,7 @@ msgstr ""
 #: includes/class-mtp-post-type.php:31
 msgctxt "Post type general name"
 msgid "Tournament Tables"
-msgstr ""
+msgstr "Turniertabelle"
 
 #: includes/class-mtp-post-type.php:32
 msgctxt "Post type singular name"
@@ -572,7 +571,7 @@ msgstr ""
 #: includes/class-mtp-table-widget.php:14
 #: includes/class-mtp-table-widget.php:66
 msgid "Tournament Table"
-msgstr "Turniertabelle"
+msgstr ""
 
 #: includes/class-mtp-table-renderer.php:313
 msgid "Tournament Table Preview"
