@@ -223,7 +223,7 @@ class MTP_Table_Renderer {
 
         // Handle special cases for colors with opacity
         if (in_array($url_param, array('bgcolor', 'bgeven', 'bgodd', 'bgover', 'bghead'))) {
-          $value = $this->get_bg_color_with_opacity($table_id, $config['meta']);
+          $value = MTP_Admin_Utilities::get_bg_color_with_opacity($table_id, $config['meta']);
         }
       }
 
@@ -236,40 +236,6 @@ class MTP_Table_Renderer {
     }
 
     return $params;
-  }
-
-  /**
-   * Get background color with opacity from post meta
-   */
-  private function get_bg_color_with_opacity($post_id, $color_meta_key) {
-    if (!$post_id) {
-      return '00000000'; // Transparent default
-    }
-
-    $bg_color = get_post_meta($post_id, $color_meta_key, true);
-
-    // Determine opacity meta key based on color meta key
-    $opacity_meta_mapping = array(
-      '_mtp_bg_color' => '_mtp_bg_opacity',
-      '_mtp_even_bg_color' => '_mtp_even_bg_opacity',
-      '_mtp_odd_bg_color' => '_mtp_odd_bg_opacity',
-      '_mtp_hover_bg_color' => '_mtp_hover_bg_opacity',
-      '_mtp_head_bg_color' => '_mtp_head_bg_opacity',
-    );
-
-    $opacity_meta_key = isset($opacity_meta_mapping[$color_meta_key]) ? $opacity_meta_mapping[$color_meta_key] : null;
-    $bg_opacity = $opacity_meta_key ? get_post_meta($post_id, $opacity_meta_key, true) : null;
-
-    // Set defaults
-    if (empty($bg_color)) {
-      $bg_color = '000000'; // Default color
-    }
-
-    if (empty($bg_opacity) && $bg_opacity !== '0') {
-      $bg_opacity = $color_meta_key === '_mtp_bg_color' ? 0 : 69; // Different defaults for different colors
-    }
-
-    return MTP_Admin_Utilities::combine_color_opacity($bg_color, $bg_opacity);
   }
 
   /**
