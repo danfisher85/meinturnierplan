@@ -26,13 +26,13 @@ class MTP_Matches_Renderer {
   /**
    * Render matches HTML
    */
-  public function render_matches_html($table_id, $atts = array()) {
+  public function render_matches_html($matches_id, $atts = array()) {
     // Get tournament ID from attributes or post meta
     $tournament_id = '';
     if (!empty($atts['id'])) {
       $tournament_id = $atts['id'];
-    } elseif (!empty($table_id)) {
-      $tournament_id = get_post_meta($table_id, '_mtp_tournament_id', true);
+    } elseif (!empty($matches_id)) {
+      $tournament_id = get_post_meta($matches_id, '_mtp_tournament_id', true);
     }
 
     // If no tournament ID, show empty static table
@@ -45,13 +45,13 @@ class MTP_Matches_Renderer {
     $height = !empty($atts['height']) ? intval($atts['height']) : 200;
 
     // Build URL parameters array
-    $params = $this->build_url_params($tournament_id, $table_id, $atts);
+    $params = $this->build_url_params($tournament_id, $matches_id, $atts);
 
     // Build the iframe URL
-    $iframe_url = 'https://www.meinturnierplan.de/displayTable.php?' . $this->build_query_string($params);
+    $iframe_url = 'https://www.meinturnierplan.de/displayMatches.php?' . $this->build_query_string($params);
 
     // Generate unique ID for this iframe instance
-    $iframe_id = 'mtp-table-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
+    $iframe_id = 'mtp-matches-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
 
     // Build the iframe HTML with auto-sizing styles and shortcode dimensions
     $iframe_html = sprintf(
@@ -75,12 +75,12 @@ class MTP_Matches_Renderer {
   /**
    * Build URL parameters for the iframe
    */
-  private function build_url_params($tournament_id, $table_id, $atts) {
+  private function build_url_params($tournament_id, $matches_id, $atts) {
     $params = array();
     $params['id'] = $tournament_id;
 
     // Get styling parameters
-    $styling_params = $this->get_styling_parameters($table_id, $atts);
+    $styling_params = $this->get_styling_parameters($matches_id, $atts);
 
     // Map shortcode styling parameters to URL parameters
     foreach ($styling_params as $key => $value) {
@@ -92,72 +92,24 @@ class MTP_Matches_Renderer {
     // Add wrap=false parameter
     $params['s[wrap]'] = 'false';
 
-    // Add sw parameter if suppress_wins is enabled
-    $suppress_wins = '';
-    if (!empty($atts['sw'])) {
-      $suppress_wins = $atts['sw'];
-    } elseif ($table_id) {
-      $suppress_wins = get_post_meta($table_id, '_mtp_suppress_wins', true);
-    }
-
-    if (!empty($suppress_wins) && $suppress_wins === '1') {
-      $params['sw'] = '';
-    }
-
-    // Add sl parameter if suppress_logos is enabled
-    $suppress_logos = '';
-    if (!empty($atts['sl'])) {
-      $suppress_logos = $atts['sl'];
-    } elseif ($table_id) {
-      $suppress_logos = get_post_meta($table_id, '_mtp_suppress_logos', true);
-    }
-
-    if (!empty($suppress_logos) && $suppress_logos === '1') {
-      $params['sl'] = '';
-    }
-
-    // Add sn parameter if suppress_num_matches is enabled
-    $suppress_num_matches = '';
-    if (!empty($atts['sn'])) {
-      $suppress_num_matches = $atts['sn'];
-    } elseif ($table_id) {
-      $suppress_num_matches = get_post_meta($table_id, '_mtp_suppress_num_matches', true);
-    }
-
-    if (!empty($suppress_num_matches) && $suppress_num_matches === '1') {
-      $params['sn'] = '';
-    }
-
     // Add bm parameter if projector_presentation is enabled
     $projector_presentation = '';
     if (!empty($atts['bm'])) {
       $projector_presentation = $atts['bm'];
-    } elseif ($table_id) {
-      $projector_presentation = get_post_meta($table_id, '_mtp_projector_presentation', true);
+    } elseif ($matches_id) {
+      $projector_presentation = get_post_meta($matches_id, '_mtp_projector_presentation', true);
     }
 
     if (!empty($projector_presentation) && $projector_presentation === '1') {
       $params['bm'] = '';
     }
 
-    // Add nav parameter if navigation_for_groups is enabled
-    $navigation_for_groups = '';
-    if (!empty($atts['nav'])) {
-      $navigation_for_groups = $atts['nav'];
-    } elseif ($table_id) {
-      $navigation_for_groups = get_post_meta($table_id, '_mtp_navigation_for_groups', true);
-    }
-
-    if (!empty($navigation_for_groups) && $navigation_for_groups === '1') {
-      $params['nav'] = '';
-    }
-
     // Add setlang parameter if language is specified
     $language = '';
     if (!empty($atts['setlang'])) {
       $language = $atts['setlang'];
-    } elseif ($table_id) {
-      $language = get_post_meta($table_id, '_mtp_language', true);
+    } elseif ($matches_id) {
+      $language = get_post_meta($matches_id, '_mtp_language', true);
     }
 
     if (!empty($language) && $language !== 'en') {
@@ -168,8 +120,8 @@ class MTP_Matches_Renderer {
     $group = '';
     if (!empty($atts['group'])) {
       $group = $atts['group'];
-    } elseif ($table_id) {
-      $group = get_post_meta($table_id, '_mtp_group', true);
+    } elseif ($matches_id) {
+      $group = get_post_meta($matches_id, '_mtp_group', true);
     }
 
     if (!empty($group)) {
@@ -182,30 +134,116 @@ class MTP_Matches_Renderer {
   /**
    * Get styling parameters from post meta or attributes
    */
-  private function get_styling_parameters($table_id, $atts) {
+  private function get_styling_parameters($matches_id, $atts) {
     $params = array();
 
     // Define parameter mapping and defaults
     $param_mapping = array(
-      'size' => array('attr' => 's-size', 'meta' => '_mtp_font_size', 'default' => '9'),
-      'sizeheader' => array('attr' => 's-sizeheader', 'meta' => '_mtp_header_font_size', 'default' => '10'),
-      'color' => array('attr' => 's-color', 'meta' => '_mtp_text_color', 'default' => '000000'),
-      'maincolor' => array('attr' => 's-maincolor', 'meta' => '_mtp_main_color', 'default' => '173f75'),
-      'padding' => array('attr' => 's-padding', 'meta' => '_mtp_table_padding', 'default' => '2'),
-      'innerpadding' => array('attr' => 's-innerpadding', 'meta' => '_mtp_inner_padding', 'default' => '5'),
-      'bgcolor' => array('attr' => 's-bgcolor', 'meta' => '_mtp_bg_color', 'default' => '00000000'),
-      'logosize' => array('attr' => 's-logosize', 'meta' => '_mtp_logo_size', 'default' => '20'),
-      'bcolor' => array('attr' => 's-bcolor', 'meta' => '_mtp_border_color', 'default' => 'bbbbbb'),
-      'bsizeh' => array('attr' => 's-bsizeh', 'meta' => '_mtp_bsizeh', 'default' => '1'),
-      'bsizev' => array('attr' => 's-bsizev', 'meta' => '_mtp_bsizev', 'default' => '1'),
-      'bsizeoh' => array('attr' => 's-bsizeoh', 'meta' => '_mtp_bsizeoh', 'default' => '1'),
-      'bsizeov' => array('attr' => 's-bsizeov', 'meta' => '_mtp_bsizeov', 'default' => '1'),
-      'bbcolor' => array('attr' => 's-bbcolor', 'meta' => '_mtp_head_bottom_border_color', 'default' => 'bbbbbb'),
-      'bbsize' => array('attr' => 's-bbsize', 'meta' => '_mtp_bbsize', 'default' => '2'),
-      'bgeven' => array('attr' => 's-bgeven', 'meta' => '_mtp_even_bg_color', 'default' => 'f0f8ffb0'),
-      'bgodd' => array('attr' => 's-bgodd', 'meta' => '_mtp_odd_bg_color', 'default' => 'ffffffb0'),
-      'bgover' => array('attr' => 's-bgover', 'meta' => '_mtp_hover_bg_color', 'default' => 'eeeeffb0'),
-      'bghead' => array('attr' => 's-bghead', 'meta' => '_mtp_head_bg_color', 'default' => 'eeeeffff'),
+      'size' => array(
+        'attr'    => 's-size',
+        'meta'    => '_mtp_font_size',
+        'default' => '9'
+      ),
+      'sizeheader' => array(
+        'attr'    => 's-sizeheader',
+        'meta'    => '_mtp_header_font_size',
+        'default' => '10'
+      ),
+      'color' => array(
+        'attr'    => 's-color',
+        'meta'    => '_mtp_text_color',
+        'default' => '000000'
+      ),
+      'maincolor' => array(
+        'attr'    => 's-maincolor',
+        'meta'    => '_mtp_main_color',
+        'default' => '173f75'
+      ),
+      'padding' => array(
+        'attr'    => 's-padding',
+        'meta'    => '_mtp_table_padding',
+        'default' => '2'
+      ),
+      'innerpadding' => array(
+        'attr'    => 's-innerpadding',
+        'meta'    => '_mtp_inner_padding',
+        'default' => '5'
+      ),
+      'bgcolor' => array(
+        'attr'    => 's-bgcolor',
+        'meta'    => '_mtp_bg_color',
+        'default' => '00000000'
+      ),
+      'bcolor' => array(
+        'attr'    => 's-bcolor',
+        'meta'    => '_mtp_border_color',
+        'default' => 'bbbbbb'
+      ),
+      'bsizeh' => array(
+        'attr'    => 's-bsizeh',
+        'meta'    => '_mtp_bsizeh',
+        'default' => '1'
+      ),
+      'bsizev' => array(
+        'attr'    => 's-bsizev',
+        'meta'    => '_mtp_bsizev',
+        'default' => '1'
+      ),
+      'bsizeoh' => array(
+        'attr'    => 's-bsizeoh',
+        'meta'    => '_mtp_bsizeoh',
+        'default' => '1'
+      ),
+      'bsizeov' => array(
+        'attr'    => 's-bsizeov',
+        'meta'    => '_mtp_bsizeov',
+        'default' => '1'
+      ),
+      'bbcolor' => array(
+        'attr'    => 's-bbcolor',
+        'meta'    => '_mtp_head_bottom_border_color',
+        'default' => 'bbbbbb'
+      ),
+      'bbsize' => array(
+        'attr'    => 's-bbsize',
+        'meta'    => '_mtp_bbsize',
+        'default' => '2'
+      ),
+      'bgeven' => array(
+        'attr'    => 's-bgeven',
+        'meta'    => '_mtp_even_bg_color',
+        'default' => 'f0f8ffb0'
+      ),
+      'bgodd' => array(
+        'attr'    => 's-bgodd',
+        'meta'    => '_mtp_odd_bg_color',
+        'default' => 'ffffffb0'
+      ),
+      'bgover' => array(
+        'attr'    => 's-bgover',
+        'meta'    => '_mtp_hover_bg_color',
+        'default' => 'eeeeffb0'
+      ),
+      'bghead' => array(
+        'attr'    => 's-bghead',
+        'meta'    => '_mtp_head_bg_color',
+        'default' => 'eeeeffff'
+      ),
+      'ehrsize' => array(
+        'attr'    => 's-ehrsize',
+        'meta'    => '_mtp_ehrsize',
+        'default' => '10'
+      ),
+      'ehrtop' => array(
+        'attr'    => 's-ehrtop',
+        'meta'    => '_mtp_ehrtop',
+        'default' => '9'
+      ),
+      'ehrbottom' => array(
+        'attr'    => 's-ehrbottom',
+        'meta'    => '_mtp_ehrbottom',
+        'default' => '3'
+      ),
     );
 
     foreach ($param_mapping as $url_param => $config) {
@@ -214,16 +252,16 @@ class MTP_Matches_Renderer {
       // Check if value is provided in shortcode attributes
       if (!empty($atts[$config['attr']])) {
         $value = $atts[$config['attr']];
-      } elseif ($table_id) {
+      } elseif ($matches_id) {
         // Get from post meta
-        $meta_value = get_post_meta($table_id, $config['meta'], true);
+        $meta_value = get_post_meta($matches_id, $config['meta'], true);
         if (!empty($meta_value)) {
           $value = $meta_value;
         }
 
         // Handle special cases for colors with opacity
         if (in_array($url_param, array('bgcolor', 'bgeven', 'bgodd', 'bgover', 'bghead'))) {
-          $value = $this->get_bg_color_with_opacity($table_id, $config['meta']);
+          $value = $this->get_bg_color_with_opacity($matches_id, $config['meta']);
         }
       }
 
