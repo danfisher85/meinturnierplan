@@ -82,7 +82,7 @@ class MTP_Plugin {
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-widget.php';
 
     // Gutenberg block class
-    include_once MTP_PLUGIN_PATH . 'includes/class-mtp-gutenberg-block.php';
+    include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-block.php';
   }
 
   /**
