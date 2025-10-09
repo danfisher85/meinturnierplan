@@ -3,7 +3,7 @@
  * Main Plugin Class
  *
  * @package MeinTurnierplan
- * @since 1.0.0
+ * @since 0.1.0
  */
 
 // Prevent direct access
@@ -24,7 +24,8 @@ class MTP_Plugin {
   /**
    * Plugin components
    */
-  public $post_type;
+  public $table_post_type;
+  public $matches_post_type;
   public $shortcode;
   public $admin_meta_boxes;
   public $table_renderer;
@@ -71,6 +72,7 @@ class MTP_Plugin {
     // Core classes
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-installer.php';
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-post-type.php';
+    include_once MTP_PLUGIN_PATH . 'includes/class-mtp-matches-post-type.php';
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-renderer.php';
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-shortcode.php';
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-admin-utilities.php';
@@ -92,7 +94,8 @@ class MTP_Plugin {
     // Initialize components
     $this->installer = new MTP_Installer();
     $this->table_renderer = new MTP_Table_Renderer();
-    $this->post_type = new MTP_Table_Post_Type();
+    $this->table_post_type = new MTP_Table_Post_Type();
+    $this->matches_post_type = new MTP_Matches_Post_Type();
     $this->shortcode = new MTP_Table_Shortcode($this->table_renderer);
     $this->admin_meta_boxes = new MTP_Admin_Meta_Boxes($this->table_renderer);
     $this->ajax_handler = new MTP_Ajax_Handler($this->table_renderer);
