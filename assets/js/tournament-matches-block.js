@@ -1,0 +1,113 @@
+(function(wp) {
+  const { registerBlockType } = wp.blocks;
+  const { createElement: el, Fragment, useState, useEffect } = wp.element;
+  const { SelectControl, Placeholder, Spinner } = wp.components;
+  const { __ } = wp.i18n;
+  const { apiFetch } = wp;
+
+  registerBlockType('meinturnierplan/matches-table', {
+    title: __('Matches Table', 'meinturnierplan'),
+    icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+      el('path', {
+        d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+        fill: 'currentColor'
+      })
+    ),
+    category: 'widgets',
+    description: __('Display a matches table from your custom post types.', 'meinturnierplan'),
+
+    attributes: {
+      tableId: {
+        type: 'string',
+        default: ''
+      },
+      tableName: {
+        type: 'string',
+        default: ''
+      }
+    },
+
+    edit: function(props) {
+      const { attributes, setAttributes } = props;
+      const { tableId, tableName } = attributes;
+      const [tables, setTables] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      // Fetch tournament tables on component mount
+      useEffect(() => {
+        const formData = new FormData();
+        formData.append('action', 'mtp_get_matches');
+        formData.append('nonce', mtpBlock.nonce);
+
+        fetch(mtpBlock.ajaxUrl, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            setTables(data.data);
+          }
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error fetching tables:', error);
+          setLoading(false);
+        });
+      }, []);
+
+      const onChangeTable = function(value) {
+        const selectedTable = tables.find(table => table.value === value);
+        setAttributes({
+          tableId: value,
+          tableName: selectedTable ? selectedTable.label : ''
+        });
+      };
+
+      if (loading) {
+        return el(
+          Placeholder,
+          {
+            icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+              el('path', {
+                d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+                fill: 'currentColor'
+              })
+            ),
+            label: __('Matches Table', 'meinturnierplan')
+          },
+          el(Spinner)
+        );
+      }
+
+      return el(
+        Fragment,
+        null,
+        el(
+          Placeholder,
+          {
+            icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+              el('path', {
+                d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+                fill: 'currentColor'
+              })
+            ),
+            label: __('Matches Table', 'meinturnierplan')
+          },
+          el(SelectControl, {
+            label: __('Select Matches Table', 'meinturnierplan'),
+            value: tableId,
+            options: tables,
+            onChange: onChangeTable
+          })
+        )
+      );
+    },
+
+    save: function() {
+      // Return null since we use dynamic rendering
+      return null;
+    }
+  });
+
+})(window.wp);

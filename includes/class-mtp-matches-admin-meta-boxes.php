@@ -238,7 +238,7 @@ class MTP_Admin_Matches_Meta_Boxes {
 
     // Create attributes for preview
     $atts = $this->build_preview_attributes($meta_values);
-    echo $this->matches_renderer->render_table_html($post->ID, $atts);
+    echo $this->matches_renderer->render_matches_html($post->ID, $atts);
 
     echo '</div>';
   }
