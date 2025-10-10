@@ -509,37 +509,37 @@ class MTP_Admin_Matches_Meta_Boxes {
 
     // Add si parameter if si is enabled
     if (!empty($meta_values['si']) && $meta_values['si'] === '1') {
-      $atts_array['si'] = '1';
+      $shortcode .= ' si="1"';
     }
 
     // Add sf parameter if sf is enabled
     if (!empty($meta_values['sf']) && $meta_values['sf'] === '1') {
-      $atts_array['sf'] = '1';
+      $shortcode .= ' sf="1"';
     }
 
     // Add st parameter if st is enabled
     if (!empty($meta_values['st']) && $meta_values['st'] === '1') {
-      $atts_array['st'] = '1';
+      $shortcode .= ' st="1"';
     }
 
     // Add sg parameter if sg is enabled
     if (!empty($meta_values['sg']) && $meta_values['sg'] === '1') {
-      $atts_array['sg'] = '1';
+      $shortcode .= ' sg="1"';
     }
 
     // Add se parameter if se is enabled
     if (!empty($meta_values['se']) && $meta_values['se'] === '1') {
-      $atts_array['se'] = '1';
+      $shortcode .= ' se="1"';
     }
 
     // Add sp parameter if sp is enabled
     if (!empty($meta_values['sp']) && $meta_values['sp'] === '1') {
-      $atts_array['sp'] = '1';
+      $shortcode .= ' sp="1"';
     }
 
     // Add sh parameter if sh is enabled
     if (!empty($meta_values['sh']) && $meta_values['sh'] === '1') {
-      $atts_array['sh'] = '1';
+      $shortcode .= ' sh="1"';
     }
 
     // Add width and height parameters for iframe sizing

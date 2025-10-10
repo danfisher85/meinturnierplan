@@ -104,6 +104,90 @@ class MTP_Matches_Renderer {
       $params['bm'] = '';
     }
 
+    // Add si parameter if enabled
+    $si = '';
+    if (!empty($atts['si'])) {
+      $si = $atts['si'];
+    } elseif ($matches_id) {
+      $si = get_post_meta($matches_id, '_mtp_si', true);
+    }
+
+    if (!empty($si) && $si === '1') {
+      $params['si'] = '';
+    }
+
+    // Add sf parameter if enabled
+    $sf = '';
+    if (!empty($atts['sf'])) {
+      $sf = $atts['sf'];
+    } elseif ($matches_id) {
+      $sf = get_post_meta($matches_id, '_mtp_sf', true);
+    }
+
+    if (!empty($sf) && $sf === '1') {
+      $params['sf'] = '';
+    }
+
+    // Add st parameter if enabled
+    $st = '';
+    if (!empty($atts['st'])) {
+      $st = $atts['st'];
+    } elseif ($matches_id) {
+      $st = get_post_meta($matches_id, '_mtp_st', true);
+    }
+
+    if (!empty($st) && $st === '1') {
+      $params['st'] = '';
+    }
+
+    // Add sg parameter if enabled
+    $sg = '';
+    if (!empty($atts['sg'])) {
+      $sg = $atts['sg'];
+    } elseif ($matches_id) {
+      $sg = get_post_meta($matches_id, '_mtp_sg', true);
+    }
+
+    if (!empty($sg) && $sg === '1') {
+      $params['sg'] = '';
+    }
+
+    // Add se parameter if enabled
+    $se = '';
+    if (!empty($atts['se'])) {
+      $se = $atts['se'];
+    } elseif ($matches_id) {
+      $se = get_post_meta($matches_id, '_mtp_se', true);
+    }
+
+    if (!empty($se) && $se === '1') {
+      $params['se'] = '';
+    }
+
+    // Add sp parameter if enabled
+    $sp = '';
+    if (!empty($atts['sp'])) {
+      $sp = $atts['sp'];
+    } elseif ($matches_id) {
+      $sp = get_post_meta($matches_id, '_mtp_sp', true);
+    }
+
+    if (!empty($sp) && $sp === '1') {
+      $params['sp'] = '';
+    }
+
+    // Add sh parameter if enabled
+    $sh = '';
+    if (!empty($atts['sh'])) {
+      $sh = $atts['sh'];
+    } elseif ($matches_id) {
+      $sh = get_post_meta($matches_id, '_mtp_sh', true);
+    }
+
+    if (!empty($sh) && $sh === '1') {
+      $params['sh'] = '';
+    }
+
     // Add setlang parameter if language is specified
     $language = '';
     if (!empty($atts['setlang'])) {
