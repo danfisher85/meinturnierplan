@@ -116,7 +116,7 @@ class MTP_Matches_Renderer {
       $params['setlang'] = $language;
     }
 
-    // Add gr parameter if group is specified
+    // Add gr parameter if group is specified (but NOT if it's empty - for "All Matches")
     $group = '';
     if (!empty($atts['group'])) {
       $group = $atts['group'];
@@ -124,6 +124,7 @@ class MTP_Matches_Renderer {
       $group = get_post_meta($matches_id, '_mtp_group', true);
     }
 
+    // Only add gr parameter if group is not empty (empty means "All Matches")
     if (!empty($group)) {
       $params['gr'] = $group;
     }

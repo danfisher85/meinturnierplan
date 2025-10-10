@@ -607,6 +607,7 @@ class MTP_Admin_Utilities {
           var defaults = {
             preserveSelection: false,
             forceRefresh: false,
+            context: 'tables', // 'matches' or 'tables' - determines if "All Matches" option is shown
             groupRowSelector: "#<?php echo esc_js($config['field_prefix']); ?>group_field_row",
             groupSelectSelector: "#<?php echo esc_js($config['field_prefix']); ?>group, #<?php echo esc_js($config['field_prefix']); ?>group_select",
             refreshButtonSelector: "#<?php echo esc_js($config['field_prefix']); ?>refresh_groups",
@@ -615,6 +616,7 @@ class MTP_Admin_Utilities {
             nonce: "<?php echo wp_create_nonce($config['nonce_action']); ?>"
           };
           options = jQuery.extend(defaults, options || {});
+          var showAllOption = (options.context === 'matches');
 
           var $groupRow = jQuery(options.groupRowSelector);
           var $groupSelect = jQuery(options.groupSelectSelector);
@@ -658,14 +660,21 @@ class MTP_Admin_Utilities {
             if (response.success && response.data.groups.length > 0) {
               $groupSelect.prop("disabled", false).empty();
 
+              // Add "All Matches" option first (only for matches context)
+              if (showAllOption) {
+                var isAllSelected = !currentSelection || currentSelection === '';
+                $groupSelect.append('<option value=""' + (isAllSelected ? ' selected' : '') + '>All Matches</option>');
+              }
+
               jQuery.each(response.data.groups, function(index, group) {
                 var groupNumber = index + 1;
                 var groupLabel = "Group " + group.displayId;
                 var isSelected = false;
 
-                if (!currentSelection && index === 0) {
+                if (currentSelection && currentSelection == groupNumber) {
                   isSelected = true;
-                } else if (currentSelection && currentSelection == groupNumber) {
+                } else if (!currentSelection && !showAllOption && index === 0) {
+                  // Auto-select first group as default for tables (when no "All Matches" option)
                   isSelected = true;
                 }
 
@@ -689,11 +698,18 @@ class MTP_Admin_Utilities {
             } else {
               $groupSelect.prop("disabled", false).empty();
 
+              // For matches: Add "All Matches" option
+              // For tables: Show "Default" option
+              if (showAllOption) {
+                var isAllSelected = !currentSelection || currentSelection === '';
+                $groupSelect.append('<option value=""' + (isAllSelected ? ' selected' : '') + '>All Matches</option>');
+              } else {
+                $groupSelect.append('<option value="">Default</option>');
+              }
+
               if (response.data.hasFinalRound) {
                 var finalRoundSelected = (currentSelection && currentSelection == '90') ? ' selected' : '';
                 $groupSelect.append('<option value="90"' + finalRoundSelected + '>Final Round</option>');
-              } else {
-                $groupSelect.append('<option value="">Default</option>');
               }
 
               if (currentSelection && currentSelection !== '' && currentSelection !== '90' && !response.data.hasFinalRound) {
@@ -709,14 +725,20 @@ class MTP_Admin_Utilities {
           }).fail(function() {
             $refreshButton.find('.dashicons').removeClass('dashicons-update-alt-rotating');
             $groupSelect.prop("disabled", false).empty();
-            $groupSelect.append('<option value="">Default</option>');
+
+            // For matches: Add "All Matches" option
+            // For tables: Show "Default" option
+            if (showAllOption) {
+              var isAllSelected = !currentSelection || currentSelection === '';
+              $groupSelect.append('<option value=""' + (isAllSelected ? ' selected' : '') + '>All Matches</option>');
+            } else {
+              $groupSelect.append('<option value="">Default</option>');
+            }
 
             if (currentSelection && currentSelection !== '') {
               var label = currentSelection == '90' ? 'Final Round (saved)' : 'Group ' + currentSelection + ' (saved)';
               $groupSelect.append('<option value="' + currentSelection + '" selected>' + label + '</option>');
-            }
-
-            $refreshButton.prop("disabled", false);
+            }            $refreshButton.prop("disabled", false);
 
             if (options.forceRefresh) {
               MTPAdminUtils.showTemporaryMessage("Error refreshing groups. Please try again.", "error", options.groupRowSelector);
@@ -861,12 +883,14 @@ class MTP_Admin_Utilities {
    *
    * @param array $meta_values Array containing tournament_id and group values
    * @param string $field_prefix Optional. Prefix for field names. Default 'mtp_'.
+   * @param string $context Optional. Context: 'matches' or 'tables'. Default 'tables'. Only 'matches' shows "All Matches" option.
    */
-  public static function render_conditional_group_field($meta_values, $field_prefix = 'mtp_') {
+  public static function render_conditional_group_field($meta_values, $field_prefix = 'mtp_', $context = 'tables') {
     $tournament_id = $meta_values['tournament_id'];
     $saved_group = $meta_values['group'];
     $groups = array();
     $has_final_round = false;
+    $show_all_option = ($context === 'matches'); // Only show "All Matches" for matches context
 
     // Only fetch groups if tournament ID is provided
     if (!empty($tournament_id)) {
@@ -888,7 +912,14 @@ class MTP_Admin_Utilities {
     echo '<select id="' . esc_attr($group_field_id) . '" name="' . esc_attr($group_field_id) . '" class="regular-text">';
 
     if (!empty($groups)) {
-      // Populate with actual groups - never show "All Groups" option
+      // Add "All Matches" option first as default (only for matches context)
+      if ($show_all_option) {
+        $is_all_selected = empty($saved_group);
+        $all_selected = $is_all_selected ? ' selected' : '';
+        echo '<option value=""' . $all_selected . '>' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+      }
+
+      // Populate with actual groups
       foreach ($groups as $index => $group) {
         $group_number = $index + 1;
         $is_selected = false;
@@ -896,8 +927,8 @@ class MTP_Admin_Utilities {
         if (!empty($saved_group)) {
           // Use saved selection
           $is_selected = ($saved_group == $group_number);
-        } else if ($index == 0) {
-          // Auto-select first group as default (both single and multiple group cases)
+        } else if (!$show_all_option && $index == 0) {
+          // Auto-select first group as default for tables (when no "All Matches" option)
           $is_selected = true;
         }
 
@@ -912,6 +943,11 @@ class MTP_Admin_Utilities {
         echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
       }
     } else if (!empty($saved_group) && !empty($tournament_id)) {
+      // Add "All Matches" option first (only for matches context)
+      if ($show_all_option) {
+        echo '<option value="">' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+      }
+
       // Show a placeholder for the saved group if groups haven't loaded yet
       if ($saved_group == '90') {
         echo '<option value="90" selected>' . esc_html(__('Final Round (saved)', 'meinturnierplan')) . '</option>';
@@ -919,14 +955,19 @@ class MTP_Admin_Utilities {
         echo '<option value="' . esc_attr($saved_group) . '" selected>' . esc_html(sprintf(__('Group %s (saved)', 'meinturnierplan'), $saved_group)) . '</option>';
       }
     } else {
-      // No groups available - check for Final Round only
+      // For matches: Add "All Matches" option as default
+      // For tables: Show "Default" option
+      if ($show_all_option) {
+        echo '<option value="" selected>' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+      } else {
+        echo '<option value="">' . esc_html(__('Default', 'meinturnierplan')) . '</option>';
+      }
+
+      // Check for Final Round only
       if ($has_final_round) {
         $is_final_selected = (!empty($saved_group) && $saved_group == '90');
         $final_selected = $is_final_selected ? ' selected' : '';
         echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
-      } else {
-        // No groups and no final round - show default option
-        echo '<option value="">' . esc_html(__('Default', 'meinturnierplan')) . '</option>';
       }
     }
 

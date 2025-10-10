@@ -164,7 +164,7 @@ class MTP_Admin_Matches_Meta_Boxes {
     MTP_Admin_Utilities::render_group_header(
       __('Display Options', 'meinturnierplan')
     );
-    MTP_Admin_Utilities::render_conditional_group_field($meta_values);
+    MTP_Admin_Utilities::render_conditional_group_field($meta_values, 'mtp_', 'matches');
     MTP_Admin_Utilities::render_checkbox_field(
       'mtp_projector_presentation',
       __('Projector Presentation', 'meinturnierplan'),
@@ -389,18 +389,20 @@ class MTP_Admin_Matches_Meta_Boxes {
 
       // Initialize tournament ID field with group loading
       MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
-        MTPAdminUtils.loadTournamentGroups(tournamentId);
+        MTPAdminUtils.loadTournamentGroups(tournamentId, {context: 'matches'});
       });
 
       // Initialize group refresh button
       MTPAdminUtils.initGroupRefreshButton('#mtp_refresh_groups', '#mtp_tournament_id', function(tournamentId, options) {
+        options = options || {};
+        options.context = 'matches';
         MTPAdminUtils.loadTournamentGroups(tournamentId, options);
       });
 
       // Load groups on page load if tournament ID exists
       var initialTournamentId = $("#mtp_tournament_id").val();
       if (initialTournamentId) {
-        MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false});
+        MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false, context: 'matches'});
       }
 
       // Add specific field listeners for all form fields
