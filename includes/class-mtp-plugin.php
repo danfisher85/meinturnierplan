@@ -54,7 +54,6 @@ class MTP_Plugin {
   public function __construct() {
     $this->init_hooks();
     $this->includes();
-    $this->init();
   }
 
   /**
