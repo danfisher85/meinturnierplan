@@ -483,6 +483,65 @@ class MTP_Admin_Utilities {
   }
 
   /**
+   * Fetch tournament teams from external API
+   *
+   * @param string $tournament_id The tournament ID
+   * @param bool $force_refresh Whether to force refresh the cache
+   * @return array Array of teams
+   */
+  public static function fetch_tournament_teams($tournament_id, $force_refresh = false) {
+    if (empty($tournament_id)) {
+      return array();
+    }
+
+    $cache_key = 'mtp_teams_' . $tournament_id;
+    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
+
+    // Try to get cached data first (unless force refresh is requested)
+    if (!$force_refresh) {
+      $cached_data = get_transient($cache_key);
+      if ($cached_data !== false) {
+        return $cached_data;
+      }
+    } else {
+      // Force refresh - clear the cache first
+      delete_transient($cache_key);
+    }
+
+    // Use WordPress HTTP API to fetch the JSON
+    $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
+    $response = wp_remote_get($url, array(
+      'timeout' => 10,
+      'sslverify' => true
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+      // Return cached data if available, even if expired
+      $cached_data = get_transient($cache_key);
+      if ($cached_data !== false) {
+        return $cached_data;
+      }
+      return array();
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    $teams = array();
+
+    // Check if teams exist and are not empty
+    if (isset($data['teams']) && is_array($data['teams']) && !empty($data['teams'])) {
+      $teams = $data['teams'];
+    }
+
+    // Cache the result (even if empty)
+    set_transient($cache_key, $teams, $cache_expiry);
+
+    return $teams;
+  }
+
+  /**
    * Render JavaScript utilities for admin forms
    *
    * This generates common JavaScript functions that can be reused across different
@@ -782,6 +841,123 @@ class MTP_Admin_Utilities {
               groupLoadCallback(tournamentId, {preserveSelection: true, forceRefresh: true});
             }
           });
+        },
+
+        // Load tournament teams (participants)
+        loadTournamentTeams: function(tournamentId, options) {
+          var defaults = {
+            preserveSelection: false,
+            forceRefresh: false,
+            participantSelectSelector: "#<?php echo esc_js($config['field_prefix']); ?>participant",
+            refreshButtonSelector: "#<?php echo esc_js($config['field_prefix']); ?>refresh_participants",
+            savedValueSelector: "#<?php echo esc_js($config['field_prefix']); ?>participant_saved_value",
+            ajaxActions: <?php echo isset($config['ajax_actions_teams']) ? json_encode($config['ajax_actions_teams']) : '["mtp_get_teams", "mtp_refresh_teams"]'; ?>,
+            nonce: "<?php echo wp_create_nonce($config['nonce_action']); ?>"
+          };
+          options = jQuery.extend(defaults, options || {});
+
+          var $participantSelect = jQuery(options.participantSelectSelector);
+          var $refreshButton = jQuery(options.refreshButtonSelector);
+          var currentSelection = options.preserveSelection ? $participantSelect.val() : '';
+          var savedValue = jQuery(options.savedValueSelector).val();
+
+          // Use saved value if no current selection and this isn't a forced refresh
+          if (!currentSelection && savedValue && !options.forceRefresh) {
+            currentSelection = savedValue;
+          }
+
+          if (!tournamentId) {
+            $participantSelect.prop("disabled", false).empty().append('<option value="-1">All</option>');
+            $refreshButton.prop("disabled", true);
+            return;
+          }
+
+          $participantSelect.prop("disabled", true);
+          $refreshButton.prop("disabled", true);
+
+          if (options.forceRefresh) {
+            $participantSelect.empty().append('<option value="-1">Refreshing participants...</option>');
+            $refreshButton.find('.dashicons').addClass('dashicons-update-alt-rotating');
+          } else {
+            $participantSelect.empty().append('<option value="-1">Loading participants...</option>');
+          }
+
+          var ajaxAction = options.forceRefresh ? options.ajaxActions[1] : options.ajaxActions[0];
+
+          jQuery.post(ajaxurl, {
+            action: ajaxAction,
+            tournament_id: tournamentId,
+            force_refresh: options.forceRefresh,
+            nonce: options.nonce
+          }, function(response) {
+            $refreshButton.find('.dashicons').removeClass('dashicons-update-alt-rotating');
+
+            if (response.success && response.data.teams && response.data.teams.length > 0) {
+              $participantSelect.prop("disabled", false).empty();
+
+              // Add "All" option first as default
+              var isAllSelected = !currentSelection || currentSelection === '-1';
+              $participantSelect.append('<option value="-1"' + (isAllSelected ? ' selected' : '') + '>All</option>');
+
+              jQuery.each(response.data.teams, function(index, team) {
+                var teamId = team.displayId || '';
+                var teamName = team.name || '';
+
+                if (teamId && teamName) {
+                  var isSelected = (currentSelection && currentSelection == teamId);
+                  $participantSelect.append('<option value="' + teamId + '"' + (isSelected ? ' selected' : '') + '>' + teamName + '</option>');
+                }
+              });
+
+              if (currentSelection && currentSelection !== '-1' && $participantSelect.find('option[value="' + currentSelection + '"]').length === 0) {
+                $participantSelect.find('option:first').prop('selected', true);
+              }
+
+              $refreshButton.prop("disabled", false);
+
+              if (options.forceRefresh && response.data.refreshed) {
+                MTPAdminUtils.showTemporaryMessage("Participants refreshed successfully!", "success", options.participantSelectSelector);
+              }
+            } else {
+              $participantSelect.prop("disabled", false).empty();
+              $participantSelect.append('<option value="-1"' + (!currentSelection || currentSelection === '-1' ? ' selected' : '') + '>All</option>');
+
+              if (currentSelection && currentSelection !== '-1') {
+                $participantSelect.append('<option value="' + currentSelection + '" selected>Team ' + currentSelection + ' (saved)</option>');
+              }
+
+              $refreshButton.prop("disabled", false);
+
+              if (options.forceRefresh) {
+                MTPAdminUtils.showTemporaryMessage("No participants found for this tournament.", "info", options.participantSelectSelector);
+              }
+            }
+          }).fail(function() {
+            $refreshButton.find('.dashicons').removeClass('dashicons-update-alt-rotating');
+            $participantSelect.prop("disabled", false).empty();
+            $participantSelect.append('<option value="-1"' + (!currentSelection || currentSelection === '-1' ? ' selected' : '') + '>All</option>');
+
+            if (currentSelection && currentSelection !== '-1') {
+              $participantSelect.append('<option value="' + currentSelection + '" selected>Team ' + currentSelection + ' (saved)</option>');
+            }
+
+            $refreshButton.prop("disabled", false);
+
+            if (options.forceRefresh) {
+              MTPAdminUtils.showTemporaryMessage("Error refreshing participants. Please try again.", "error", options.participantSelectSelector);
+            }
+          });
+        },
+
+        // Initialize participant refresh button
+        initParticipantRefreshButton: function(refreshButtonSelector, tournamentIdSelector, teamLoadCallback) {
+          jQuery(document).on("click", refreshButtonSelector, function(e) {
+            e.preventDefault();
+            var tournamentId = jQuery(tournamentIdSelector).val();
+            if (tournamentId && teamLoadCallback) {
+              teamLoadCallback(tournamentId, {preserveSelection: true, forceRefresh: true});
+            }
+          });
         }
       };
     }
@@ -990,5 +1166,71 @@ class MTP_Admin_Utilities {
     if (empty($tournament_id)) {
       echo '<style>#' . esc_attr($group_field_row_id) . ' { display: none; }</style>';
     }
+  }
+
+  /**
+   * Render conditional participant field for tournament selection
+   *
+   * @param array $meta_values Array containing tournament_id and participant values
+   * @param string $field_prefix Optional. Prefix for field names. Default 'mtp_'.
+   */
+  public static function render_conditional_participant_field($meta_values, $field_prefix = 'mtp_') {
+    $tournament_id = $meta_values['tournament_id'];
+    $saved_participant = isset($meta_values['participant']) ? $meta_values['participant'] : '-1';
+    $teams = array();
+
+    // Only fetch teams if tournament ID is provided
+    if (!empty($tournament_id)) {
+      $teams = self::fetch_tournament_teams($tournament_id);
+    }
+
+    $participant_field_id = $field_prefix . 'participant';
+    $refresh_button_id = $field_prefix . 'refresh_participants';
+    $participant_field_row_id = $field_prefix . 'participant_field_row';
+    $saved_value_field_id = $field_prefix . 'participant_saved_value';
+
+    // Always render the field (unlike Group, this is always displayed)
+    echo '<tr id="' . esc_attr($participant_field_row_id) . '">';
+    echo '<th scope="row"><label for="' . esc_attr($participant_field_id) . '">' . esc_html(__('Participant', 'meinturnierplan')) . '</label></th>';
+    echo '<td>';
+    echo '<div style="display: flex; align-items: center; gap: 10px;">';
+    echo '<select id="' . esc_attr($participant_field_id) . '" name="' . esc_attr($participant_field_id) . '" class="regular-text">';
+
+    // Add "All" option first as default
+    $is_all_selected = ($saved_participant == '-1');
+    $all_selected = $is_all_selected ? ' selected' : '';
+    echo '<option value="-1"' . $all_selected . '>' . esc_html(__('All', 'meinturnierplan')) . '</option>';
+
+    if (!empty($teams)) {
+      // Populate with actual teams
+      foreach ($teams as $team) {
+        $team_id = isset($team['displayId']) ? $team['displayId'] : '';
+        $team_name = isset($team['name']) ? $team['name'] : '';
+
+        if (!empty($team_id) && !empty($team_name)) {
+          $is_selected = ($saved_participant == $team_id);
+          $selected = $is_selected ? ' selected' : '';
+          echo '<option value="' . esc_attr($team_id) . '"' . $selected . '>' . esc_html($team_name) . '</option>';
+        }
+      }
+    } else if (!empty($saved_participant) && $saved_participant != '-1' && !empty($tournament_id)) {
+      // Show a placeholder for the saved participant if teams haven't loaded yet
+      echo '<option value="' . esc_attr($saved_participant) . '" selected>' . esc_html(sprintf(__('Team %s (saved)', 'meinturnierplan'), $saved_participant)) . '</option>';
+    }
+
+    echo '</select>';
+    echo '<button type="button" id="' . esc_attr($refresh_button_id) . '" class="button button-secondary" title="' . esc_attr(__('Refresh Participants', 'meinturnierplan')) . '">';
+    echo '<span class="dashicons dashicons-update-alt" style="vertical-align: middle;"></span>';
+    echo '</button>';
+    echo '</div>';
+
+    // Description
+    echo '<p class="description">' . esc_html(__('Select a participant (team) to filter matches. Select "All" to display matches for all participants. Click refresh to update participants from server.', 'meinturnierplan')) . '</p>';
+
+    // Add hidden field to store the initially saved value for JavaScript
+    echo '<input type="hidden" id="' . esc_attr($saved_value_field_id) . '" value="' . esc_attr($saved_participant) . '" />';
+
+    echo '</td>';
+    echo '</tr>';
   }
 }

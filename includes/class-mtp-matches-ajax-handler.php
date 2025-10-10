@@ -36,6 +36,8 @@ class MTP_Matches_Ajax_Handler {
     add_action('wp_ajax_mtp_preview_matches', array($this, 'ajax_preview_matches'));
     add_action('wp_ajax_mtp_get_matches_groups', array($this, 'ajax_get_matches_groups'));
     add_action('wp_ajax_mtp_refresh_matches_groups', array($this, 'ajax_refresh_matches_groups'));
+    add_action('wp_ajax_mtp_get_matches_teams', array($this, 'ajax_get_matches_teams'));
+    add_action('wp_ajax_mtp_refresh_matches_teams', array($this, 'ajax_refresh_matches_teams'));
   }
 
   /**
@@ -82,6 +84,11 @@ class MTP_Matches_Ajax_Handler {
     // Add group parameter if specified
     if (!empty($data['group'])) {
       $atts['group'] = $data['group'];
+    }
+
+    // Add participant parameter if specified and not default "All"
+    if (!empty($data['participant']) && $data['participant'] !== '-1') {
+      $atts['participant'] = $data['participant'];
     }
 
     // Add bm parameter if projector_presentation is enabled
@@ -177,6 +184,52 @@ class MTP_Matches_Ajax_Handler {
   }
 
   /**
+   * AJAX handler for fetching tournament teams
+   */
+  public function ajax_get_matches_teams() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+
+    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $force_refresh = isset($_POST['force_refresh']) ? (bool)$_POST['force_refresh'] : false;
+
+    if (empty($tournament_id)) {
+      wp_send_json_success(array('teams' => array()));
+      return;
+    }
+
+    // Fetch teams from external API (with caching)
+    $teams = MTP_Admin_Utilities::fetch_tournament_teams($tournament_id, $force_refresh);
+
+    wp_send_json_success(array('teams' => $teams));
+  }
+
+  /**
+   * AJAX handler for refreshing tournament teams (force refresh)
+   */
+  public function ajax_refresh_matches_teams() {
+    // Check nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+      wp_die('Security check failed');
+    }
+
+    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+
+    if (empty($tournament_id)) {
+      wp_send_json_success(array('teams' => array()));
+      return;
+    }
+
+    // Force refresh teams from external API
+    $teams = MTP_Admin_Utilities::fetch_tournament_teams($tournament_id, true);
+
+    // Add refreshed flag to the response
+    wp_send_json_success(array('teams' => $teams, 'refreshed' => true));
+  }
+
+  /**
    * Sanitize AJAX data
    */
   private function sanitize_ajax_data($data) {
@@ -215,6 +268,7 @@ class MTP_Matches_Ajax_Handler {
       'sh' => isset($data['sh']) ? sanitize_text_field($data['sh']) : '0',
       'language' => isset($data['language']) ? sanitize_text_field($data['language']) : 'en',
       'group' => isset($data['group']) ? sanitize_text_field($data['group']) : '',
+      'participant' => isset($data['participant']) ? sanitize_text_field($data['participant']) : '-1',
     );
   }
 }

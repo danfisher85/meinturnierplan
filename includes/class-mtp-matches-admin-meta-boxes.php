@@ -135,6 +135,7 @@ class MTP_Admin_Matches_Meta_Boxes {
       'sh' => '0',
       'language' => MTP_Admin_Utilities::get_default_language(),
       'group' => '',
+      'participant' => '-1',
     );
 
     $meta_values = array();
@@ -165,6 +166,7 @@ class MTP_Admin_Matches_Meta_Boxes {
       __('Display Options', 'meinturnierplan')
     );
     MTP_Admin_Utilities::render_conditional_group_field($meta_values, 'mtp_', 'matches');
+    MTP_Admin_Utilities::render_conditional_participant_field($meta_values, 'mtp_');
     MTP_Admin_Utilities::render_checkbox_field(
       'mtp_projector_presentation',
       __('Projector Presentation', 'meinturnierplan'),
@@ -287,6 +289,11 @@ class MTP_Admin_Matches_Meta_Boxes {
       $atts_array['group'] = $meta_values['group'];
     }
 
+    // Add participant parameter if specified and not default "All"
+    if (!empty($meta_values['participant']) && $meta_values['participant'] !== '-1') {
+      $atts_array['participant'] = $meta_values['participant'];
+    }
+
     // Add bm parameter if projector_presentation is enabled
     if (!empty($meta_values['projector_presentation']) && $meta_values['projector_presentation'] === '1') {
       $atts_array['bm'] = '1';
@@ -372,12 +379,14 @@ class MTP_Admin_Matches_Meta_Boxes {
       'mtp_sp',
       'mtp_sh',
       'mtp_language',
-      'mtp_group'
+      'mtp_group',
+      'mtp_participant'
     );
 
     // Include reusable admin JavaScript utilities
     MTP_Admin_Utilities::render_admin_javascript_utilities(array(
-      'ajax_actions' => array('mtp_get_matches_groups', 'mtp_refresh_matches_groups')
+      'ajax_actions' => array('mtp_get_matches_groups', 'mtp_refresh_matches_groups'),
+      'ajax_actions_teams' => array('mtp_get_matches_teams', 'mtp_refresh_matches_teams')
     ));
     ?>
     <script>
@@ -387,9 +396,10 @@ class MTP_Admin_Matches_Meta_Boxes {
       MTPAdminUtils.initOpacitySliders(updatePreview);
       MTPAdminUtils.initFormFieldListeners('mtp_', updatePreview);
 
-      // Initialize tournament ID field with group loading
+      // Initialize tournament ID field with group and team loading
       MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
         MTPAdminUtils.loadTournamentGroups(tournamentId, {context: 'matches'});
+        MTPAdminUtils.loadTournamentTeams(tournamentId);
       });
 
       // Initialize group refresh button
@@ -399,10 +409,16 @@ class MTP_Admin_Matches_Meta_Boxes {
         MTPAdminUtils.loadTournamentGroups(tournamentId, options);
       });
 
-      // Load groups on page load if tournament ID exists
+      // Initialize participant refresh button
+      MTPAdminUtils.initParticipantRefreshButton('#mtp_refresh_participants', '#mtp_tournament_id', function(tournamentId, options) {
+        MTPAdminUtils.loadTournamentTeams(tournamentId, options);
+      });
+
+      // Load groups and teams on page load if tournament ID exists
       var initialTournamentId = $("#mtp_tournament_id").val();
       if (initialTournamentId) {
         MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false, context: 'matches'});
+        MTPAdminUtils.loadTournamentTeams(initialTournamentId, {preserveSelection: false});
       }
 
       // Add specific field listeners for all form fields
@@ -452,6 +468,7 @@ class MTP_Admin_Matches_Meta_Boxes {
           sh: $("#mtp_sh").is(":checked") ? "1" : "0",
           language: $("#mtp_language").val(),
           group: $("#mtp_group").val(),
+          participant: $("#mtp_participant").val(),
           action: "mtp_preview_matches",
           nonce: "<?php echo wp_create_nonce('mtp_preview_nonce'); ?>"
         };
@@ -500,6 +517,11 @@ class MTP_Admin_Matches_Meta_Boxes {
     // Add group parameter if specified
     if (!empty($meta_values['group'])) {
       $shortcode .= ' group="' . esc_attr($meta_values['group']) . '"';
+    }
+
+    // Add participant parameter if specified and not default "All"
+    if (!empty($meta_values['participant']) && $meta_values['participant'] !== '-1') {
+      $shortcode .= ' participant="' . esc_attr($meta_values['participant']) . '"';
     }
 
     // Add bm parameter if projector_presentation is enabled
@@ -639,6 +661,7 @@ class MTP_Admin_Matches_Meta_Boxes {
         var ehrbottom = $("#mtp_ehrbottom").val() || "3";
         var language = $("#mtp_language").val() || "en";
         var group = $("#mtp_group").val() || "";
+        var participant = $("#mtp_participant").val() || "-1";
 
         // Combine colors with opacity (convert opacity percentage to hex)
         var bgColor = $("#mtp_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_bg_opacity").val() / 100) * 255));
@@ -714,6 +737,11 @@ class MTP_Admin_Matches_Meta_Boxes {
         // Add group parameter if selected
         if (group) {
           newShortcode += ' group="' + group + '"';
+        }
+
+        // Add participant parameter if selected and not default "All"
+        if (participant && participant !== '-1') {
+          newShortcode += ' participant="' + participant + '"';
         }
 
         // Add width and height parameters
@@ -804,7 +832,8 @@ class MTP_Admin_Matches_Meta_Boxes {
       'sp',
       'sh',
       'language',
-      'group'
+      'group',
+      'participant'
     );
 
     foreach ($meta_fields as $field) {

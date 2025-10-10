@@ -213,6 +213,19 @@ class MTP_Matches_Renderer {
       $params['gr'] = $group;
     }
 
+    // Add tm parameter if participant is specified and not "All" (-1)
+    $participant = '';
+    if (!empty($atts['participant'])) {
+      $participant = $atts['participant'];
+    } elseif ($matches_id) {
+      $participant = get_post_meta($matches_id, '_mtp_participant', true);
+    }
+
+    // Only add tm parameter if participant is not empty and not "-1" (which means "All")
+    if (!empty($participant) && $participant !== '-1') {
+      $params['tm'] = $participant;
+    }
+
     return $params;
   }
 
