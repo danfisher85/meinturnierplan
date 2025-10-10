@@ -77,7 +77,7 @@
    */
   function handlePostMessage(event) {
     // Verify the message is for tournament table or matches sizing
-    if (!event.data || event.data.type !== "iframeSizeMtpTable") {
+    if (!event.data || (event.data.type !== "iframeSizeMtpTable" && event.data.type !== "iframeSizeMtpMatches")) {
       return;
     }
 
