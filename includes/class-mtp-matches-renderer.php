@@ -128,6 +128,18 @@ class MTP_Matches_Renderer {
       $params['sf'] = '';
     }
 
+    // Add sc parameter if enabled
+    $sc = '';
+    if (!empty($atts['sc'])) {
+      $sc = $atts['sc'];
+    } elseif ($matches_id) {
+      $sc = get_post_meta($matches_id, '_mtp_sc', true);
+    }
+
+    if (!empty($sc) && $sc === '1') {
+      $params['sc'] = '';
+    }
+
     // Add st parameter if enabled
     $st = '';
     if (!empty($atts['st'])) {
@@ -411,7 +423,7 @@ class MTP_Matches_Renderer {
     $query_parts = array();
 
     // Parameters that should appear without values when enabled
-    $no_value_params = array('bm', 'si', 'sf', 'st', 'sg', 'se', 'sp', 'sh');
+    $no_value_params = array('bm', 'si', 'sf', 'sc', 'st', 'sg', 'se', 'sp', 'sh');
 
     foreach ($params as $key => $value) {
       if (in_array($key, $no_value_params) && $value === '') {

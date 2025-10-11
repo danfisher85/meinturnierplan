@@ -38,6 +38,7 @@ class MTP_Matches_Ajax_Handler {
     add_action('wp_ajax_mtp_refresh_matches_groups', array($this, 'ajax_refresh_matches_groups'));
     add_action('wp_ajax_mtp_get_matches_teams', array($this, 'ajax_get_matches_teams'));
     add_action('wp_ajax_mtp_refresh_matches_teams', array($this, 'ajax_refresh_matches_teams'));
+    add_action('wp_ajax_mtp_check_tournament_option', array($this, 'ajax_check_tournament_option'));
   }
 
   /**
@@ -109,6 +110,11 @@ class MTP_Matches_Ajax_Handler {
     // Add sf parameter if sf is enabled
     if (!empty($data['sf']) && $data['sf'] === '1') {
       $atts['sf'] = '1';
+    }
+
+    // Add sc parameter if sc is enabled
+    if (!empty($data['sc']) && $data['sc'] === '1') {
+      $atts['sc'] = '1';
     }
 
     // Add st parameter if st is enabled
@@ -266,6 +272,7 @@ class MTP_Matches_Ajax_Handler {
       'projector_presentation' => isset($data['projector_presentation']) ? sanitize_text_field($data['projector_presentation']) : '0',
       'si' => isset($data['si']) ? sanitize_text_field($data['si']) : '0',
       'sf' => isset($data['sf']) ? sanitize_text_field($data['sf']) : '0',
+      'sc' => isset($data['sc']) ? sanitize_text_field($data['sc']) : '0',
       'st' => isset($data['st']) ? sanitize_text_field($data['st']) : '0',
       'sg' => isset($data['sg']) ? sanitize_text_field($data['sg']) : '0',
       'se' => isset($data['se']) ? sanitize_text_field($data['se']) : '0',
@@ -276,5 +283,35 @@ class MTP_Matches_Ajax_Handler {
       'participant' => isset($data['participant']) ? sanitize_text_field($data['participant']) : '-1',
       'match_number' => isset($data['match_number']) ? sanitize_text_field($data['match_number']) : '',
     );
+  }
+
+  /**
+   * AJAX handler to check tournament option (like showCourts)
+   */
+  public function ajax_check_tournament_option() {
+    // Check nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'mtp_check_option_nonce')) {
+      wp_send_json_error(array('message' => 'Security check failed'));
+      return;
+    }
+
+    // Get parameters
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field($_POST['tournament_id']) : '';
+    $option_name = isset($_POST['option_name']) ? sanitize_text_field($_POST['option_name']) : '';
+
+    if (empty($tournament_id) || empty($option_name)) {
+      wp_send_json_error(array('message' => 'Missing required parameters'));
+      return;
+    }
+
+    // Use the utility function to fetch the option
+    $option_value = MTP_Admin_Utilities::fetch_tournament_option($tournament_id, $option_name);
+
+    // Return the value
+    wp_send_json_success(array(
+      'value' => $option_value,
+      'tournament_id' => $tournament_id,
+      'option_name' => $option_name
+    ));
   }
 }

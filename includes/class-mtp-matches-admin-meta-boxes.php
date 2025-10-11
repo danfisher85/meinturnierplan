@@ -128,6 +128,7 @@ class MTP_Admin_Matches_Meta_Boxes {
       'projector_presentation' => '0',
       'si' => '0',
       'sf' => '0',
+      'sc' => '0',
       'st' => '0',
       'sg' => '0',
       'se' => '0',
@@ -180,6 +181,14 @@ class MTP_Admin_Matches_Meta_Boxes {
       __('Suppress Match Number', 'meinturnierplan'),
       $meta_values['si'],
       __('Enable suppression of match numbers in the matches table.', 'meinturnierplan')
+    );
+    MTP_Admin_Utilities::render_conditional_checkbox_field(
+      'mtp_sc',
+      __('Suppress Court', 'meinturnierplan'),
+      $meta_values['sc'],
+      __('Enable suppression of court information in the matches table.', 'meinturnierplan'),
+      $meta_values['tournament_id'],
+      'showCourts'
     );
     MTP_Admin_Utilities::render_checkbox_field(
       'mtp_st',
@@ -316,6 +325,11 @@ class MTP_Admin_Matches_Meta_Boxes {
       $atts_array['sf'] = '1';
     }
 
+    // Add sc parameter if sc is enabled
+    if (!empty($meta_values['sc']) && $meta_values['sc'] === '1') {
+      $atts_array['sc'] = '1';
+    }
+
     // Add st parameter if st is enabled
     if (!empty($meta_values['st']) && $meta_values['st'] === '1') {
       $atts_array['st'] = '1';
@@ -348,49 +362,6 @@ class MTP_Admin_Matches_Meta_Boxes {
    * Add preview JavaScript
    */
   private function add_preview_javascript($post_id) {
-    $field_list = array(
-      'mtp_tournament_id',
-      'mtp_font_size',
-      'mtp_header_font_size',
-      'mtp_bsizeh',
-      'mtp_bsizev',
-      'mtp_bsizeoh',
-      'mtp_bsizeov',
-      'mtp_bbsize',
-      'mtp_ehrsize',
-      'mtp_ehrtop',
-      'mtp_ehrbottom',
-      'mtp_table_padding',
-      'mtp_inner_padding',
-      'mtp_text_color',
-      'mtp_main_color',
-      'mtp_bg_color',
-      'mtp_logo_size',
-      'mtp_bg_opacity',
-      'mtp_border_color',
-      'mtp_head_bottom_border_color',
-      'mtp_even_bg_color',
-      'mtp_even_bg_opacity',
-      'mtp_odd_bg_color',
-      'mtp_odd_bg_opacity',
-      'mtp_hover_bg_color',
-      'mtp_hover_bg_opacity',
-      'mtp_head_bg_color',
-      'mtp_head_bg_opacity',
-      'mtp_projector_presentation',
-      'mtp_si',
-      'mtp_sf',
-      'mtp_st',
-      'mtp_sg',
-      'mtp_se',
-      'mtp_sp',
-      'mtp_sh',
-      'mtp_language',
-      'mtp_group',
-      'mtp_participant',
-      'mtp_match_number'
-    );
-
     // Include reusable admin JavaScript utilities
     MTP_Admin_Utilities::render_admin_javascript_utilities(array(
       'ajax_actions' => array('mtp_get_matches_groups', 'mtp_refresh_matches_groups'),
@@ -408,7 +379,48 @@ class MTP_Admin_Matches_Meta_Boxes {
       MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
         MTPAdminUtils.loadTournamentGroups(tournamentId, {context: 'matches'});
         MTPAdminUtils.loadTournamentTeams(tournamentId);
+        // Check tournament data for conditional fields
+        checkConditionalFields(tournamentId);
       });
+
+      // Function to check tournament data and show/hide conditional fields
+      function checkConditionalFields(tournamentId) {
+        if (!tournamentId) {
+          // Hide all conditional fields if no tournament ID
+          $('#mtp_sc_row').hide();
+          return;
+        }
+
+        // Fetch tournament data via WordPress AJAX to avoid CORS issues
+        $.ajax({
+          url: ajaxurl,
+          type: 'POST',
+          data: {
+            action: 'mtp_check_tournament_option',
+            tournament_id: tournamentId,
+            option_name: 'showCourts',
+            nonce: '<?php echo wp_create_nonce('mtp_check_option_nonce'); ?>'
+          },
+          success: function(response) {
+            if (response.success && response.data) {
+              var showCourtsValue = response.data.value;
+
+              // Show/hide Suppress Court field based on showCourts
+              if (showCourtsValue === true) {
+                $('#mtp_sc_row').show();
+              } else {
+                $('#mtp_sc_row').hide();
+              }
+            } else {
+              $('#mtp_sc_row').hide();
+            }
+          },
+          error: function(xhr, status, error) {
+            // On error, hide the field
+            $('#mtp_sc_row').hide();
+          }
+        });
+      }
 
       // Initialize group refresh button
       MTPAdminUtils.initGroupRefreshButton('#mtp_refresh_groups', '#mtp_tournament_id', function(tournamentId, options) {
@@ -424,13 +436,18 @@ class MTP_Admin_Matches_Meta_Boxes {
 
       // Load groups and teams on page load if tournament ID exists
       var initialTournamentId = $("#mtp_tournament_id").val();
+
       if (initialTournamentId) {
         MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false, context: 'matches'});
         MTPAdminUtils.loadTournamentTeams(initialTournamentId, {preserveSelection: false});
+        checkConditionalFields(initialTournamentId);
+      } else {
+        // Hide conditional fields if no tournament ID on load
+        $('#mtp_sc_row').hide();
       }
 
-      // Add specific field listeners for all form fields
-      $("#<?php echo implode(', #', $field_list); ?>").on("input change", function() {
+      // Additional explicit listeners for checkboxes to ensure they work even when dynamically shown/hidden
+      $('input[type="checkbox"][id^="mtp_"]').on('change', function() {
         updatePreview();
       });
 
@@ -469,6 +486,7 @@ class MTP_Admin_Matches_Meta_Boxes {
           projector_presentation: $("#mtp_projector_presentation").is(":checked") ? "1" : "0",
           si: $("#mtp_si").is(":checked") ? "1" : "0",
           sf: $("#mtp_sf").is(":checked") ? "1" : "0",
+          sc: $("#mtp_sc").is(":checked") ? "1" : "0",
           st: $("#mtp_st").is(":checked") ? "1" : "0",
           sg: $("#mtp_sg").is(":checked") ? "1" : "0",
           se: $("#mtp_se").is(":checked") ? "1" : "0",
@@ -551,6 +569,11 @@ class MTP_Admin_Matches_Meta_Boxes {
     // Add sf parameter if sf is enabled
     if (!empty($meta_values['sf']) && $meta_values['sf'] === '1') {
       $shortcode .= ' sf="1"';
+    }
+
+    // Add sc parameter if sc is enabled
+    if (!empty($meta_values['sc']) && $meta_values['sc'] === '1') {
+      $shortcode .= ' sc="1"';
     }
 
     // Add st parameter if st is enabled
@@ -724,6 +747,11 @@ class MTP_Admin_Matches_Meta_Boxes {
           newShortcode += ' sf="1"';
         }
 
+        // Add sc parameter if sc checkbox is checked
+        if ($("#mtp_sc").is(":checked")) {
+          newShortcode += ' sc="1"';
+        }
+
         // Add st parameter if st checkbox is checked
         if ($("#mtp_st").is(":checked")) {
           newShortcode += ' st="1"';
@@ -846,6 +874,7 @@ class MTP_Admin_Matches_Meta_Boxes {
       'projector_presentation',
       'si',
       'sf',
+      'sc',
       'st',
       'sg',
       'se',
@@ -861,7 +890,7 @@ class MTP_Admin_Matches_Meta_Boxes {
       $post_field = 'mtp_' . $field;
       $meta_key = '_mtp_' . $field;
 
-      if (in_array($field, array('projector_presentation', 'si', 'sf', 'st', 'sg', 'se', 'sp', 'sh'))) {
+      if (in_array($field, array('projector_presentation', 'si', 'sf', 'sc', 'st', 'sg', 'se', 'sp', 'sh'))) {
         // Handle checkbox: if not checked, it won't be in $_POST
         $value = isset($_POST[$post_field]) ? '1' : '0';
         update_post_meta($post_id, $meta_key, $value);

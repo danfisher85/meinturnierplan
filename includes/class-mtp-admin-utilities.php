@@ -115,6 +115,47 @@ class MTP_Admin_Utilities {
   }
 
   /**
+   * Render a conditional checkbox field that shows/hides based on tournament JSON data
+   *
+   * @param string $field_name The field name/ID
+   * @param string $label The field label
+   * @param mixed $value The field value (1 for checked, 0 for unchecked)
+   * @param string $description Optional. Field description text
+   * @param string $tournament_id The tournament ID to check
+   * @param string $json_field The JSON field to check (e.g., 'showCourts')
+   */
+  public static function render_conditional_checkbox_field($field_name, $label, $value, $description, $tournament_id, $json_field) {
+    $field_row_id = $field_name . '_row';
+    $show_field = false;
+
+    // Check if the JSON field is true
+    if (!empty($tournament_id)) {
+      $json_value = self::fetch_tournament_option($tournament_id, $json_field);
+      $show_field = ($json_value === true);
+
+      // Debug logging (only visible in browser console via JavaScript below)
+      if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log("MTP Debug: Tournament ID: {$tournament_id}, Checking field: {$json_field}, Value: " . var_export($json_value, true) . ", Show field: " . var_export($show_field, true));
+      }
+    }
+
+    echo '<tr id="' . esc_attr($field_row_id) . '" class="mtp-conditional-field" data-condition-field="' . esc_attr($json_field) . '" data-tournament-id="' . esc_attr($tournament_id) . '" data-show-field="' . esc_attr($show_field ? '1' : '0') . '">';
+    echo '<th scope="row"><label for="' . esc_attr($field_name) . '">' . esc_html($label) . '</label></th>';
+    echo '<td>';
+    echo '<input type="checkbox" id="' . esc_attr($field_name) . '" name="' . esc_attr($field_name) . '" value="1"' . checked(1, $value, false) . ' />';
+    if ($description) {
+      echo '<p class="description">' . esc_html($description) . '</p>';
+    }
+    echo '</td>';
+    echo '</tr>';
+
+    // Hide the field if condition is not met
+    if (!$show_field) {
+      echo '<style>#' . esc_attr($field_row_id) . ' { display: none; }</style>';
+    }
+  }
+
+  /**
    * Render a select field for admin forms
    *
    * @param string $field_name The field name/ID
@@ -539,6 +580,53 @@ class MTP_Admin_Utilities {
     set_transient($cache_key, $teams, $cache_expiry);
 
     return $teams;
+  }
+
+  /**
+   * Fetch tournament data to check for specific options like showCourts
+   *
+   * @param string $tournament_id The tournament ID
+   * @param string $option_name The option to check (e.g., 'showCourts')
+   * @return mixed The value of the option or null if not found
+   */
+  public static function fetch_tournament_option($tournament_id, $option_name) {
+    if (empty($tournament_id) || empty($option_name)) {
+      return null;
+    }
+
+    $cache_key = 'mtp_data_' . $tournament_id;
+    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
+
+    // Try to get cached data first
+    $cached_data = get_transient($cache_key);
+    if ($cached_data === false) {
+      // Use WordPress HTTP API to fetch the JSON
+      $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
+      $response = wp_remote_get($url, array(
+        'timeout' => 10,
+        'sslverify' => true
+      ));
+
+      // Check for errors
+      if (is_wp_error($response)) {
+        return null;
+      }
+
+      $body = wp_remote_retrieve_body($response);
+      $cached_data = json_decode($body, true);
+
+      // Cache the result
+      if ($cached_data) {
+        set_transient($cache_key, $cached_data, $cache_expiry);
+      }
+    }
+
+    // Return the specific option value if it exists
+    if (is_array($cached_data) && isset($cached_data[$option_name])) {
+      return $cached_data[$option_name];
+    }
+
+    return null;
   }
 
   /**
