@@ -6,7 +6,7 @@
   const { apiFetch } = wp;
 
   registerBlockType('meinturnierplan/matches-table', {
-    title: __('Matches Table', 'meinturnierplan'),
+    title: __('Matches', 'meinturnierplan'),
     icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
       el('path', {
         d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
@@ -14,7 +14,7 @@
       })
     ),
     category: 'widgets',
-    description: __('Display a matches table from your custom post types.', 'meinturnierplan'),
+    description: __('Display matches from your custom post types.', 'meinturnierplan'),
 
     attributes: {
       tableId: {
@@ -37,9 +37,9 @@
       useEffect(() => {
         const formData = new FormData();
         formData.append('action', 'mtp_get_matches');
-        formData.append('nonce', mtpBlock.nonce);
+        formData.append('nonce', mtpMatchesBlock.nonce);
 
-        fetch(mtpBlock.ajaxUrl, {
+        fetch(mtpMatchesBlock.ajaxUrl, {
           method: 'POST',
           body: formData
         })
@@ -74,7 +74,7 @@
                 fill: 'currentColor'
               })
             ),
-            label: __('Matches Table', 'meinturnierplan')
+            label: __('Matches', 'meinturnierplan')
           },
           el(Spinner)
         );
@@ -92,10 +92,10 @@
                 fill: 'currentColor'
               })
             ),
-            label: __('Matches Table', 'meinturnierplan')
+            label: __('Matches', 'meinturnierplan')
           },
           el(SelectControl, {
-            label: __('Select Matches Table', 'meinturnierplan'),
+            label: __('Select Matches', 'meinturnierplan'),
             value: tableId,
             options: tables,
             onChange: onChangeTable

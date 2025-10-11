@@ -55,7 +55,7 @@ class MTP_Matches_Gutenberg_Block {
       true
     );
 
-    wp_localize_script('mtp-tournament-matches-block', 'mtpBlock', array(
+    wp_localize_script('mtp-tournament-matches-block', 'mtpMatchesBlock', array(
       'ajaxUrl' => admin_url('admin-ajax.php'),
       'nonce' => wp_create_nonce('mtp_matches_block_nonce')
     ));
@@ -85,7 +85,7 @@ class MTP_Matches_Gutenberg_Block {
     $shortcode_atts = array_merge($shortcode_atts, $this->get_config_attributes_from_meta($table_id));
 
     // Use the existing shortcode functionality
-    $shortcode = new MTP_Table_Shortcode($this->matches_renderer);
+    $shortcode = new MTP_Matches_Shortcode($this->matches_renderer);
     return $shortcode->shortcode_callback($shortcode_atts);
   }
 
@@ -190,7 +190,7 @@ class MTP_Matches_Gutenberg_Block {
    */
   public function get_tables_ajax() {
     // Verify nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_block_nonce')) {
+    if (!wp_verify_nonce($_POST['nonce'], 'mtp_matches_block_nonce')) {
       wp_die(__('Security check failed', 'meinturnierplan'));
     }
 
