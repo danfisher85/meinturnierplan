@@ -94,7 +94,7 @@ class MTP_Table_Renderer {
 
     // Add sw parameter if suppress_wins is enabled
     $suppress_wins = '';
-    if (!empty($atts['sw'])) {
+    if (isset($atts['sw'])) {
       $suppress_wins = $atts['sw'];
     } elseif ($table_id) {
       $suppress_wins = get_post_meta($table_id, '_mtp_suppress_wins', true);
@@ -106,7 +106,7 @@ class MTP_Table_Renderer {
 
     // Add sl parameter if suppress_logos is enabled
     $suppress_logos = '';
-    if (!empty($atts['sl'])) {
+    if (isset($atts['sl'])) {
       $suppress_logos = $atts['sl'];
     } elseif ($table_id) {
       $suppress_logos = get_post_meta($table_id, '_mtp_suppress_logos', true);
@@ -118,7 +118,7 @@ class MTP_Table_Renderer {
 
     // Add sn parameter if suppress_num_matches is enabled
     $suppress_num_matches = '';
-    if (!empty($atts['sn'])) {
+    if (isset($atts['sn'])) {
       $suppress_num_matches = $atts['sn'];
     } elseif ($table_id) {
       $suppress_num_matches = get_post_meta($table_id, '_mtp_suppress_num_matches', true);
@@ -130,7 +130,7 @@ class MTP_Table_Renderer {
 
     // Add bm parameter if projector_presentation is enabled
     $projector_presentation = '';
-    if (!empty($atts['bm'])) {
+    if (isset($atts['bm'])) {
       $projector_presentation = $atts['bm'];
     } elseif ($table_id) {
       $projector_presentation = get_post_meta($table_id, '_mtp_projector_presentation', true);
@@ -142,7 +142,7 @@ class MTP_Table_Renderer {
 
     // Add nav parameter if navigation_for_groups is enabled
     $navigation_for_groups = '';
-    if (!empty($atts['nav'])) {
+    if (isset($atts['nav'])) {
       $navigation_for_groups = $atts['nav'];
     } elseif ($table_id) {
       $navigation_for_groups = get_post_meta($table_id, '_mtp_navigation_for_groups', true);

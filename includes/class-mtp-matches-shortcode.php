@@ -74,6 +74,7 @@ class MTP_Matches_Shortcode {
       'sf' => '0',
       'st' => '0',
       'sg' => '0',
+      'sr' => '0',
       'se' => '0',
       'sp' => '0',
       'sh' => '0',

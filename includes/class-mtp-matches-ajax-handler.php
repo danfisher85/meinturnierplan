@@ -102,39 +102,60 @@ class MTP_Matches_Ajax_Handler {
       $atts['bm'] = '1';
     }
 
-    // Add si parameter if si is enabled
+    // Add si parameter (always include to override post meta)
     if (!empty($data['si']) && $data['si'] === '1') {
       $atts['si'] = '1';
+    } else {
+      $atts['si'] = '0';
     }
 
-    // Add sf parameter if sf is enabled (Suppress Court)
+    // Add sf parameter (always include to override post meta - Suppress Court)
     if (!empty($data['sf']) && $data['sf'] === '1') {
       $atts['sf'] = '1';
+    } else {
+      $atts['sf'] = '0';
     }
 
-    // Add st parameter if st is enabled
+    // Add st parameter (always include to override post meta)
     if (!empty($data['st']) && $data['st'] === '1') {
       $atts['st'] = '1';
+    } else {
+      $atts['st'] = '0';
     }
 
-    // Add sg parameter if sg is enabled
+    // Add sg parameter (always include to override post meta)
     if (!empty($data['sg']) && $data['sg'] === '1') {
       $atts['sg'] = '1';
+    } else {
+      $atts['sg'] = '0';
     }
 
-    // Add se parameter if se is enabled
+    // Add sr parameter (always include to override post meta - Suppress Referee)
+    if (!empty($data['sr']) && $data['sr'] === '1') {
+      $atts['sr'] = '1';
+    } else {
+      $atts['sr'] = '0';
+    }
+
+    // Add se parameter (always include to override post meta)
     if (!empty($data['se']) && $data['se'] === '1') {
       $atts['se'] = '1';
+    } else {
+      $atts['se'] = '0';
     }
 
-    // Add sp parameter if sp is enabled
+    // Add sp parameter (always include to override post meta)
     if (!empty($data['sp']) && $data['sp'] === '1') {
       $atts['sp'] = '1';
+    } else {
+      $atts['sp'] = '0';
     }
 
-    // Add sh parameter if sh is enabled
+    // Add sh parameter (always include to override post meta)
     if (!empty($data['sh']) && $data['sh'] === '1') {
       $atts['sh'] = '1';
+    } else {
+      $atts['sh'] = '0';
     }
 
     $html = $this->matches_renderer->render_matches_html($post_id, $atts);
@@ -269,6 +290,7 @@ class MTP_Matches_Ajax_Handler {
       'sf' => isset($data['sf']) ? sanitize_text_field($data['sf']) : '0',
       'st' => isset($data['st']) ? sanitize_text_field($data['st']) : '0',
       'sg' => isset($data['sg']) ? sanitize_text_field($data['sg']) : '0',
+      'sr' => isset($data['sr']) ? sanitize_text_field($data['sr']) : '0',
       'se' => isset($data['se']) ? sanitize_text_field($data['se']) : '0',
       'sp' => isset($data['sp']) ? sanitize_text_field($data['sp']) : '0',
       'sh' => isset($data['sh']) ? sanitize_text_field($data['sh']) : '0',

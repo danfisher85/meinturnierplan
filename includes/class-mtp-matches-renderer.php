@@ -94,7 +94,7 @@ class MTP_Matches_Renderer {
 
     // Add bm parameter if projector_presentation is enabled
     $projector_presentation = '';
-    if (!empty($atts['bm'])) {
+    if (isset($atts['bm'])) {
       $projector_presentation = $atts['bm'];
     } elseif ($matches_id) {
       $projector_presentation = get_post_meta($matches_id, '_mtp_projector_presentation', true);
@@ -106,7 +106,7 @@ class MTP_Matches_Renderer {
 
     // Add si parameter if enabled
     $si = '';
-    if (!empty($atts['si'])) {
+    if (isset($atts['si'])) {
       $si = $atts['si'];
     } elseif ($matches_id) {
       $si = get_post_meta($matches_id, '_mtp_si', true);
@@ -118,7 +118,7 @@ class MTP_Matches_Renderer {
 
     // Add sf parameter if enabled (Suppress Court)
     $sf = '';
-    if (!empty($atts['sf'])) {
+    if (isset($atts['sf'])) {
       $sf = $atts['sf'];
     } elseif ($matches_id) {
       $sf = get_post_meta($matches_id, '_mtp_sf', true);
@@ -130,7 +130,7 @@ class MTP_Matches_Renderer {
 
     // Add st parameter if enabled
     $st = '';
-    if (!empty($atts['st'])) {
+    if (isset($atts['st'])) {
       $st = $atts['st'];
     } elseif ($matches_id) {
       $st = get_post_meta($matches_id, '_mtp_st', true);
@@ -142,7 +142,7 @@ class MTP_Matches_Renderer {
 
     // Add sg parameter if enabled
     $sg = '';
-    if (!empty($atts['sg'])) {
+    if (isset($atts['sg'])) {
       $sg = $atts['sg'];
     } elseif ($matches_id) {
       $sg = get_post_meta($matches_id, '_mtp_sg', true);
@@ -152,9 +152,21 @@ class MTP_Matches_Renderer {
       $params['sg'] = '';
     }
 
+    // Add sr parameter if enabled (Suppress Referee)
+    $sr = '';
+    if (isset($atts['sr'])) {
+      $sr = $atts['sr'];
+    } elseif ($matches_id) {
+      $sr = get_post_meta($matches_id, '_mtp_sr', true);
+    }
+
+    if (!empty($sr) && $sr === '1') {
+      $params['sr'] = '';
+    }
+
     // Add se parameter if enabled
     $se = '';
-    if (!empty($atts['se'])) {
+    if (isset($atts['se'])) {
       $se = $atts['se'];
     } elseif ($matches_id) {
       $se = get_post_meta($matches_id, '_mtp_se', true);
@@ -166,7 +178,7 @@ class MTP_Matches_Renderer {
 
     // Add sp parameter if enabled
     $sp = '';
-    if (!empty($atts['sp'])) {
+    if (isset($atts['sp'])) {
       $sp = $atts['sp'];
     } elseif ($matches_id) {
       $sp = get_post_meta($matches_id, '_mtp_sp', true);
@@ -178,7 +190,7 @@ class MTP_Matches_Renderer {
 
     // Add sh parameter if enabled
     $sh = '';
-    if (!empty($atts['sh'])) {
+    if (isset($atts['sh'])) {
       $sh = $atts['sh'];
     } elseif ($matches_id) {
       $sh = get_post_meta($matches_id, '_mtp_sh', true);
@@ -411,7 +423,7 @@ class MTP_Matches_Renderer {
     $query_parts = array();
 
     // Parameters that should appear without values when enabled
-    $no_value_params = array('bm', 'si', 'sf', 'st', 'sg', 'se', 'sp', 'sh');
+    $no_value_params = array('bm', 'si', 'sf', 'st', 'sg', 'sr', 'se', 'sp', 'sh');
 
     foreach ($params as $key => $value) {
       if (in_array($key, $no_value_params) && $value === '') {
