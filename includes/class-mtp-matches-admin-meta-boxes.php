@@ -228,6 +228,14 @@ class MTP_Admin_Matches_Meta_Boxes {
       $meta_values['tournament_id'],
       'finalMatches'
     );
+    MTP_Admin_Utilities::render_conditional_checkbox_field(
+      'mtp_sh',
+      __('Suppress Headlines in Final Matches', 'meinturnierplan'),
+      $meta_values['sh'],
+      __('Enable suppression of headlines in the final matches.', 'meinturnierplan'),
+      $meta_values['tournament_id'],
+      'finalMatches'
+    );
 
     // Typography Group
     MTP_Admin_Utilities::render_group_header(__('Typography', 'meinturnierplan'));
@@ -399,8 +407,8 @@ class MTP_Admin_Matches_Meta_Boxes {
       $atts_array['sp'] = '1';
     }
 
-    // Add sh parameter if sh is enabled
-    if (!empty($meta_values['sh']) && $meta_values['sh'] === '1') {
+    // Add sh parameter if sh is enabled (Suppress Headlines in Final Matches) AND tournament has final matches
+    if ($has_final_matches && !empty($meta_values['sh']) && $meta_values['sh'] === '1') {
       $atts_array['sh'] = '1';
     }
 
@@ -441,6 +449,7 @@ class MTP_Admin_Matches_Meta_Boxes {
           $('#mtp_sr_row').hide();
           $('#mtp_se_row').hide();
           $('#mtp_sp_row').hide();
+          $('#mtp_sh_row').hide();
           return;
         }
 
@@ -548,23 +557,27 @@ class MTP_Admin_Matches_Meta_Boxes {
             if (response.success && response.data) {
               var finalMatchesValue = response.data.value;
 
-              // Show Suppress Extra Time and Suppress Penalties fields if finalMatches exists (array or not empty)
+              // Show Suppress Extra Time, Suppress Penalties, and Suppress Headlines fields if finalMatches exists
               if (finalMatchesValue !== null && finalMatchesValue !== undefined) {
                 $('#mtp_se_row').show();
                 $('#mtp_sp_row').show();
+                $('#mtp_sh_row').show();
               } else {
                 $('#mtp_se_row').hide();
                 $('#mtp_sp_row').hide();
+                $('#mtp_sh_row').hide();
               }
             } else {
               $('#mtp_se_row').hide();
               $('#mtp_sp_row').hide();
+              $('#mtp_sh_row').hide();
             }
           },
           error: function(xhr, status, error) {
             // On error, hide the fields
             $('#mtp_se_row').hide();
             $('#mtp_sp_row').hide();
+            $('#mtp_sh_row').hide();
           }
         });
       }
@@ -595,6 +608,7 @@ class MTP_Admin_Matches_Meta_Boxes {
         $('#mtp_sr_row').hide();
         $('#mtp_se_row').hide();
         $('#mtp_sp_row').hide();
+        $('#mtp_sh_row').hide();
       }
 
       // Additional explicit listeners for checkboxes to ensure they work even when dynamically shown/hidden
@@ -643,7 +657,7 @@ class MTP_Admin_Matches_Meta_Boxes {
           sr: ($("#mtp_sr").length && $("#mtp_sr").is(":visible") && $("#mtp_sr").is(":checked")) ? "1" : "0",
           se: ($("#mtp_se").length && $("#mtp_se").is(":visible") && $("#mtp_se").is(":checked")) ? "1" : "0",
           sp: ($("#mtp_sp").length && $("#mtp_sp").is(":visible") && $("#mtp_sp").is(":checked")) ? "1" : "0",
-          sh: $("#mtp_sh").is(":checked") ? "1" : "0",
+          sh: ($("#mtp_sh").length && $("#mtp_sh").is(":visible") && $("#mtp_sh").is(":checked")) ? "1" : "0",
           language: $("#mtp_language").val(),
           group: $("#mtp_group").val(),
           participant: $("#mtp_participant").val(),
