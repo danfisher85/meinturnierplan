@@ -71,6 +71,31 @@
           'div',
           blockProps,
           el(
+            'div',
+            { className: 'components-placeholder' },
+            el(
+              Placeholder,
+              {
+                icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
+                  el('path', {
+                    d: 'M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h10v2H7v-2z',
+                    fill: 'currentColor'
+                  })
+                ),
+                label: __('Matches', 'meinturnierplan')
+              },
+              el(Spinner)
+            )
+          )
+        );
+      }
+
+      // If a table is selected, show a preview box, otherwise show the selector
+      if (tableId) {
+        return el(
+          'div',
+          blockProps,
+          el(
             Placeholder,
             {
               icon: el('svg', { width: 24, height: 24, viewBox: '0 0 24 24' },
@@ -81,24 +106,13 @@
               ),
               label: __('Matches', 'meinturnierplan')
             },
-            el(Spinner)
+            el(SelectControl, {
+              label: __('Select a Matches Table:', 'meinturnierplan'),
+              value: tableId,
+              options: tables,
+              onChange: onChangeTable
+            })
           )
-        );
-      }
-
-      // If a table is selected, show a preview box, otherwise show the selector
-      if (tableId) {
-        return el(
-          'div',
-          blockProps,
-          el('div', null, __('Selected Matches:', 'meinturnierplan')),
-          el('div', null, tableName || __('Match Table', 'meinturnierplan')),
-          el(SelectControl, {
-            label: __('Change Matches Table', 'meinturnierplan'),
-            value: tableId,
-            options: tables,
-            onChange: onChangeTable
-          })
         );
       }
 
@@ -117,7 +131,7 @@
             label: __('Matches', 'meinturnierplan')
           },
           el(SelectControl, {
-            label: __('Select Matches', 'meinturnierplan'),
+            label: __('Select a Matches Table:', 'meinturnierplan'),
             value: tableId,
             options: tables,
             onChange: onChangeTable
