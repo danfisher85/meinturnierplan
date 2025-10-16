@@ -1096,7 +1096,7 @@ class MTP_Admin_Utilities {
     if (empty($tournament_id)) {
       echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
       echo '<strong>' . __('Note:', 'meinturnierplan') . '</strong> ';
-      echo __('Enter a Tournament ID above to display live tournament data. Without an ID, a placeholder will be shown.', 'meinturnierplan');
+      echo __('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
       echo '</div>';
     }
 
