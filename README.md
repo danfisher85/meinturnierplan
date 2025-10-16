@@ -53,6 +53,12 @@ A WordPress plugin to display tournament tables and match lists using custom pos
 
 ### Displaying Content
 
+#### Automatic Display on Single CPT Pages
+
+**New in v0.3.1:** When you visit a single tournament table or match list page directly, the plugin automatically displays the content with all configured settings. No shortcode insertion needed!
+
+Simply navigate to the permalink of your tournament table or match list (e.g., `/tournament-table/my-tournament/` or `/tournament-match-list/my-matches/`), and the content will be automatically rendered.
+
 #### Using Gutenberg Blocks
 
 1. Edit any post or page in the block editor
@@ -169,6 +175,7 @@ meinturnierplan-wp/
 │   ├── class-mtp-installer.php               # Plugin activation/deactivation
 │   ├── class-mtp-assets.php                  # Asset management
 │   ├── class-mtp-admin-utilities.php         # Admin helper functions
+│   ├── class-mtp-single-content-filter.php   # Auto-populate single CPT pages
 │   ├── class-mtp-table-post-type.php         # Tournament table CPT
 │   ├── class-mtp-table-admin-meta-boxes.php  # Table admin interface
 │   ├── class-mtp-table-renderer.php          # Table HTML rendering
@@ -266,6 +273,15 @@ The plugin supports integration with external tournament management systems:
 - **Browser**: Modern browsers with JavaScript enabled for admin features
 
 ## Changelog
+
+### Version 0.3.1
+- **Auto-populate Single CPT Pages**: Single tournament table and match list pages now automatically display their content without manual shortcode insertion
+- The content filter retrieves all saved settings and renders the appropriate table or match list on single CPT pages
+
+### Version 0.3.0
+- Added Gutenberg block support for both tables and matches
+- Enhanced admin interface with better organization
+- Improved AJAX preview functionality
 
 ### Version 0.2.0
 - Added Matches custom post type

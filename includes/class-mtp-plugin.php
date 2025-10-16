@@ -38,6 +38,7 @@ class MTP_Plugin {
   public $installer;
   public $table_gutenberg_block;
   public $matches_gutenberg_block;
+  public $single_content_filter;
   /**
    * Main Plugin Instance
    */
@@ -97,6 +98,9 @@ class MTP_Plugin {
     // Gutenberg block class
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-table-block.php';
     include_once MTP_PLUGIN_PATH . 'includes/class-mtp-matches-block.php';
+
+    // Single content filter
+    include_once MTP_PLUGIN_PATH . 'includes/class-mtp-single-content-filter.php';
   }
 
   /**
@@ -118,6 +122,7 @@ class MTP_Plugin {
     $this->assets = new MTP_Assets();
     $this->table_gutenberg_block = new MTP_Table_Gutenberg_Block($this->table_renderer);
     $this->matches_gutenberg_block = new MTP_Matches_Gutenberg_Block($this->matches_renderer);
+    $this->single_content_filter = new MTP_Single_Content_Filter($this->table_renderer, $this->matches_renderer);
 
     // Initialize widget
     add_action('widgets_init', function() {
