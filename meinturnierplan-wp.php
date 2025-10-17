@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: MeinTurnierplan
- * Plugin URI: https://github.com/danfisher85/meinturnierplan-wp
- * Description: A WordPress plugin to display tournament tables and match lists using custom post types, shortcodes, and widgets.
- * Version: 0.3.2
+ * Plugin URI: https://www.meinturnierplan.de
+ * Description: Display tournament tables and match lists from Tournej/MeinTurnierplan using shortcodes and blocks.
+ * Version: 1.0.0
  * Author: Roman Perevala
  * License: MIT
  * License URI: https://opensource.org/licenses/MIT
@@ -27,7 +27,7 @@ if (!defined('MTP_PLUGIN_PATH')) {
   define('MTP_PLUGIN_PATH', plugin_dir_path(__FILE__));
 }
 if (!defined('MTP_PLUGIN_VERSION')) {
-  define('MTP_PLUGIN_VERSION', '0.3.2');
+  define('MTP_PLUGIN_VERSION', '1.0.0');
 }
 
 // Load requirements checker
