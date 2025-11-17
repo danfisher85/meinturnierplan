@@ -62,7 +62,6 @@ class MTP_Plugin {
    */
   private function init_hooks() {
     add_action('init', array($this, 'init'), 0);
-    add_action('plugins_loaded', array($this, 'load_textdomain'));
 
     // Activation and deactivation hooks
     register_activation_hook(MTP_PLUGIN_FILE, array($this, 'activate'));
@@ -128,17 +127,6 @@ class MTP_Plugin {
     add_action('widgets_init', function() {
       register_widget('MTP_Table_Widget');
     });
-  }
-
-  /**
-   * Load plugin text domain
-   */
-  public function load_textdomain() {
-    load_plugin_textdomain(
-      'meinturnierplan',
-      false,
-      dirname(plugin_basename(MTP_PLUGIN_FILE)) . '/languages/'
-    );
   }
 
   /**
