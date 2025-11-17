@@ -46,11 +46,11 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_preview_matches() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
 
-    $post_id = absint($_POST['post_id']);
+    $post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
     $data = $this->sanitize_ajax_data($_POST);
 
     // Create attributes for rendering
@@ -168,11 +168,11 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_get_matches_groups() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
 
-    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field(wp_unslash($_POST['tournament_id'])) : '';
     $force_refresh = isset($_POST['force_refresh']) ? (bool)$_POST['force_refresh'] : false;
 
     if (empty($tournament_id)) {
@@ -191,11 +191,11 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_refresh_matches_groups() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
 
-    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field(wp_unslash($_POST['tournament_id'])) : '';
 
     if (empty($tournament_id)) {
       wp_send_json_success(array('groups' => array(), 'hasFinalRound' => false));
@@ -215,11 +215,11 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_get_matches_teams() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
 
-    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field(wp_unslash($_POST['tournament_id'])) : '';
     $force_refresh = isset($_POST['force_refresh']) ? (bool)$_POST['force_refresh'] : false;
 
     if (empty($tournament_id)) {
@@ -238,11 +238,11 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_refresh_matches_teams() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
       wp_die('Security check failed');
     }
 
-    $tournament_id = sanitize_text_field($_POST['tournament_id']);
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field(wp_unslash($_POST['tournament_id'])) : '';
 
     if (empty($tournament_id)) {
       wp_send_json_success(array('teams' => array()));
@@ -306,14 +306,14 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_check_tournament_option() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'mtp_check_option_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_check_option_nonce')) {
       wp_send_json_error(array('message' => 'Security check failed'));
       return;
     }
 
     // Get parameters
-    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field($_POST['tournament_id']) : '';
-    $option_name = isset($_POST['option_name']) ? sanitize_text_field($_POST['option_name']) : '';
+    $tournament_id = isset($_POST['tournament_id']) ? sanitize_text_field(wp_unslash($_POST['tournament_id'])) : '';
+    $option_name = isset($_POST['option_name']) ? sanitize_text_field(wp_unslash($_POST['option_name'])) : '';
 
     if (empty($tournament_id) || empty($option_name)) {
       wp_send_json_error(array('message' => 'Missing required parameters'));
