@@ -217,7 +217,7 @@ class MTP_Admin_Utilities {
     echo '<div style="display: flex; align-items: center; gap: 15px;">';
     echo '<input type="text" id="' . esc_attr($color_field) . '" name="' . esc_attr($color_field) . '" value="#' . esc_attr($color_value) . '" class="mtp-color-picker" style="width: 120px;" />';
     echo '<div style="display: flex; align-items: center; gap: 8px;">';
-    echo '<label for="' . esc_attr($opacity_field) . '" style="margin: 0; font-weight: normal;">' . __('Opacity:', 'meinturnierplan') . '</label>';
+    echo '<label for="' . esc_attr($opacity_field) . '" style="margin: 0; font-weight: normal;">' . esc_html__('Opacity:', 'meinturnierplan') . '</label>';
     echo '<input type="range" id="' . esc_attr($opacity_field) . '" name="' . esc_attr($opacity_field) . '" value="' . esc_attr($opacity_value) . '" min="0" max="100" step="1" style="width: 100px;" />';
     echo '<span id="' . esc_attr($opacity_field) . '_value" style="min-width: 35px; font-size: 12px; color: #666;">' . esc_attr($opacity_value) . '%</span>';
     echo '</div>';
@@ -760,7 +760,7 @@ class MTP_Admin_Utilities {
             refreshButtonSelector: "#<?php echo esc_js($config['field_prefix']); ?>refresh_groups",
             savedValueSelector: "#<?php echo esc_js($config['field_prefix']); ?>group_saved_value",
             ajaxActions: <?php echo json_encode($config['ajax_actions']); ?>,
-            nonce: "<?php echo wp_create_nonce($config['nonce_action']); ?>"
+            nonce: "<?php echo esc_js(wp_create_nonce($config['nonce_action'])); ?>"
           };
           options = jQuery.extend(defaults, options || {});
           var showAllOption = (options.context === 'matches');
@@ -940,7 +940,7 @@ class MTP_Admin_Utilities {
             refreshButtonSelector: "#<?php echo esc_js($config['field_prefix']); ?>refresh_participants",
             savedValueSelector: "#<?php echo esc_js($config['field_prefix']); ?>participant_saved_value",
             ajaxActions: <?php echo isset($config['ajax_actions_teams']) ? json_encode($config['ajax_actions_teams']) : '["mtp_get_teams", "mtp_refresh_teams"]'; ?>,
-            nonce: "<?php echo wp_create_nonce($config['nonce_action']); ?>"
+            nonce: "<?php echo esc_js(wp_create_nonce($config['nonce_action'])); ?>"
           };
           options = jQuery.extend(defaults, options || {});
 
@@ -1079,24 +1079,24 @@ class MTP_Admin_Utilities {
     $config = array_merge($defaults, $config);
 
     echo '<div class="mtp-generated-shortcode-wrapper">';
-    echo '<label class="mtp-generated-shortcode__label" for="' . esc_attr($config['field_id']) . '">' . __('Generated Shortcode:', 'meinturnierplan') . '</label>';
+    echo '<label class="mtp-generated-shortcode__label" for="' . esc_attr($config['field_id']) . '">' . esc_html__('Generated Shortcode:', 'meinturnierplan') . '</label>';
     echo '<textarea class="mtp-generated-shortcode__field" id="' . esc_attr($config['field_id']) . '" readonly>' . esc_textarea($shortcode) . '</textarea>';
     echo '</div>';
 
     echo '<button type="button" id="' . esc_attr($config['copy_button_id']) . '" class="mtp-generated-shortcode__btn button button-secondary">';
     echo '<span class="mtp-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
-    echo __('Copy Shortcode', 'meinturnierplan');
+    echo esc_html__('Copy Shortcode', 'meinturnierplan');
     echo '</button>';
 
     echo '<div id="' . esc_attr($config['success_message_id']) . '" class="mtp-generated-shortcode__copy-success" style="display: none;">';
     echo '<span class="mtp-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
-    echo __('Shortcode copied to clipboard!', 'meinturnierplan');
+    echo esc_html__('Shortcode copied to clipboard!', 'meinturnierplan');
     echo '</div>';
 
     if (empty($tournament_id)) {
       echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
-      echo '<strong>' . __('Note:', 'meinturnierplan') . '</strong> ';
-      echo __('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
+      echo '<strong>' . esc_html__('Note:', 'meinturnierplan') . '</strong> ';
+      echo esc_html__('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
       echo '</div>';
     }
 
@@ -1170,7 +1170,7 @@ class MTP_Admin_Utilities {
 
     // Always render the field, but populate it based on available groups
     echo '<tr id="' . esc_attr($group_field_row_id) . '">';
-    echo '<th scope="row"><label for="' . esc_attr($group_field_id) . '">' . esc_html(__('Group', 'meinturnierplan')) . '</label></th>';
+    echo '<th scope="row"><label for="' . esc_attr($group_field_id) . '">' . esc_html__('Group', 'meinturnierplan') . '</label></th>';
     echo '<td>';
     echo '<div style="display: flex; align-items: center; gap: 10px;">';
     echo '<select id="' . esc_attr($group_field_id) . '" name="' . esc_attr($group_field_id) . '" class="regular-text">';
@@ -1179,8 +1179,7 @@ class MTP_Admin_Utilities {
       // Add "All Matches" option first as default (only for matches context)
       if ($show_all_option) {
         $is_all_selected = empty($saved_group);
-        $all_selected = $is_all_selected ? ' selected' : '';
-        echo '<option value=""' . $all_selected . '>' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+        echo '<option value=""' . selected($is_all_selected, true, false) . '>' . esc_html__('All Matches', 'meinturnierplan') . '</option>';
       }
 
       // Populate with actual groups
@@ -1196,26 +1195,24 @@ class MTP_Admin_Utilities {
           $is_selected = true;
         }
 
-        $selected = $is_selected ? ' selected' : '';
         /* translators: %s is the group display name */
-        echo '<option value="' . esc_attr($group_number) . '"' . $selected . '>' . esc_html(sprintf(__('Group %s', 'meinturnierplan'), $group['displayId'])) . '</option>';
+        echo '<option value="' . esc_attr($group_number) . '"' . selected($is_selected, true, false) . '>' . esc_html(sprintf(__('Group %s', 'meinturnierplan'), $group['displayId'])) . '</option>';
       }
 
       // Add Final Round option if it exists
       if ($has_final_round) {
         $is_final_selected = (!empty($saved_group) && $saved_group == '90');
-        $final_selected = $is_final_selected ? ' selected' : '';
-        echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
+        echo '<option value="90"' . selected($is_final_selected, true, false) . '>' . esc_html__('Final Round', 'meinturnierplan') . '</option>';
       }
     } else if (!empty($saved_group) && !empty($tournament_id)) {
       // Add "All Matches" option first (only for matches context)
       if ($show_all_option) {
-        echo '<option value="">' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+        echo '<option value="">' . esc_html__('All Matches', 'meinturnierplan') . '</option>';
       }
 
       // Show a placeholder for the saved group if groups haven't loaded yet
       if ($saved_group == '90') {
-        echo '<option value="90" selected>' . esc_html(__('Final Round (saved)', 'meinturnierplan')) . '</option>';
+        echo '<option value="90" selected>' . esc_html__('Final Round (saved)', 'meinturnierplan') . '</option>';
       } else {
         /* translators: %s is the saved group name */
         echo '<option value="' . esc_attr($saved_group) . '" selected>' . esc_html(sprintf(__('Group %s (saved)', 'meinturnierplan'), $saved_group)) . '</option>';
@@ -1224,16 +1221,15 @@ class MTP_Admin_Utilities {
       // For matches: Add "All Matches" option as default
       // For tables: Show "Default" option
       if ($show_all_option) {
-        echo '<option value="" selected>' . esc_html(__('All Matches', 'meinturnierplan')) . '</option>';
+        echo '<option value="" selected>' . esc_html__('All Matches', 'meinturnierplan') . '</option>';
       } else {
-        echo '<option value="">' . esc_html(__('Default', 'meinturnierplan')) . '</option>';
+        echo '<option value="">' . esc_html__('Default', 'meinturnierplan') . '</option>';
       }
 
       // Check for Final Round only
       if ($has_final_round) {
         $is_final_selected = (!empty($saved_group) && $saved_group == '90');
-        $final_selected = $is_final_selected ? ' selected' : '';
-        echo '<option value="90"' . $final_selected . '>' . esc_html(__('Final Round', 'meinturnierplan')) . '</option>';
+        echo '<option value="90"' . selected($is_final_selected, true, false) . '>' . esc_html__('Final Round', 'meinturnierplan') . '</option>';
       }
     }
 
@@ -1244,7 +1240,7 @@ class MTP_Admin_Utilities {
     echo '</div>';
 
     // Static description that covers all scenarios
-    echo '<p class="description">' . esc_html(__('Select a group to display from this tournament. Click refresh to update groups from server. Please note that some tournaments do not have groups.', 'meinturnierplan')) . '</p>';
+    echo '<p class="description">' . esc_html__('Select a group to display from this tournament. Click refresh to update groups from server. Please note that some tournaments do not have groups.', 'meinturnierplan') . '</p>';
 
     // Add hidden field to store the initially saved value for JavaScript
     echo '<input type="hidden" id="' . esc_attr($saved_value_field_id) . '" value="' . esc_attr($saved_group) . '" />';
@@ -1281,15 +1277,14 @@ class MTP_Admin_Utilities {
 
     // Always render the field (unlike Group, this is always displayed)
     echo '<tr id="' . esc_attr($participant_field_row_id) . '">';
-    echo '<th scope="row"><label for="' . esc_attr($participant_field_id) . '">' . esc_html(__('Participant', 'meinturnierplan')) . '</label></th>';
+    echo '<th scope="row"><label for="' . esc_attr($participant_field_id) . '">' . esc_html__('Participant', 'meinturnierplan') . '</label></th>';
     echo '<td>';
     echo '<div style="display: flex; align-items: center; gap: 10px;">';
     echo '<select id="' . esc_attr($participant_field_id) . '" name="' . esc_attr($participant_field_id) . '" class="regular-text">';
 
     // Add "All" option first as default
     $is_all_selected = ($saved_participant == '-1');
-    $all_selected = $is_all_selected ? ' selected' : '';
-    echo '<option value="-1"' . $all_selected . '>' . esc_html(__('All', 'meinturnierplan')) . '</option>';
+    echo '<option value="-1"' . selected($is_all_selected, true, false) . '>' . esc_html__('All', 'meinturnierplan') . '</option>';
 
     if (!empty($teams)) {
       // Populate with actual teams
@@ -1299,8 +1294,7 @@ class MTP_Admin_Utilities {
 
         if (!empty($team_id) && !empty($team_name)) {
           $is_selected = ($saved_participant == $team_id);
-          $selected = $is_selected ? ' selected' : '';
-          echo '<option value="' . esc_attr($team_id) . '"' . $selected . '>' . esc_html($team_name) . '</option>';
+          echo '<option value="' . esc_attr($team_id) . '"' . selected($is_selected, true, false) . '>' . esc_html($team_name) . '</option>';
         }
       }
     } else if (!empty($saved_participant) && $saved_participant != '-1' && !empty($tournament_id)) {
@@ -1316,7 +1310,7 @@ class MTP_Admin_Utilities {
     echo '</div>';
 
     // Description
-    echo '<p class="description">' . esc_html(__('Select a participant (team) to filter matches. Select "All" to display matches for all participants. Click refresh to update participants from server.', 'meinturnierplan')) . '</p>';
+    echo '<p class="description">' . esc_html__('Select a participant (team) to filter matches. Select "All" to display matches for all participants. Click refresh to update participants from server.', 'meinturnierplan') . '</p>';
 
     // Add hidden field to store the initially saved value for JavaScript
     echo '<input type="hidden" id="' . esc_attr($saved_value_field_id) . '" value="' . esc_attr($saved_participant) . '" />';
