@@ -1062,6 +1062,7 @@ class MTP_Admin_Matches_Meta_Boxes {
         $value = isset($_POST[$post_field]) ? '1' : '0';
         update_post_meta($post_id, $meta_key, $value);
       } elseif (isset($_POST[$post_field])) {
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitization handled by sanitize_meta_value method
         $value = $this->sanitize_meta_value($field, wp_unslash($_POST[$post_field]));
         update_post_meta($post_id, $meta_key, $value);
       }
