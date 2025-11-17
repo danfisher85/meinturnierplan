@@ -155,6 +155,7 @@ class MTP_Installer {
 
     // Remove all meta data associated with our post types
     global $wpdb;
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct query acceptable during uninstall for cleanup
     $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mtp_%'");
 
     // Clean up any remaining transients
