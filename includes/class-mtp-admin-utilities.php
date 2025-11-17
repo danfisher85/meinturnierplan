@@ -132,11 +132,6 @@ class MTP_Admin_Utilities {
     if (!empty($tournament_id)) {
       $json_value = self::fetch_tournament_option($tournament_id, $json_field);
       $show_field = ($json_value === true);
-
-      // Debug logging (only visible in browser console via JavaScript below)
-      if (defined('WP_DEBUG') && WP_DEBUG) {
-        error_log("MTP Debug: Tournament ID: {$tournament_id}, Checking field: {$json_field}, Value: " . var_export($json_value, true) . ", Show field: " . var_export($show_field, true));
-      }
     }
 
     echo '<tr id="' . esc_attr($field_row_id) . '" class="mtp-conditional-field" data-condition-field="' . esc_attr($json_field) . '" data-tournament-id="' . esc_attr($tournament_id) . '" data-show-field="' . esc_attr($show_field ? '1' : '0') . '">';
