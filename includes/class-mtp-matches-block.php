@@ -190,7 +190,7 @@ class MTP_Matches_Gutenberg_Block {
    */
   public function get_tables_ajax() {
     // Verify nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'mtp_matches_block_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_matches_block_nonce')) {
       wp_die(esc_html__('Security check failed', 'meinturnierplan'));
     }
 
