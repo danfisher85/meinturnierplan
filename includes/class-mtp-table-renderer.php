@@ -41,36 +41,25 @@ class MTP_Table_Renderer {
       return $this->render_empty_table($atts);
     }
 
-    // Get width and height from shortcode attributes or use defaults for auto-sizing
-    $width = !empty($atts['width']) ? intval($atts['width']) : 300;
-    $height = !empty($atts['height']) ? intval($atts['height']) : 200;
+    // Fetch tournament data from API
+    $tournament_data = $this->fetch_tournament_data($tournament_id);
 
-    // Build URL parameters array
-    $params = $this->build_url_params($tournament_id, $table_id, $atts);
+    // If no data available, show error message
+    if (empty($tournament_data)) {
+      /* translators: %s is the tournament ID */
+      return $this->render_error_message(sprintf(__('Unable to fetch tournament data for ID: %s', 'meinturnierplan'), $tournament_id));
+    }
 
-    // Build the iframe URL
-    $iframe_url = 'https://www.meinturnierplan.de/displayTable.php?' . $this->build_query_string($params);
+    // Get group filter if specified
+    $group_filter = '';
+    if (!empty($atts['group'])) {
+      $group_filter = $atts['group'];
+    } elseif ($table_id) {
+      $group_filter = get_post_meta($table_id, '_mtp_group', true);
+    }
 
-    // Generate unique ID for this iframe instance
-    $iframe_id = 'mtp-table-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
-
-    // Build the iframe HTML with auto-sizing styles and shortcode dimensions
-    $iframe_html = sprintf(
-      '<iframe id="%s" src="%s" width="%d" height="%d" style="overflow:hidden; min-width: 300px; min-height: 150px; width: %dpx; height: %dpx; border: none; display: block;" allowtransparency="true" frameborder="0">
-        <p>%s <a href="https://www.meinturnierplan.de/showit.php?id=%s">%s</a></p>
-      </iframe>',
-      esc_attr($iframe_id),
-      esc_url($iframe_url),
-      $width,
-      $height,
-      $width,
-      $height,
-      __('Your browser does not support the tournament widget.', 'meinturnierplan'),
-      esc_attr($tournament_id),
-      __('Go to Tournament.', 'meinturnierplan')
-    );
-
-    return $iframe_html;
+    // Render the tournament table
+    return $this->render_tournament_table($tournament_data, $group_filter, $atts);
   }
 
   /**
@@ -250,6 +239,437 @@ class MTP_Table_Renderer {
     $html .= __('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
     $html .= '</div>';
 
+    return $html;
+  }
+
+  /**
+   * Fetch tournament data from external API
+   *
+   * @param string $tournament_id The tournament ID
+   * @return array|null Tournament data or null on failure
+   */
+  private function fetch_tournament_data($tournament_id) {
+    if (empty($tournament_id)) {
+      return null;
+    }
+
+    $cache_key = 'mtp_tournament_data_' . $tournament_id;
+    $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
+
+    // Try to get cached data first
+    $cached_data = get_transient($cache_key);
+    if ($cached_data !== false && is_array($cached_data) && !empty($cached_data)) {
+      // Validate cached data has proper structure
+      if (isset($cached_data['teams']) || isset($cached_data['groups']) || isset($cached_data['groupRankTables']) || isset($cached_data['rankTable'])) {
+        return $cached_data;
+      }
+      // Invalid cache structure, delete it
+      delete_transient($cache_key);
+    }
+
+    // Fetch fresh data from API
+    $url = 'https://tournej.com/json/json.php?id=' . urlencode($tournament_id);
+    $response = wp_remote_get($url, array(
+      'timeout' => 10,
+      'sslverify' => true
+    ));
+
+    // Check for errors
+    if (is_wp_error($response)) {
+      return null;
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    
+    // Check if body is empty
+    if (empty($body)) {
+      return null;
+    }
+
+    $data = json_decode($body, true);
+
+    // Validate data structure - must have at least one of these keys
+    if (!is_array($data) || empty($data)) {
+      return null;
+    }
+
+    // Validate that we have meaningful data
+    if (!isset($data['teams']) && !isset($data['groups']) && !isset($data['groupRankTables']) && !isset($data['rankTable'])) {
+      return null;
+    }
+
+    // Cache the result
+    set_transient($cache_key, $data, $cache_expiry);
+
+    return $data;
+  }
+
+  /**
+   * Render tournament table from fetched data
+   *
+   * @param array $tournament_data Tournament data from API
+   * @param string $group_filter Group number to filter (empty for all groups or final round)
+   * @param array $atts Shortcode attributes
+   * @return string HTML output
+   */
+  private function render_tournament_table($tournament_data, $group_filter = '', $atts = array()) {
+    // Handle group filtering
+    $table_data = null;
+    
+    // Check if group_filter is '90' (final round)
+    if ($group_filter === '90') {
+      // Display final ranking table
+      if (!empty($tournament_data['finalRankTable']) && is_array($tournament_data['finalRankTable'])) {
+        return $this->render_final_ranking_table($tournament_data, $atts);
+      } else {
+        return $this->render_error_message(__('Final round data not available.', 'meinturnierplan'));
+      }
+    } elseif (!empty($group_filter) && !empty($tournament_data['groupRankTables'])) {
+      // Display specific group
+      $group_index = intval($group_filter) - 1;
+      if (isset($tournament_data['groupRankTables'][$group_index])) {
+        $group_info = isset($tournament_data['groups'][$group_index]) ? $tournament_data['groups'][$group_index] : null;
+        return $this->render_group_table($tournament_data['groupRankTables'][$group_index], $tournament_data, $atts, $group_info);
+      } else {
+        return $this->render_error_message(__('Selected group not found.', 'meinturnierplan'));
+      }
+    } elseif (!empty($tournament_data['groupRankTables']) && is_array($tournament_data['groupRankTables'])) {
+      // Display first group by default
+      $group_info = isset($tournament_data['groups'][0]) ? $tournament_data['groups'][0] : null;
+      return $this->render_group_table($tournament_data['groupRankTables'][0], $tournament_data, $atts, $group_info);
+    } elseif (!empty($tournament_data['rankTable']) && is_array($tournament_data['rankTable'])) {
+      // Tournament without groups - display main ranking table
+      return $this->render_single_ranking_table($tournament_data, $atts);
+    }
+
+    return $this->render_error_message(__('No tournament data available.', 'meinturnierplan'));
+  }
+
+  /**
+   * Render group table
+   *
+   * @param array $rank_table Array of ranking entries for the group
+   * @param array $tournament_data Full tournament data
+   * @param array $atts Shortcode attributes
+   * @param array|null $group_info Group info with displayId
+   * @return string HTML output
+   */
+  private function render_group_table($rank_table, $tournament_data, $atts = array(), $group_info = null) {
+    if (empty($rank_table) || !is_array($rank_table)) {
+      return $this->render_error_message(__('No ranking data available for this group.', 'meinturnierplan'));
+    }
+
+    // Build teams lookup array - support both displayId and index-based lookup
+    $teams = array();
+    $teams_by_index = array();
+    if (!empty($tournament_data['teams']) && is_array($tournament_data['teams'])) {
+      foreach ($tournament_data['teams'] as $idx => $team) {
+        // Store by displayId for direct lookup
+        if (isset($team['displayId'])) {
+          $teams[$team['displayId']] = $team;
+        }
+        // Also store by array index for tournaments where teamId = array index
+        $teams_by_index[$idx] = $team;
+      }
+    }
+
+    // Start building HTML
+    $html = '<div id="widgetBox">';
+    $html .= '<table class="width100 centered" name="RankTable">';
+    $html .= '<thead>';
+    $html .= '<tr>';
+    $html .= '<th title="' . esc_attr__('Rank in Group', 'meinturnierplan') . '">' . esc_html__('Pl', 'meinturnierplan') . '</th>';
+    $html .= '<th>' . esc_html__('Participant', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Matches', 'meinturnierplan') . '">' . esc_html__('M', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Wins', 'meinturnierplan') . '">' . esc_html__('W', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Draws', 'meinturnierplan') . '">' . esc_html__('D', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Loss', 'meinturnierplan') . '">' . esc_html__('L', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Goals', 'meinturnierplan') . '">' . esc_html__('G', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Goal Difference', 'meinturnierplan') . '">' . esc_html__('GD', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Points', 'meinturnierplan') . '">' . esc_html__('Pts', 'meinturnierplan') . '</th>';
+    $html .= '</tr>';
+    $html .= '</thead>';
+    $html .= '<tbody>';
+
+    // Render each team row
+    foreach ($rank_table as $index => $rank_entry) {
+      $team_id = isset($rank_entry['teamId']) ? $rank_entry['teamId'] : '';
+      
+      // Try to find team by displayId first (string match)
+      $team = isset($teams[strval($team_id)]) ? $teams[strval($team_id)] : array();
+      
+      // If not found, try by array index (for tournaments where teamId is 0-based index)
+      if (empty($team) && isset($teams_by_index[$team_id])) {
+        $team = $teams_by_index[$team_id];
+      }
+      
+      $team_name = isset($team['name']) ? $team['name'] : __('Unknown Team', 'meinturnierplan');
+      
+      $rank = isset($rank_entry['rank']) ? $rank_entry['rank'] : ($index + 1);
+      $matches = isset($rank_entry['numMatches']) ? $rank_entry['numMatches'] : 0;
+      $wins = isset($rank_entry['numWins']) ? $rank_entry['numWins'] : 0;
+      $draws = isset($rank_entry['numDraws']) ? $rank_entry['numDraws'] : 0;
+      $losses = isset($rank_entry['numLosts']) ? $rank_entry['numLosts'] : 0;
+      $goals_for = isset($rank_entry['ownGoals']) ? $rank_entry['ownGoals'] : 0;
+      $goals_against = isset($rank_entry['otherGoals']) ? $rank_entry['otherGoals'] : 0;
+      $goal_diff = isset($rank_entry['goalDiff']) ? $rank_entry['goalDiff'] : 0;
+      $points = isset($rank_entry['points']) ? $rank_entry['points'] : 0;
+
+      // Get team logo
+      $logo_url = '';
+      if (isset($team['logo']['lx32'])) {
+        $logo_url = $team['logo']['lx32'];
+      } elseif (isset($team['logo']['lx32w'])) {
+        $logo_url = $team['logo']['lx32w'];
+      }
+
+      $html .= '<tr>';
+      $html .= '<td class="tdRank">' . esc_html($rank) . '</td>';
+      
+      // Team name with logo
+      $html .= '<td class="tdRankTeamName">';
+      $html .= '<div class="rankicons">';
+      if (!empty($logo_url)) {
+        $html .= '<div class="icon"><img alt="Logo" src="' . esc_url($logo_url) . '"></div>';
+      }
+      $html .= '<div class="iconAside">' . esc_html($team_name) . '</div>';
+      $html .= '</div>';
+      $html .= '</td>';
+      
+      $html .= '<td class="tdNumGames">' . esc_html($matches) . '</td>';
+      $html .= '<td class="tdNumWins">' . esc_html($wins) . '</td>';
+      $html .= '<td class="tdNumDraws">' . esc_html($draws) . '</td>';
+      $html .= '<td class="tdNumLosts">' . esc_html($losses) . '</td>';
+      $html .= '<td class="tdGoals">' . esc_html($goals_for . ':' . $goals_against) . '</td>';
+      $html .= '<td class="tdGoalDiff">' . esc_html($goal_diff) . '</td>';
+      $html .= '<td class="tdPoints">' . esc_html($points) . '</td>';
+      $html .= '</tr>';
+    }
+
+    $html .= '</tbody>';
+    $html .= '</table>';
+    
+    // Add tournament link if we have tournament ID
+    if (!empty($atts['id'])) {
+      $html .= '<font class="small"><a target="_blank" href="https://www.meinturnierplan.de/showit.php?id=' . esc_attr($atts['id']) . '">' . esc_html__('Show Full Tournament', 'meinturnierplan') . '</a></font>';
+    }
+    
+    $html .= '</div>';
+
+    return $html;
+  }
+
+  /**
+   * Render single ranking table (for tournaments without groups)
+   *
+   * @param array $tournament_data Full tournament data
+   * @param array $atts Shortcode attributes
+   * @return string HTML output
+   */
+  private function render_single_ranking_table($tournament_data, $atts = array()) {
+    if (empty($tournament_data['rankTable']) || !is_array($tournament_data['rankTable'])) {
+      return $this->render_error_message(__('No ranking data available.', 'meinturnierplan'));
+    }
+
+    // Build teams lookup array - support both displayId and index-based lookup
+    $teams = array();
+    $teams_by_index = array();
+    if (!empty($tournament_data['teams']) && is_array($tournament_data['teams'])) {
+      foreach ($tournament_data['teams'] as $idx => $team) {
+        // Store by displayId for direct lookup
+        if (isset($team['displayId'])) {
+          $teams[$team['displayId']] = $team;
+        }
+        // Also store by array index for tournaments where teamId = array index
+        $teams_by_index[$idx] = $team;
+      }
+    }
+
+    // Start building HTML
+    $html = '<div id="widgetBox">';
+    $html .= '<table class="width100 centered" name="RankTable">';
+    $html .= '<thead>';
+    $html .= '<tr>';
+    $html .= '<th title="' . esc_attr__('Rank in Group', 'meinturnierplan') . '">' . esc_html__('Pl', 'meinturnierplan') . '</th>';
+    $html .= '<th>' . esc_html__('Participant', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Matches', 'meinturnierplan') . '">' . esc_html__('M', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Wins', 'meinturnierplan') . '">' . esc_html__('W', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Draws', 'meinturnierplan') . '">' . esc_html__('D', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Loss', 'meinturnierplan') . '">' . esc_html__('L', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Goals', 'meinturnierplan') . '">' . esc_html__('G', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Goal Difference', 'meinturnierplan') . '">' . esc_html__('GD', 'meinturnierplan') . '</th>';
+    $html .= '<th title="' . esc_attr__('Points', 'meinturnierplan') . '">' . esc_html__('Pts', 'meinturnierplan') . '</th>';
+    $html .= '</tr>';
+    $html .= '</thead>';
+    $html .= '<tbody>';
+
+    // Render each team row
+    foreach ($tournament_data['rankTable'] as $index => $rank_entry) {
+      $team_id = isset($rank_entry['teamId']) ? $rank_entry['teamId'] : '';
+      
+      // Try to find team by displayId first (string match)
+      $team = isset($teams[strval($team_id)]) ? $teams[strval($team_id)] : array();
+      
+      // If not found, try by array index (for tournaments where teamId is 0-based index)
+      if (empty($team) && isset($teams_by_index[$team_id])) {
+        $team = $teams_by_index[$team_id];
+      }
+      
+      $team_name = isset($team['name']) ? $team['name'] : __('Unknown Team', 'meinturnierplan');
+      
+      $rank = isset($rank_entry['rank']) ? $rank_entry['rank'] : ($index + 1);
+      $matches = isset($rank_entry['numMatches']) ? $rank_entry['numMatches'] : 0;
+      $wins = isset($rank_entry['numWins']) ? $rank_entry['numWins'] : 0;
+      $draws = isset($rank_entry['numDraws']) ? $rank_entry['numDraws'] : 0;
+      $losses = isset($rank_entry['numLosts']) ? $rank_entry['numLosts'] : 0;
+      $goals_for = isset($rank_entry['ownGoals']) ? $rank_entry['ownGoals'] : 0;
+      $goals_against = isset($rank_entry['otherGoals']) ? $rank_entry['otherGoals'] : 0;
+      $goal_diff = isset($rank_entry['goalDiff']) ? $rank_entry['goalDiff'] : 0;
+      $points = isset($rank_entry['points']) ? $rank_entry['points'] : 0;
+
+      // Get team logo
+      $logo_url = '';
+      if (isset($team['logo']['lx32'])) {
+        $logo_url = $team['logo']['lx32'];
+      } elseif (isset($team['logo']['lx32w'])) {
+        $logo_url = $team['logo']['lx32w'];
+      }
+
+      $html .= '<tr>';
+      $html .= '<td class="tdRank">' . esc_html($rank) . '</td>';
+      
+      // Team name with logo
+      $html .= '<td class="tdRankTeamName">';
+      $html .= '<div class="rankicons">';
+      if (!empty($logo_url)) {
+        $html .= '<div class="icon"><img alt="Logo" src="' . esc_url($logo_url) . '"></div>';
+      }
+      $html .= '<div class="iconAside">' . esc_html($team_name) . '</div>';
+      $html .= '</div>';
+      $html .= '</td>';
+      
+      $html .= '<td class="tdNumGames">' . esc_html($matches) . '</td>';
+      $html .= '<td class="tdNumWins">' . esc_html($wins) . '</td>';
+      $html .= '<td class="tdNumDraws">' . esc_html($draws) . '</td>';
+      $html .= '<td class="tdNumLosts">' . esc_html($losses) . '</td>';
+      $html .= '<td class="tdGoals">' . esc_html($goals_for . ':' . $goals_against) . '</td>';
+      $html .= '<td class="tdGoalDiff">' . esc_html($goal_diff) . '</td>';
+      $html .= '<td class="tdPoints">' . esc_html($points) . '</td>';
+      $html .= '</tr>';
+    }
+
+    $html .= '</tbody>';
+    $html .= '</table>';
+    
+    // Add tournament link if we have tournament ID
+    if (!empty($atts['id'])) {
+      $html .= '<font class="small"><a target="_blank" href="https://www.meinturnierplan.de/showit.php?id=' . esc_attr($atts['id']) . '">' . esc_html__('Show Full Tournament', 'meinturnierplan') . '</a></font>';
+    }
+    
+    $html .= '</div>';
+
+    return $html;
+  }
+
+  /**
+   * Render final ranking table
+   *
+   * @param array $tournament_data Full tournament data
+   * @param array $atts Shortcode attributes
+   * @return string HTML output
+   */
+  private function render_final_ranking_table($tournament_data, $atts = array()) {
+    if (empty($tournament_data['finalRankTable']) || !is_array($tournament_data['finalRankTable'])) {
+      return $this->render_error_message(__('No final ranking data available.', 'meinturnierplan'));
+    }
+
+    // Build teams lookup array - support both displayId and index-based lookup
+    $teams = array();
+    $teams_by_index = array();
+    if (!empty($tournament_data['teams']) && is_array($tournament_data['teams'])) {
+      foreach ($tournament_data['teams'] as $idx => $team) {
+        // Store by displayId for direct lookup
+        if (isset($team['displayId'])) {
+          $teams[$team['displayId']] = $team;
+        }
+        // Also store by array index for tournaments where teamId = array index
+        $teams_by_index[$idx] = $team;
+      }
+    }
+
+    // Start building HTML
+    $html = '<div id="widgetBox">';
+    $html .= '<table class="width100 centered" name="RankTable">';
+    $html .= '<thead>';
+    $html .= '<tr>';
+    $html .= '<th title="' . esc_attr__('Rank', 'meinturnierplan') . '">' . esc_html__('Pl', 'meinturnierplan') . '</th>';
+    $html .= '<th>' . esc_html__('Participant', 'meinturnierplan') . '</th>';
+    $html .= '</tr>';
+    $html .= '</thead>';
+    $html .= '<tbody>';
+
+    // Render each team row
+    foreach ($tournament_data['finalRankTable'] as $index => $rank_entry) {
+      $team_id = isset($rank_entry['teamId']) ? $rank_entry['teamId'] : '';
+      
+      // Try to find team by displayId first (string match)
+      $team = isset($teams[strval($team_id)]) ? $teams[strval($team_id)] : array();
+      
+      // If not found, try by array index (for tournaments where teamId is 0-based index)
+      if (empty($team) && isset($teams_by_index[$team_id])) {
+        $team = $teams_by_index[$team_id];
+      }
+      
+      $team_name = isset($team['name']) ? $team['name'] : __('Unknown Team', 'meinturnierplan');
+      
+      $rank = isset($rank_entry['rank']) ? $rank_entry['rank'] : ($index + 1);
+
+      // Get team logo
+      $logo_url = '';
+      if (isset($team['logo']['lx32'])) {
+        $logo_url = $team['logo']['lx32'];
+      } elseif (isset($team['logo']['lx32w'])) {
+        $logo_url = $team['logo']['lx32w'];
+      }
+
+      $html .= '<tr>';
+      $html .= '<td class="tdRank">' . esc_html($rank) . '</td>';
+      
+      // Team name with logo
+      $html .= '<td class="tdRankTeamName">';
+      $html .= '<div class="rankicons">';
+      if (!empty($logo_url)) {
+        $html .= '<div class="icon"><img alt="Logo" src="' . esc_url($logo_url) . '"></div>';
+      }
+      $html .= '<div class="iconAside">' . esc_html($team_name) . '</div>';
+      $html .= '</div>';
+      $html .= '</td>';
+      $html .= '</tr>';
+    }
+
+    $html .= '</tbody>';
+    $html .= '</table>';
+    
+    // Add tournament link if we have tournament ID
+    if (!empty($atts['id'])) {
+      $html .= '<font class="small"><a target="_blank" href="https://www.meinturnierplan.de/showit.php?id=' . esc_attr($atts['id']) . '">' . esc_html__('Show Full Tournament', 'meinturnierplan') . '</a></font>';
+    }
+    
+    $html .= '</div>';
+
+    return $html;
+  }
+
+  /**
+   * Render error message
+   *
+   * @param string $message Error message to display
+   * @return string HTML output
+   */
+  private function render_error_message($message) {
+    $html = '<div class="mtp-error-message">';
+    $html .= '<p>' . esc_html($message) . '</p>';
+    $html .= '</div>';
     return $html;
   }
 

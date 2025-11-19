@@ -55,6 +55,16 @@ class MTP_Assets {
           MTP_PLUGIN_VERSION
         );
 
+        // Enqueue table styles for mtp_table preview
+        if ($post && $post->post_type == 'mtp_table') {
+          wp_enqueue_style(
+            'mtp-table-styles',
+            MTP_PLUGIN_URL . 'assets/css/table.css',
+            array(),
+            MTP_PLUGIN_VERSION
+          );
+        }
+
         // Enqueue jQuery (already available in admin)
         wp_enqueue_script('jquery');
 
@@ -92,6 +102,14 @@ class MTP_Assets {
    * Enqueue frontend scripts and styles
    */
   public function enqueue_frontend_scripts() {
+    // Enqueue table styles for mtp_table CPT
+    wp_enqueue_style(
+      'mtp-table-styles',
+      MTP_PLUGIN_URL . 'assets/css/table.css',
+      array(),
+      MTP_PLUGIN_VERSION
+    );
+
     // Debug: Always enqueue for testing (remove this later)
     wp_enqueue_script(
       'mtp-frontend-scripts',

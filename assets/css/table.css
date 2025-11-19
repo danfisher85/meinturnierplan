@@ -1,0 +1,326 @@
+#widgetBox {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	font-size: 9pt;
+	margin: 0;
+	background-color: rgba(0,0,0,0.00);
+	padding: 2px;
+	width: auto;
+	height: auto;
+	display: inline-block;
+	overflow: hidden auto;
+}
+
+#widgetBox h1,
+#widgetBox h2,
+#widgetBox h3,
+#widgetBox h4,
+#widgetBox h5,
+#widgetBox h6 {
+	margin: 0.4eM 0;
+}
+
+#widgetBox h1 {
+	font-size: 200%;
+	color: #173f75;
+}
+
+#widgetBox h2 {
+	font-size: 150%;
+	color: #173f75;
+}
+
+#widgetBox h3 {
+	font-size: 133.33%;
+}
+
+#widgetBox a {
+	color: #173f75;
+	background: transparent;
+	text-decoration: none;
+}
+
+#widgetBox a:visited {
+	color: #173f75;
+}
+
+#widgetBox a:focus {
+	text-decoration: underline;
+	color: #173f75;
+	outline: 0 none;
+}
+
+#widgetBox a:hover,
+#widgetBox a:active {
+	color: #173f75;
+	text-decoration: underline;
+	outline: 0 none;
+}
+
+#widgetBox table {
+	width: auto;
+	border-collapse: collapse;
+	margin-bottom: 0.5em;
+	border: solid #BBBBBB;
+	border-width: 1px 1px;
+}
+
+#widgetBox th,
+#widgetBox td {
+	padding: 5px;
+	border: solid #BBBBBB;
+	border-width: 1px 0px;
+	min-width: 1eM;
+}
+
+#widgetBox tbody tr:nth-of-type(odd) td {
+	background: rgba(255,255,255,0.69);
+}
+
+#widgetBox tbody tr:nth-of-type(even) td {
+	background: rgba(240,248,255,0.69);
+}
+
+#widgetBox thead th {
+	text-align: center;
+	vertical-align: middle;
+	font-size: 10pt;
+	background: rgba(238,238,255,1.00);
+	border-bottom: 2px solid #BBBBBB;
+}
+
+#widgetBox tbody tr:hover td {
+	background: rgba(238,238,255,0.69);
+}
+
+#widgetBox table.verttop tbody td,
+#widgetBox table.verttop tbody th,
+#widgetBox table.verttop thead th {
+	vertical-align: top;
+}
+
+#widgetBox .e403 {
+	text-align: center;
+	white-space: nowrap;
+	display: inline-block;
+}
+			
+#widgetBox .rankicons {
+	position: relative;
+	display: table;
+	table-layout: fixed;
+}
+	
+#widgetBox .rankicons .icon {
+	width: 20pt;
+	height: 20pt;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+	
+#widgetBox .rankicons .icon img {
+	max-width: 20pt;
+	max-height: 20pt;
+}
+	
+#widgetBox .rankicons .iconAside {
+	line-height: 1.5eM;
+	margin-left: 20pt;
+	padding: 5px;
+	display: table-cell;
+}
+	
+#widgetBox .icontable {
+	margin: 0;
+	display: table;
+	table-layout: fixed;
+}
+
+#widgetBox .icontable .iconAsideInformation.iconbig {
+	display: inline-block;
+	vertical-align: top;
+	width: auto;
+	margin: 0;
+	padding: 0 0.5eM;
+	line-height: 20pt;
+}
+
+#widgetBox *.beamer {
+	font-weight: bold;
+}
+
+#widgetBox tbody tr.Activetr {
+	box-shadow: inset 0 0 0.7eM #173f75;
+	color: #173f75;
+	font-weight: bold;
+}
+			
+#widgetBox .table {
+	display: table;
+	table-layout: fixed;
+	overflow: hidden;
+}
+			
+#widgetBox .table>.tr {
+	display: table-row;
+	vertical-align: middle;
+}
+			
+#widgetBox .table>.tr>.td {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+}
+			
+#widgetBox .td-box {
+	padding: 0.5eM;
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+	box-sizing: border-box;
+}
+			
+#widgetBox .th {
+	display: table-cell;
+	vertical-align: middle;
+	background-color: #eef;
+	font-weight: bold;
+	text-align: center;
+}
+
+#widgetBox .th-box {
+	padding: 0.5eM;
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#widgetBox .centered,
+#widgetBox .td.centered,
+#widgetBox td.centered {
+	text-align: center;
+}
+
+#widgetBox table.centered {
+	text-align: left;
+}
+
+#widgetBox .extraHeaderRow td {
+	text-align: center;
+	font-size: 10pt;
+	padding: 9px 0 3px;
+	border: 0 solid;
+}
+
+#widgetBox .extraHeaderRow td:first {
+	border-left: 0px solid #BBBBBB;
+}
+
+#widgetBox .extraHeaderRow td:last {
+	border-right: 0px solid #BBBBBB;
+}
+
+#widgetBox .tdId,
+#widgetBox .tdRound,
+#widgetBox .tdPosition,
+#widgetBox .tdCourt,
+#widgetBox .tdTime,
+#widgetBox .tdGroup,
+#widgetBox .tdTeam,
+#widgetBox .tdScore,
+#widgetBox .tdReferee,
+#widgetBox .tdWOT,
+#widgetBox .tdWPS,
+#widgetBox .tdMatchDay,
+#widgetBox .tdIsActive,
+#widgetBox .tdLastRow {
+	text-align: center;
+	vertical-align: center;
+	white-space: nowrap;
+}
+			
+#widgetBox .tdScore {
+	width: 8eM;
+}
+
+#widgetBox .tdTime,
+#widgetBox .tdTeam {
+	white-space: normal;
+}
+			
+#widgetBox .tdRank,
+#widgetBox .tdNumGames,
+#widgetBox .tdNumWins,
+#widgetBox .tdNumDraws,
+#widgetBox .tdNumLosts,
+#widgetBox .tdGoals,
+#widgetBox .tdGoalDiff,
+#widgetBox .tdPoints {
+	text-align: center;
+	vertical-align: center;
+	white-space: nowrap;
+	width: 4eM;
+}
+
+#widgetBox .tdRankTeamName {
+	text-align: left;
+	vertical-align: center;
+	min-width: 4eM;
+}
+
+#widgetBox .separator {
+	display: inline-block;
+	margin: 0.5eM 0 0;
+}
+
+#widgetBox .spielfrei {
+	font-weight: bold;
+	color: #bbb;
+}
+
+#widgetBox .teamSourceDecoded {
+	text-align: left;
+	font-size: 65%;
+	color: #333;
+}
+
+#widgetBox .oneline,
+#widgetBox .oneline * {
+	white-space: nowrap;
+}
+			
+#widgetBox .Deletedtr {
+	display: none;
+}
+	
+@font-face {
+	font-family: tournejIcons;
+	font-style: normal;
+	font-weight: 400;
+	src: url("/static/3.41.3-Hotfix4/fonts/tournejIcons.ttf") format("truetype"), url("/static/3.41.3-Hotfix4/fonts/tournejIcons.woff2") format("woff2");
+	unicode-range: U+E000-F8FF;
+}
+
+#widgetBox .ym-scoreIcon {
+	margin-left: 1px;
+	margin-right: 1px;
+}
+
+#widgetBox .ym-scoreIcon-vivid .ym-scoreIcon-glyph {
+	color: #000;
+}
+
+#widgetBox .ym-scoreIcon-pale .ym-scoreIcon-glyph {
+	color: #aaa;
+}
+
+#widgetBox .ym-scoreIcon-glyph {		
+	font-family: tournejIcons;
+}
+
+#widgetBox .ym-scoreIcon-planMod .ym-scoreIcon-glyph {
+	font-size: 19px;
+	line-height: 14px;
+}
