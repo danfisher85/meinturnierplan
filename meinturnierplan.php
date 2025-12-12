@@ -4,7 +4,8 @@
  * Plugin URI: https://www.meinturnierplan.de
  * Description: Display tournament tables and match lists from Tournej/MeinTurnierplan using shortcodes and blocks.
  * Version: 1.0.0
- * Author: Roman Perevala
+ * Author: MeinTurnierplan
+ * Author URI: https://www.meinturnierplan.de
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: meinturnierplan
