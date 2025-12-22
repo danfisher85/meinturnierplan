@@ -426,264 +426,26 @@ class MTP_Admin_Matches_Meta_Boxes {
       'ajax_actions' => array('mtp_get_matches_groups', 'mtp_refresh_matches_groups'),
       'ajax_actions_teams' => array('mtp_get_matches_teams', 'mtp_refresh_matches_teams')
     ));
-    ?>
-    <script>
-    jQuery(document).ready(function($) {
-      // Initialize reusable utilities with preview update callback
-      MTPAdminUtils.initColorPickers(updatePreview);
-      MTPAdminUtils.initOpacitySliders(updatePreview);
-      MTPAdminUtils.initFormFieldListeners('mtp_', updatePreview);
 
-      // Initialize tournament ID field with group and team loading
-      MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
-        MTPAdminUtils.loadTournamentGroups(tournamentId, {context: 'matches'});
-        MTPAdminUtils.loadTournamentTeams(tournamentId);
-        // Check tournament data for conditional fields
-        checkConditionalFields(tournamentId);
-      });
+    // Enqueue preview JavaScript file
+    wp_enqueue_script(
+      'mtp-admin-matches-preview',
+      plugins_url('assets/js/admin-matches-preview.js', dirname(__FILE__)),
+      array('jquery', 'mtp-admin-utilities'),
+      '1.0.0',
+      true
+    );
 
-      // Function to check tournament data and show/hide conditional fields
-      function checkConditionalFields(tournamentId) {
-        if (!tournamentId) {
-          // Hide all conditional fields if no tournament ID
-          $('#mtp_sf_row').hide();
-          $('#mtp_sg_row').hide();
-          $('#mtp_sr_row').hide();
-          $('#mtp_se_row').hide();
-          $('#mtp_sp_row').hide();
-          $('#mtp_sh_row').hide();
-          return;
-        }
-
-        // Fetch tournament data for showCourts via WordPress AJAX to avoid CORS issues
-        $.ajax({
-          url: ajaxurl,
-          type: 'POST',
-          data: {
-            action: 'mtp_check_tournament_option',
-            tournament_id: tournamentId,
-            option_name: 'showCourts',
-            nonce: '<?php echo esc_js(wp_create_nonce('mtp_check_option_nonce')); ?>'
-          },
-          success: function(response) {
-            if (response.success && response.data) {
-              var showCourtsValue = response.data.value;
-
-              // Show/hide Suppress Court field based on showCourts
-              if (showCourtsValue === true) {
-                $('#mtp_sf_row').show();
-              } else {
-                $('#mtp_sf_row').hide();
-              }
-            } else {
-              $('#mtp_sf_row').hide();
-            }
-          },
-          error: function(xhr, status, error) {
-            // On error, hide the field
-            $('#mtp_sf_row').hide();
-          }
-        });
-
-        // Fetch tournament data for showGroups via WordPress AJAX to avoid CORS issues
-        $.ajax({
-          url: ajaxurl,
-          type: 'POST',
-          data: {
-            action: 'mtp_check_tournament_option',
-            tournament_id: tournamentId,
-            option_name: 'showGroups',
-            nonce: '<?php echo esc_js(wp_create_nonce('mtp_check_option_nonce')); ?>'
-          },
-          success: function(response) {
-            if (response.success && response.data) {
-              var showGroupsValue = response.data.value;
-
-              // Show/hide Suppress Group field based on showGroups
-              if (showGroupsValue === true) {
-                $('#mtp_sg_row').show();
-              } else {
-                $('#mtp_sg_row').hide();
-              }
-            } else {
-              $('#mtp_sg_row').hide();
-            }
-          },
-          error: function(xhr, status, error) {
-            // On error, hide the field
-            $('#mtp_sg_row').hide();
-          }
-        });
-
-        // Fetch tournament data for showReferees via WordPress AJAX to avoid CORS issues
-        $.ajax({
-          url: ajaxurl,
-          type: 'POST',
-          data: {
-            action: 'mtp_check_tournament_option',
-            tournament_id: tournamentId,
-            option_name: 'showReferees',
-            nonce: '<?php echo esc_js(wp_create_nonce('mtp_check_option_nonce')); ?>'
-          },
-          success: function(response) {
-            if (response.success && response.data) {
-              var showRefereesValue = response.data.value;
-
-              // Show/hide Suppress Referee field based on showReferees
-              if (showRefereesValue === true) {
-                $('#mtp_sr_row').show();
-              } else {
-                $('#mtp_sr_row').hide();
-              }
-            } else {
-              $('#mtp_sr_row').hide();
-            }
-          },
-          error: function(xhr, status, error) {
-            // On error, hide the field
-            $('#mtp_sr_row').hide();
-          }
-        });
-
-        // Fetch tournament data for finalMatches via WordPress AJAX to avoid CORS issues
-        $.ajax({
-          url: ajaxurl,
-          type: 'POST',
-          data: {
-            action: 'mtp_check_tournament_option',
-            tournament_id: tournamentId,
-            option_name: 'finalMatches',
-            nonce: '<?php echo esc_js(wp_create_nonce('mtp_check_option_nonce')); ?>'
-          },
-          success: function(response) {
-            if (response.success && response.data) {
-              var finalMatchesValue = response.data.value;
-
-              // Show Suppress Extra Time, Suppress Penalties, and Suppress Headlines fields if finalMatches exists
-              if (finalMatchesValue !== null && finalMatchesValue !== undefined) {
-                $('#mtp_se_row').show();
-                $('#mtp_sp_row').show();
-                $('#mtp_sh_row').show();
-              } else {
-                $('#mtp_se_row').hide();
-                $('#mtp_sp_row').hide();
-                $('#mtp_sh_row').hide();
-              }
-            } else {
-              $('#mtp_se_row').hide();
-              $('#mtp_sp_row').hide();
-              $('#mtp_sh_row').hide();
-            }
-          },
-          error: function(xhr, status, error) {
-            // On error, hide the fields
-            $('#mtp_se_row').hide();
-            $('#mtp_sp_row').hide();
-            $('#mtp_sh_row').hide();
-          }
-        });
-      }
-
-      // Initialize group refresh button
-      MTPAdminUtils.initGroupRefreshButton('#mtp_refresh_groups', '#mtp_tournament_id', function(tournamentId, options) {
-        options = options || {};
-        options.context = 'matches';
-        MTPAdminUtils.loadTournamentGroups(tournamentId, options);
-      });
-
-      // Initialize participant refresh button
-      MTPAdminUtils.initParticipantRefreshButton('#mtp_refresh_participants', '#mtp_tournament_id', function(tournamentId, options) {
-        MTPAdminUtils.loadTournamentTeams(tournamentId, options);
-      });
-
-      // Load groups and teams on page load if tournament ID exists
-      var initialTournamentId = $("#mtp_tournament_id").val();
-
-      if (initialTournamentId) {
-        MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false, context: 'matches'});
-        MTPAdminUtils.loadTournamentTeams(initialTournamentId, {preserveSelection: false});
-        checkConditionalFields(initialTournamentId);
-      } else {
-        // Hide conditional fields if no tournament ID on load
-        $('#mtp_sf_row').hide();
-        $('#mtp_sg_row').hide();
-        $('#mtp_sr_row').hide();
-        $('#mtp_se_row').hide();
-        $('#mtp_sp_row').hide();
-        $('#mtp_sh_row').hide();
-      }
-
-      // Additional explicit listeners for checkboxes to ensure they work even when dynamically shown/hidden
-      // Use event delegation to handle dynamically shown fields
-      $(document).on('change', 'input[type="checkbox"][id^="mtp_"]', function() {
-        updatePreview();
-      });
-
-      // Function to update preview
-      function updatePreview() {
-        // Get all field values
-        var data = {
-          post_id: <?php echo intval($post_id); ?>,
-          tournament_id: $("#mtp_tournament_id").val(),
-          font_size: $("#mtp_font_size").val(),
-          header_font_size: $("#mtp_header_font_size").val(),
-          bsizeh: $("#mtp_bsizeh").val(),
-          bsizev: $("#mtp_bsizev").val(),
-          bsizeoh: $("#mtp_bsizeoh").val(),
-          bsizeov: $("#mtp_bsizeov").val(),
-          bbsize: $("#mtp_bbsize").val(),
-          ehrsize: $("#mtp_ehrsize").val(),
-          ehrtop: $("#mtp_ehrtop").val(),
-          ehrbottom: $("#mtp_ehrbottom").val(),
-          table_padding: $("#mtp_table_padding").val(),
-          inner_padding: $("#mtp_inner_padding").val(),
-          text_color: $("#mtp_text_color").val().replace("#", ""),
-          main_color: $("#mtp_main_color").val().replace("#", ""),
-          bg_color: $("#mtp_bg_color").val().replace("#", ""),
-          bg_opacity: $("#mtp_bg_opacity").val(),
-          border_color: $("#mtp_border_color").val().replace("#", ""),
-          head_bottom_border_color: $("#mtp_head_bottom_border_color").val().replace("#", ""),
-          even_bg_color: $("#mtp_even_bg_color").val().replace("#", ""),
-          even_bg_opacity: $("#mtp_even_bg_opacity").val(),
-          odd_bg_color: $("#mtp_odd_bg_color").val().replace("#", ""),
-          odd_bg_opacity: $("#mtp_odd_bg_opacity").val(),
-          hover_bg_color: $("#mtp_hover_bg_color").val().replace("#", ""),
-          hover_bg_opacity: $("#mtp_hover_bg_opacity").val(),
-          head_bg_color: $("#mtp_head_bg_color").val().replace("#", ""),
-          head_bg_opacity: $("#mtp_head_bg_opacity").val(),
-          projector_presentation: $("#mtp_projector_presentation").is(":checked") ? "1" : "0",
-          si: $("#mtp_si").is(":checked") ? "1" : "0",
-          sf: ($("#mtp_sf").length && $("#mtp_sf").is(":visible") && $("#mtp_sf").is(":checked")) ? "1" : "0",
-          st: $("#mtp_st").is(":checked") ? "1" : "0",
-          sg: ($("#mtp_sg").length && $("#mtp_sg").is(":visible") && $("#mtp_sg").is(":checked")) ? "1" : "0",
-          sr: ($("#mtp_sr").length && $("#mtp_sr").is(":visible") && $("#mtp_sr").is(":checked")) ? "1" : "0",
-          se: ($("#mtp_se").length && $("#mtp_se").is(":visible") && $("#mtp_se").is(":checked")) ? "1" : "0",
-          sp: ($("#mtp_sp").length && $("#mtp_sp").is(":visible") && $("#mtp_sp").is(":checked")) ? "1" : "0",
-          sh: ($("#mtp_sh").length && $("#mtp_sh").is(":visible") && $("#mtp_sh").is(":checked")) ? "1" : "0",
-          language: $("#mtp_language").val(),
-          group: $("#mtp_group").val(),
-          participant: $("#mtp_participant").val(),
-          match_number: $("#mtp_match_number").val(),
-          action: "mtp_preview_matches",
-          nonce: "<?php echo esc_js(wp_create_nonce('mtp_preview_nonce')); ?>"
-        };
-
-        // Convert opacity to hex and combine with colors
-        data.bg_color = data.bg_color + Math.round((data.bg_opacity / 100) * 255).toString(16).padStart(2, "0");
-        data.even_bg_color = data.even_bg_color + Math.round((data.even_bg_opacity / 100) * 255).toString(16).padStart(2, "0");
-        data.odd_bg_color = data.odd_bg_color + Math.round((data.odd_bg_opacity / 100) * 255).toString(16).padStart(2, "0");
-        data.hover_bg_color = data.hover_bg_color + Math.round((data.hover_bg_opacity / 100) * 255).toString(16).padStart(2, "0");
-        data.head_bg_color = data.head_bg_color + Math.round((data.head_bg_opacity / 100) * 255).toString(16).padStart(2, "0");
-
-        $.post(ajaxurl, data, function(response) {
-          if (response.success) {
-            $("#mtp-preview").html(response.data);
-          }
-        });
-      }
-    });
-    </script>
-    <?php
+    // Localize script with configuration
+    wp_localize_script(
+      'mtp-admin-matches-preview',
+      'mtpMatchesPreviewConfig',
+      array(
+        'postId' => intval($post_id),
+        'checkOptionNonce' => wp_create_nonce('mtp_check_option_nonce'),
+        'previewNonce' => wp_create_nonce('mtp_preview_nonce')
+      )
+    );
   }
 
   /**
@@ -795,192 +557,25 @@ class MTP_Admin_Matches_Meta_Boxes {
    * Add tournament table specific shortcode update JavaScript
    */
   private function add_shortcode_update_javascript($meta_values) {
-    ?>
-    <script>
-    jQuery(document).ready(function($) {
-      // Helper function to get current iframe dimensions
-      function getCurrentIframeDimensions() {
-        var dimensions = { width: null, height: null };
+    // Enqueue external JavaScript file
+    wp_enqueue_script(
+      'mtp-admin-matches-meta-boxes',
+      plugins_url('assets/js/admin-matches-meta-boxes.js', dirname(__FILE__)),
+      array('jquery'),
+      '1.0.0',
+      true
+    );
 
-        // Check if global dimensions are available from frontend script
-        if (window.MTP_IframeDimensions) {
-          // Find the most recent dimensions for any iframe
-          var latestTimestamp = 0;
-          var latestDimensions = null;
-
-          for (var iframeId in window.MTP_IframeDimensions) {
-            var dim = window.MTP_IframeDimensions[iframeId];
-            if (dim.timestamp > latestTimestamp) {
-              latestTimestamp = dim.timestamp;
-              latestDimensions = dim;
-            }
-          }
-
-          if (latestDimensions) {
-            dimensions.width = latestDimensions.width;
-            dimensions.height = latestDimensions.height;
-          }
-        }
-
-        // Fallback: check actual iframe dimensions in the preview
-        if (!dimensions.width || !dimensions.height) {
-          var previewIframe = $("#mtp-preview iframe[id^='mtp-matches-']").first();
-          if (previewIframe.length) {
-            dimensions.width = previewIframe.attr('width') || previewIframe.width();
-            dimensions.height = previewIframe.attr('height') || previewIframe.height();
-          }
-        }
-
-        return dimensions;
-      }
-
-      // Define updateShortcode function globally so shared utilities can call it
-      window.updateShortcode = function() {
-        var postId = <?php echo intval(get_the_ID()); ?>;
-        var tournamentId = $("#mtp_tournament_id").val() || "";
-
-        // Get current iframe dimensions if available, otherwise use defaults
-        var currentDimensions = getCurrentIframeDimensions();
-        var width = currentDimensions.width || "<?php echo esc_js($meta_values['width']); ?>" || "300";
-        var height = currentDimensions.height || "<?php echo esc_js($meta_values['height']); ?>" || "200";
-
-        // Update hidden fields so the values get saved
-        $("#mtp_width").val(width);
-        $("#mtp_height").val(height);
-
-        var fontSize = $("#mtp_font_size").val() || "9";
-        var headerFontSize = $("#mtp_header_font_size").val() || "10";
-        var textColor = $("#mtp_text_color").val().replace("#", "") || "000000";
-        var mainColor = $("#mtp_main_color").val().replace("#", "") || "173f75";
-        var tablePadding = $("#mtp_table_padding").val() || "2";
-        var innerPadding = $("#mtp_inner_padding").val() || "5";
-        var borderColor = $("#mtp_border_color").val().replace("#", "") || "bbbbbb";
-        var headBottomBorderColor = $("#mtp_head_bottom_border_color").val().replace("#", "") || "bbbbbb";
-        var bsizeh = $("#mtp_bsizeh").val() || "1";
-        var bsizev = $("#mtp_bsizev").val() || "1";
-        var bsizeoh = $("#mtp_bsizeoh").val() || "1";
-        var bsizeov = $("#mtp_bsizeov").val() || "1";
-        var bbsize = $("#mtp_bbsize").val() || "2";
-        var ehrsize = $("#mtp_ehrsize").val() || "10";
-        var ehrtop = $("#mtp_ehrtop").val() || "9";
-        var ehrbottom = $("#mtp_ehrbottom").val() || "3";
-        var language = $("#mtp_language").val() || "en";
-        var group = $("#mtp_group").val() || "";
-        var participant = $("#mtp_participant").val() || "-1";
-        var matchNumber = $("#mtp_match_number").val() || "";
-
-        // Combine colors with opacity (convert opacity percentage to hex)
-        var bgColor = $("#mtp_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_bg_opacity").val() / 100) * 255));
-        var evenBgColor = $("#mtp_even_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_even_bg_opacity").val() / 100) * 255));
-        var oddBgColor = $("#mtp_odd_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_odd_bg_opacity").val() / 100) * 255));
-        var hoverBgColor = $("#mtp_hover_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_hover_bg_opacity").val() / 100) * 255));
-        var headBgColor = $("#mtp_head_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_head_bg_opacity").val() / 100) * 255));
-
-        // Build complete shortcode (width and height removed for auto-sizing)
-        var newShortcode = '[mtp-matches id="' + tournamentId + '" post_id="' + postId + '" lang="' + language + '"' +
-                          ' s-size="' + fontSize + '"' +
-                          ' s-sizeheader="' + headerFontSize + '"' +
-                          ' s-color="' + textColor + '"' +
-                          ' s-maincolor="' + mainColor + '"' +
-                          ' s-padding="' + tablePadding + '"' +
-                          ' s-innerpadding="' + innerPadding + '"' +
-                          ' s-bgcolor="' + bgColor + '"' +
-                          ' s-bcolor="' + borderColor + '"' +
-                          ' s-bbcolor="' + headBottomBorderColor + '"' +
-                          ' s-bgeven="' + evenBgColor + '"' +
-                          ' s-bsizeh="' + bsizeh + '"' +
-                          ' s-bsizev="' + bsizev + '"' +
-                          ' s-bsizeoh="' + bsizeoh + '"' +
-                          ' s-bsizeov="' + bsizeov + '"' +
-                          ' s-bbsize="' + bbsize + '"' +
-                          ' s-ehrsize="' + ehrsize + '"' +
-                          ' s-ehrtop="' + ehrtop + '"' +
-                          ' s-ehrbottom="' + ehrbottom + '"' +
-                          ' s-bgodd="' + oddBgColor + '"' +
-                          ' s-bgover="' + hoverBgColor + '"' +
-                          ' s-bghead="' + headBgColor + '"';
-
-        // Add bm parameter if projector_presentation checkbox is checked
-        if ($("#mtp_projector_presentation").is(":checked")) {
-          newShortcode += ' bm="1"';
-        }
-
-        // Add si parameter if si checkbox is checked
-        if ($("#mtp_si").is(":checked")) {
-          newShortcode += ' si="1"';
-        }
-
-        // Add sf parameter if sf checkbox is checked (Suppress Court)
-        if ($("#mtp_sf").is(":checked")) {
-          newShortcode += ' sf="1"';
-        }
-
-        // Add st parameter if st checkbox is checked
-        if ($("#mtp_st").is(":checked")) {
-          newShortcode += ' st="1"';
-        }
-
-        // Add sg parameter if sg checkbox is checked
-        if ($("#mtp_sg").is(":checked")) {
-          newShortcode += ' sg="1"';
-        }
-
-        // Add sr parameter if sr checkbox is checked (Suppress Referee)
-        if ($("#mtp_sr").is(":checked")) {
-          newShortcode += ' sr="1"';
-        }
-
-        // Add se parameter if se checkbox is checked
-        if ($("#mtp_se").is(":checked")) {
-          newShortcode += ' se="1"';
-        }
-
-        // Add sp parameter if sp checkbox is checked
-        if ($("#mtp_sp").is(":checked")) {
-          newShortcode += ' sp="1"';
-        }
-
-        // Add sh parameter if sh checkbox is checked
-        if ($("#mtp_sh").is(":checked")) {
-          newShortcode += ' sh="1"';
-        }
-
-        // Add group parameter if selected
-        if (group) {
-          newShortcode += ' group="' + group + '"';
-        }
-
-        // Add participant parameter if selected and not default "All"
-        if (participant && participant !== '-1') {
-          newShortcode += ' participant="' + participant + '"';
-        }
-
-        // Add gamenumbers parameter if specified
-        if (matchNumber) {
-          newShortcode += ' gamenumbers="' + matchNumber + '"';
-        }
-
-        // Add width and height parameters
-        newShortcode += ' width="' + width + '" height="' + height + '"';
-
-        newShortcode += ']';
-
-        $("#mtp_shortcode_field").val(newShortcode);
-      };
-
-      // Convert decimal opacity to hex (match PHP behavior)
-      function opacityToHex(opacity) {
-        var hex = Math.round(opacity).toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
-      }
-
-      // Call updateShortcode initially to populate the field
-      if (typeof window.updateShortcode === 'function') {
-        window.updateShortcode();
-      }
-    });
-    </script>
-    <?php
+    // Localize script with configuration
+    wp_localize_script(
+      'mtp-admin-matches-meta-boxes',
+      'mtpMatchesMetaBoxConfig',
+      array(
+        'postId' => intval(get_the_ID()),
+        'defaultWidth' => esc_js($meta_values['width']),
+        'defaultHeight' => esc_js($meta_values['height'])
+      )
+    );
   }
 
   /**
