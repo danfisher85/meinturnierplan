@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MeinTurnierplan\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-22 13:37+0000\n"
+"POT-Creation-Date: 2025-12-22 16:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,13 +16,7 @@ msgstr ""
 "X-Loco-Version: 2.8.0; wp-6.8.3; php-8.2.27\n"
 "X-Domain: meinturnierplan"
 
-#: includes/class-mtp-admin-utilities.php:1010
-#: includes/class-mtp-admin-utilities.php:1025
-msgid " (saved)"
-msgstr ""
-
-#: includes/class-mtp-admin-utilities.php:859
-#: includes/class-mtp-admin-utilities.php:882
+#: includes/class-mtp-admin-utilities.php:672
 msgid "(saved)"
 msgstr ""
 
@@ -67,19 +61,15 @@ msgctxt "Admin Menu text"
 msgid "Tournament Tables"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:954
-#: includes/class-mtp-admin-utilities.php:1007
-#: includes/class-mtp-admin-utilities.php:1022
-#: includes/class-mtp-admin-utilities.php:1283
+#: includes/class-mtp-admin-utilities.php:676
+#: includes/class-mtp-admin-utilities.php:907
 msgid "All"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:809
-#: includes/class-mtp-admin-utilities.php:848
-#: includes/class-mtp-admin-utilities.php:876
-#: includes/class-mtp-admin-utilities.php:1178
-#: includes/class-mtp-admin-utilities.php:1206
-#: includes/class-mtp-admin-utilities.php:1220
+#: includes/class-mtp-admin-utilities.php:667
+#: includes/class-mtp-admin-utilities.php:807
+#: includes/class-mtp-admin-utilities.php:835
+#: includes/class-mtp-admin-utilities.php:849
 msgid "All Matches"
 msgstr ""
 
@@ -156,13 +146,12 @@ msgstr ""
 msgid "Content Font Size (pt)"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1084
+#: includes/class-mtp-admin-utilities.php:719
 msgid "Copy Shortcode"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:850
-#: includes/class-mtp-admin-utilities.php:878
-#: includes/class-mtp-admin-utilities.php:1222
+#: includes/class-mtp-admin-utilities.php:670
+#: includes/class-mtp-admin-utilities.php:851
 msgid "Default"
 msgstr ""
 
@@ -256,7 +245,7 @@ msgid "Enter a Tournament ID above to display live matches data."
 msgstr ""
 
 #: includes/class-mtp-table-renderer.php:250
-#: includes/class-mtp-admin-utilities.php:1095
+#: includes/class-mtp-admin-utilities.php:730
 msgid "Enter a Tournament ID above to display live tournament data."
 msgstr ""
 
@@ -265,11 +254,11 @@ msgstr ""
 msgid "Enter the tournament ID from meinturnierplan.de (e.g., 1753883027)"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:887
+#: includes/class-mtp-admin-utilities.php:675
 msgid "Error refreshing groups. Please try again."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1031
+#: includes/class-mtp-admin-utilities.php:682
 msgid "Error refreshing participants. Please try again."
 msgstr ""
 
@@ -282,15 +271,14 @@ msgstr ""
 msgid "Even Rows Background Color"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:829
-#: includes/class-mtp-admin-utilities.php:855
-#: includes/class-mtp-admin-utilities.php:1201
-#: includes/class-mtp-admin-utilities.php:1228
+#: includes/class-mtp-admin-utilities.php:668
+#: includes/class-mtp-admin-utilities.php:830
+#: includes/class-mtp-admin-utilities.php:857
 msgid "Final Round"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:882
-#: includes/class-mtp-admin-utilities.php:1211
+#: includes/class-mtp-admin-utilities.php:674
+#: includes/class-mtp-admin-utilities.php:840
 msgid "Final Round (saved)"
 msgstr ""
 
@@ -298,7 +286,7 @@ msgstr ""
 msgid "Français / French"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1078
+#: includes/class-mtp-admin-utilities.php:713
 msgid "Generated Shortcode:"
 msgstr ""
 
@@ -307,25 +295,24 @@ msgstr ""
 msgid "Go to Tournament."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:859
-#: includes/class-mtp-admin-utilities.php:882
-#: includes/class-mtp-admin-utilities.php:1169
+#: includes/class-mtp-admin-utilities.php:671
+#: includes/class-mtp-admin-utilities.php:798
 msgid "Group"
 msgstr ""
 
 #. %s is the group display name
-#: includes/class-mtp-admin-utilities.php:1195
+#: includes/class-mtp-admin-utilities.php:824
 #, php-format
 msgid "Group %s"
 msgstr ""
 
 #. %s is the saved group name
-#: includes/class-mtp-admin-utilities.php:1214
+#: includes/class-mtp-admin-utilities.php:843
 #, php-format
 msgid "Group %s (saved)"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:839
+#: includes/class-mtp-admin-utilities.php:669
 msgid "Groups refreshed successfully!"
 msgstr ""
 
@@ -396,11 +383,11 @@ msgstr ""
 msgid "Link & Navigation Color"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:790
+#: includes/class-mtp-admin-utilities.php:666
 msgid "Loading groups..."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:966
+#: includes/class-mtp-admin-utilities.php:678
 msgid "Loading participants..."
 msgstr ""
 
@@ -464,15 +451,15 @@ msgstr ""
 msgid "New Tournament Table"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:777
+#: includes/class-mtp-admin-utilities.php:664
 msgid "No groups available"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:865
+#: includes/class-mtp-admin-utilities.php:673
 msgid "No groups found for this tournament."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1016
+#: includes/class-mtp-admin-utilities.php:681
 msgid "No participants found for this tournament."
 msgstr ""
 
@@ -496,7 +483,7 @@ msgstr ""
 msgid "No tournament tables found."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1094
+#: includes/class-mtp-admin-utilities.php:729
 msgid "Note:"
 msgstr ""
 
@@ -539,11 +526,11 @@ msgstr ""
 msgid "Parent Tournament Tables:"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1276
+#: includes/class-mtp-admin-utilities.php:900
 msgid "Participant"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1003
+#: includes/class-mtp-admin-utilities.php:679
 msgid "Participants refreshed successfully!"
 msgstr ""
 
@@ -598,19 +585,19 @@ msgstr ""
 msgid "Projector Presentation"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1233
+#: includes/class-mtp-admin-utilities.php:862
 msgid "Refresh Groups"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1303
+#: includes/class-mtp-admin-utilities.php:927
 msgid "Refresh Participants"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:787
+#: includes/class-mtp-admin-utilities.php:665
 msgid "Refreshing groups..."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:963
+#: includes/class-mtp-admin-utilities.php:677
 msgid "Refreshing participants..."
 msgstr ""
 
@@ -662,7 +649,7 @@ msgstr ""
 msgid "Security check failed"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1239
+#: includes/class-mtp-admin-utilities.php:868
 msgid ""
 "Select a group to display from this tournament. Click refresh to update "
 "groups from server. Please note that some tournaments do not have groups."
@@ -672,7 +659,7 @@ msgstr ""
 msgid "Select a Matches Table"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1309
+#: includes/class-mtp-admin-utilities.php:933
 msgid ""
 "Select a participant (team) to filter matches. Select \"All\" to display "
 "matches for all participants. Click refresh to update participants from "
@@ -878,7 +865,7 @@ msgstr ""
 msgid "Set the top padding of the headlines. 9px is the default value."
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1089
+#: includes/class-mtp-admin-utilities.php:724
 msgid "Shortcode copied to clipboard!"
 msgstr ""
 
@@ -979,13 +966,12 @@ msgstr ""
 msgid "Table Top and Bottom Border Size (px)"
 msgstr ""
 
-#: includes/class-mtp-admin-utilities.php:1010
-#: includes/class-mtp-admin-utilities.php:1025
-msgid "Team "
+#: includes/class-mtp-admin-utilities.php:680
+msgid "Team"
 msgstr ""
 
 #. %s is the saved team name
-#: includes/class-mtp-admin-utilities.php:1299
+#: includes/class-mtp-admin-utilities.php:923
 #, php-format
 msgid "Team %s (saved)"
 msgstr ""
