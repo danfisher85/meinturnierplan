@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Table Post Type Management Class
  */
-class MTP_Table_Post_Type {
+class MTRN_Table_Post_Type {
 
   /**
    * Constructor
@@ -68,6 +68,6 @@ class MTP_Table_Post_Type {
       'supports'           => array('title')
     );
 
-    register_post_type('mtp_table', $args);
+    register_post_type('mtrn_table', $args);
   }
 }

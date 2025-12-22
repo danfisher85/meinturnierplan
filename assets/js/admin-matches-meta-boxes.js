@@ -13,13 +13,13 @@
     var dimensions = { width: null, height: null };
 
     // Check if global dimensions are available from frontend script
-    if (window.MTP_IframeDimensions) {
+    if (window.MTRN_IframeDimensions) {
       // Find the most recent dimensions for any iframe
       var latestTimestamp = 0;
       var latestDimensions = null;
 
-      for (var iframeId in window.MTP_IframeDimensions) {
-        var dim = window.MTP_IframeDimensions[iframeId];
+      for (var iframeId in window.MTRN_IframeDimensions) {
+        var dim = window.MTRN_IframeDimensions[iframeId];
         if (dim.timestamp > latestTimestamp) {
           latestTimestamp = dim.timestamp;
           latestDimensions = dim;
@@ -34,7 +34,7 @@
 
     // Fallback: check actual iframe dimensions in the preview
     if (!dimensions.width || !dimensions.height) {
-      var previewIframe = $("#mtp-preview iframe[id^='mtp-matches-']").first();
+      var previewIframe = $("#mtrn-preview iframe[id^='mtrn-matches-']").first();
       if (previewIframe.length) {
         dimensions.width = previewIframe.attr('width') || previewIframe.width();
         dimensions.height = previewIframe.attr('height') || previewIframe.height();
@@ -53,12 +53,12 @@
   // Define updateShortcode function globally so shared utilities can call it
   window.updateShortcode = function() {
     // Get configuration from localized script
-    var config = window.mtpMatchesMetaBoxConfig || {};
+    var config = window.mtrnMatchesMetaBoxConfig || {};
     var postId = config.postId || 0;
     var defaultWidth = config.defaultWidth || "300";
     var defaultHeight = config.defaultHeight || "200";
 
-    var tournamentId = $("#mtp_tournament_id").val() || "";
+    var tournamentId = $("#mtrn_tournament_id").val() || "";
 
     // Get current iframe dimensions if available, otherwise use defaults
     var currentDimensions = getCurrentIframeDimensions();
@@ -66,36 +66,36 @@
     var height = currentDimensions.height || defaultHeight;
 
     // Update hidden fields so the values get saved
-    $("#mtp_width").val(width);
-    $("#mtp_height").val(height);
+    $("#mtrn_width").val(width);
+    $("#mtrn_height").val(height);
 
-    var fontSize = $("#mtp_font_size").val() || "9";
-    var headerFontSize = $("#mtp_header_font_size").val() || "10";
-    var textColor = $("#mtp_text_color").val().replace("#", "") || "000000";
-    var mainColor = $("#mtp_main_color").val().replace("#", "") || "173f75";
-    var tablePadding = $("#mtp_table_padding").val() || "2";
-    var innerPadding = $("#mtp_inner_padding").val() || "5";
-    var borderColor = $("#mtp_border_color").val().replace("#", "") || "bbbbbb";
-    var headBottomBorderColor = $("#mtp_head_bottom_border_color").val().replace("#", "") || "bbbbbb";
-    var bsizeh = $("#mtp_bsizeh").val() || "1";
-    var bsizev = $("#mtp_bsizev").val() || "1";
-    var bsizeoh = $("#mtp_bsizeoh").val() || "1";
-    var bsizeov = $("#mtp_bsizeov").val() || "1";
-    var bbsize = $("#mtp_bbsize").val() || "2";
-    var ehrsize = $("#mtp_ehrsize").val() || "10";
-    var ehrtop = $("#mtp_ehrtop").val() || "9";
-    var ehrbottom = $("#mtp_ehrbottom").val() || "3";
-    var language = $("#mtp_language").val() || "en";
-    var group = $("#mtp_group").val() || "";
-    var participant = $("#mtp_participant").val() || "-1";
-    var matchNumber = $("#mtp_match_number").val() || "";
+    var fontSize = $("#mtrn_font_size").val() || "9";
+    var headerFontSize = $("#mtrn_header_font_size").val() || "10";
+    var textColor = $("#mtrn_text_color").val().replace("#", "") || "000000";
+    var mainColor = $("#mtrn_main_color").val().replace("#", "") || "173f75";
+    var tablePadding = $("#mtrn_table_padding").val() || "2";
+    var innerPadding = $("#mtrn_inner_padding").val() || "5";
+    var borderColor = $("#mtrn_border_color").val().replace("#", "") || "bbbbbb";
+    var headBottomBorderColor = $("#mtrn_head_bottom_border_color").val().replace("#", "") || "bbbbbb";
+    var bsizeh = $("#mtrn_bsizeh").val() || "1";
+    var bsizev = $("#mtrn_bsizev").val() || "1";
+    var bsizeoh = $("#mtrn_bsizeoh").val() || "1";
+    var bsizeov = $("#mtrn_bsizeov").val() || "1";
+    var bbsize = $("#mtrn_bbsize").val() || "2";
+    var ehrsize = $("#mtrn_ehrsize").val() || "10";
+    var ehrtop = $("#mtrn_ehrtop").val() || "9";
+    var ehrbottom = $("#mtrn_ehrbottom").val() || "3";
+    var language = $("#mtrn_language").val() || "en";
+    var group = $("#mtrn_group").val() || "";
+    var participant = $("#mtrn_participant").val() || "-1";
+    var matchNumber = $("#mtrn_match_number").val() || "";
 
     // Combine colors with opacity (convert opacity percentage to hex)
-    var bgColor = $("#mtp_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_bg_opacity").val() / 100) * 255));
-    var evenBgColor = $("#mtp_even_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_even_bg_opacity").val() / 100) * 255));
-    var oddBgColor = $("#mtp_odd_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_odd_bg_opacity").val() / 100) * 255));
-    var hoverBgColor = $("#mtp_hover_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_hover_bg_opacity").val() / 100) * 255));
-    var headBgColor = $("#mtp_head_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtp_head_bg_opacity").val() / 100) * 255));
+    var bgColor = $("#mtrn_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_bg_opacity").val() / 100) * 255));
+    var evenBgColor = $("#mtrn_even_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_even_bg_opacity").val() / 100) * 255));
+    var oddBgColor = $("#mtrn_odd_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_odd_bg_opacity").val() / 100) * 255));
+    var hoverBgColor = $("#mtrn_hover_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_hover_bg_opacity").val() / 100) * 255));
+    var headBgColor = $("#mtrn_head_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_head_bg_opacity").val() / 100) * 255));
 
     // Build complete shortcode (width and height removed for auto-sizing)
     var newShortcode = '[mtp-matches id="' + tournamentId + '" post_id="' + postId + '" lang="' + language + '"' +
@@ -122,47 +122,47 @@
                       ' s-bghead="' + headBgColor + '"';
 
     // Add bm parameter if projector_presentation checkbox is checked
-    if ($("#mtp_projector_presentation").is(":checked")) {
+    if ($("#mtrn_projector_presentation").is(":checked")) {
       newShortcode += ' bm="1"';
     }
 
     // Add si parameter if si checkbox is checked
-    if ($("#mtp_si").is(":checked")) {
+    if ($("#mtrn_si").is(":checked")) {
       newShortcode += ' si="1"';
     }
 
     // Add sf parameter if sf checkbox is checked (Suppress Court)
-    if ($("#mtp_sf").is(":checked")) {
+    if ($("#mtrn_sf").is(":checked")) {
       newShortcode += ' sf="1"';
     }
 
     // Add st parameter if st checkbox is checked
-    if ($("#mtp_st").is(":checked")) {
+    if ($("#mtrn_st").is(":checked")) {
       newShortcode += ' st="1"';
     }
 
     // Add sg parameter if sg checkbox is checked
-    if ($("#mtp_sg").is(":checked")) {
+    if ($("#mtrn_sg").is(":checked")) {
       newShortcode += ' sg="1"';
     }
 
     // Add sr parameter if sr checkbox is checked (Suppress Referee)
-    if ($("#mtp_sr").is(":checked")) {
+    if ($("#mtrn_sr").is(":checked")) {
       newShortcode += ' sr="1"';
     }
 
     // Add se parameter if se checkbox is checked
-    if ($("#mtp_se").is(":checked")) {
+    if ($("#mtrn_se").is(":checked")) {
       newShortcode += ' se="1"';
     }
 
     // Add sp parameter if sp checkbox is checked
-    if ($("#mtp_sp").is(":checked")) {
+    if ($("#mtrn_sp").is(":checked")) {
       newShortcode += ' sp="1"';
     }
 
     // Add sh parameter if sh checkbox is checked
-    if ($("#mtp_sh").is(":checked")) {
+    if ($("#mtrn_sh").is(":checked")) {
       newShortcode += ' sh="1"';
     }
 
@@ -186,7 +186,7 @@
 
     newShortcode += ']';
 
-    $("#mtp_shortcode_field").val(newShortcode);
+    $("#mtrn_shortcode_field").val(newShortcode);
   };
 
   // Initialize on document ready

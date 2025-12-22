@@ -59,24 +59,24 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-if (!defined('MTP_PLUGIN_FILE')) {
-  define('MTP_PLUGIN_FILE', __FILE__);
+if (!defined('MTRN_PLUGIN_FILE')) {
+  define('MTRN_PLUGIN_FILE', __FILE__);
 }
-if (!defined('MTP_PLUGIN_URL')) {
-  define('MTP_PLUGIN_URL', plugin_dir_url(__FILE__));
+if (!defined('MTRN_PLUGIN_URL')) {
+  define('MTRN_PLUGIN_URL', plugin_dir_url(__FILE__));
 }
-if (!defined('MTP_PLUGIN_PATH')) {
-  define('MTP_PLUGIN_PATH', plugin_dir_path(__FILE__));
+if (!defined('MTRN_PLUGIN_PATH')) {
+  define('MTRN_PLUGIN_PATH', plugin_dir_path(__FILE__));
 }
-if (!defined('MTP_PLUGIN_VERSION')) {
-  define('MTP_PLUGIN_VERSION', '1.0.0');
+if (!defined('MTRN_PLUGIN_VERSION')) {
+  define('MTRN_PLUGIN_VERSION', '1.0.0');
 }
 
 // Load requirements checker
-require_once MTP_PLUGIN_PATH . 'includes/class-mtp-requirements-checker.php';
+require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-requirements-checker.php';
 
 // Check minimum requirements
-if (!MTP_Requirements_Checker::check()) {
+if (!MTRN_Requirements_Checker::check()) {
   return;
 }
 
@@ -86,12 +86,12 @@ if (is_admin()) {
 }
 
 // Include required files
-require_once MTP_PLUGIN_PATH . 'includes/class-mtp-plugin.php';
-require_once MTP_PLUGIN_PATH . 'includes/class-mtp-installer.php';
+require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-plugin.php';
+require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-installer.php';
 
 // Register activation and deactivation hooks
-register_activation_hook(__FILE__, array('MTP_Installer', 'activate'));
-register_deactivation_hook(__FILE__, array('MTP_Installer', 'deactivate'));
+register_activation_hook(__FILE__, array('MTRN_Installer', 'activate'));
+register_deactivation_hook(__FILE__, array('MTRN_Installer', 'deactivate'));
 
 // Initialize the plugin
-MTP_Plugin::instance();
+MTRN_Plugin::instance();

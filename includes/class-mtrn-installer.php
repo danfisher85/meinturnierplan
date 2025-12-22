@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Plugin Installer Class
  */
-class MTP_Installer {
+class MTRN_Installer {
 
   /**
    * Constructor
@@ -57,12 +57,12 @@ class MTP_Installer {
    */
   private static function register_post_type_for_activation() {
     // Simple registration for activation - the full registration is handled by respective Post Type classes
-    register_post_type('mtp_table', array(
+    register_post_type('mtrn_table', array(
       'public' => true,
       'rewrite' => array('slug' => 'tournament-table'),
     ));
 
-    register_post_type('mtp_match_list', array(
+    register_post_type('mtrn_match_list', array(
       'public' => true,
       'rewrite' => array('slug' => 'tournament-match-list'),
     ));
@@ -73,12 +73,12 @@ class MTP_Installer {
    */
   private static function set_default_options() {
     // Set plugin version
-    if (!get_option('mtp_plugin_version')) {
-      add_option('mtp_plugin_version', MTP_PLUGIN_VERSION);
+    if (!get_option('mtrn_plugin_version')) {
+      add_option('mtrn_plugin_version', MTRN_PLUGIN_VERSION);
     }
 
     // Set default settings if needed
-    if (!get_option('mtp_default_settings')) {
+    if (!get_option('mtrn_default_settings')) {
       $default_settings = array(
         'default_width' => '300',
         'default_height' => '152',
@@ -86,7 +86,7 @@ class MTP_Installer {
         'default_text_color' => '000000',
         'default_main_color' => '173f75',
       );
-      add_option('mtp_default_settings', $default_settings);
+      add_option('mtrn_default_settings', $default_settings);
     }
   }
 
@@ -94,12 +94,12 @@ class MTP_Installer {
    * Maybe update database
    */
   private static function maybe_update_database() {
-    $current_version = get_option('mtp_plugin_version', '0.0.0');
+    $current_version = get_option('mtrn_plugin_version', '0.0.0');
 
     // If this is a new installation or upgrade, run updates
-    if (version_compare($current_version, MTP_PLUGIN_VERSION, '<')) {
+    if (version_compare($current_version, MTRN_PLUGIN_VERSION, '<')) {
       self::run_database_updates($current_version);
-      update_option('mtp_plugin_version', MTP_PLUGIN_VERSION);
+      update_option('mtrn_plugin_version', MTRN_PLUGIN_VERSION);
     }
   }
 
@@ -122,7 +122,7 @@ class MTP_Installer {
    */
   private static function cleanup_temporary_data() {
     // Clean up any transients or temporary data
-    delete_transient('mtp_temporary_data');
+    delete_transient('mtrn_temporary_data');
 
     // Note: We don't delete user data on deactivation
     // Only clean up temporary/cache data
@@ -136,11 +136,11 @@ class MTP_Installer {
     // Remove all plugin data if user wants to completely remove the plugin
 
     // Remove plugin options
-    delete_option('mtp_plugin_version');
-    delete_option('mtp_default_settings');
+    delete_option('mtrn_plugin_version');
+    delete_option('mtrn_default_settings');
 
     // Remove all posts of our custom post types
-    $post_types = array('mtp_table', 'mtp_match_list');
+    $post_types = array('mtrn_table', 'mtrn_match_list');
 
     foreach ($post_types as $post_type) {
       $posts = get_posts(array(
@@ -157,10 +157,10 @@ class MTP_Installer {
     // Remove all meta data associated with our post types
     global $wpdb;
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct query acceptable during uninstall for cleanup
-    $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mtp_%'");
+    $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_mtrn_%'");
 
     // Clean up any remaining transients
-    delete_transient('mtp_temporary_data');
+    delete_transient('mtrn_temporary_data');
 
     // Flush rewrite rules
     flush_rewrite_rules();

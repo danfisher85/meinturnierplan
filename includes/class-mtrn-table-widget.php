@@ -7,18 +7,18 @@
  * @version 1.0.0
  */
 
-class MTP_Table_Widget extends WP_Widget {
+class MTRN_Table_Widget extends WP_Widget {
 
   /**
    * Constructor
    */
   public function __construct() {
     parent::__construct(
-      'mtp_table_widget',
+      'mtrn_table_widget',
       __('Tournament Table', 'meinturnierplan'),
       array(
         'description' => __('Display a tournament table.', 'meinturnierplan'),
-        'classname'   => 'mtp-table-widget'
+        'classname'   => 'mtrn-table-widget'
       )
     );
   }
@@ -49,12 +49,12 @@ class MTP_Table_Widget extends WP_Widget {
       $shortcode_atts = array_merge($shortcode_atts, $this->get_config_attributes_from_meta($table_id));
 
       // Use the existing shortcode functionality
-      $mtp_plugin = MTP_Plugin::instance();
-      $shortcode = new MTP_Table_Shortcode($mtp_plugin->table_renderer);
+      $mtrn_plugin = MTRN_Plugin::instance();
+      $shortcode = new MTRN_Table_Shortcode($mtrn_plugin->table_renderer);
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped in the renderer class
       echo $shortcode->shortcode_callback($shortcode_atts);
     } else {
-      echo '<div class="mtp-widget-placeholder">' . esc_html__('Please select a Tournament Table.', 'meinturnierplan') . '</div>';
+      echo '<div class="mtrn-widget-placeholder">' . esc_html__('Please select a Tournament Table.', 'meinturnierplan') . '</div>';
     }
 
     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $args['after_widget'] is already escaped by WordPress core
@@ -70,7 +70,7 @@ class MTP_Table_Widget extends WP_Widget {
 
     // Get all tournament tables
     $tables = get_posts(array(
-      'post_type'      => 'mtp_table',
+      'post_type'      => 'mtrn_table',
       'post_status'    => 'publish',
       'posts_per_page' => -1,
       'orderby'        => 'title',
@@ -119,20 +119,20 @@ class MTP_Table_Widget extends WP_Widget {
 
     // Define parameter mapping from meta keys to shortcode attribute names
     $param_mapping = array(
-      '_mtp_font_size' => 's-size',
-      '_mtp_header_font_size' => 's-sizeheader',
-      '_mtp_text_color' => 's-color',
-      '_mtp_main_color' => 's-maincolor',
-      '_mtp_table_padding' => 's-padding',
-      '_mtp_inner_padding' => 's-innerpadding',
-      '_mtp_logo_size' => 's-logosize',
-      '_mtp_border_color' => 's-bcolor',
-      '_mtp_bsizeh' => 's-bsizeh',
-      '_mtp_bsizev' => 's-bsizev',
-      '_mtp_bsizeoh' => 's-bsizeoh',
-      '_mtp_bsizeov' => 's-bsizeov',
-      '_mtp_head_bottom_border_color' => 's-bbcolor',
-      '_mtp_bbsize' => 's-bbsize',
+      '_mtrn_font_size' => 's-size',
+      '_mtrn_header_font_size' => 's-sizeheader',
+      '_mtrn_text_color' => 's-color',
+      '_mtrn_main_color' => 's-maincolor',
+      '_mtrn_table_padding' => 's-padding',
+      '_mtrn_inner_padding' => 's-innerpadding',
+      '_mtrn_logo_size' => 's-logosize',
+      '_mtrn_border_color' => 's-bcolor',
+      '_mtrn_bsizeh' => 's-bsizeh',
+      '_mtrn_bsizev' => 's-bsizev',
+      '_mtrn_bsizeoh' => 's-bsizeoh',
+      '_mtrn_bsizeov' => 's-bsizeov',
+      '_mtrn_head_bottom_border_color' => 's-bbcolor',
+      '_mtrn_bbsize' => 's-bbsize',
     );
 
     // Get simple color/styling values
@@ -145,11 +145,11 @@ class MTP_Table_Widget extends WP_Widget {
 
     // Handle color+opacity combinations
     $color_opacity_mapping = array(
-      '_mtp_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtp_bg_opacity'),
-      '_mtp_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtp_even_bg_opacity'),
-      '_mtp_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtp_odd_bg_opacity'),
-      '_mtp_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtp_hover_bg_opacity'),
-      '_mtp_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtp_head_bg_opacity'),
+      '_mtrn_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtrn_bg_opacity'),
+      '_mtrn_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtrn_even_bg_opacity'),
+      '_mtrn_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtrn_odd_bg_opacity'),
+      '_mtrn_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtrn_hover_bg_opacity'),
+      '_mtrn_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtrn_head_bg_opacity'),
     );
 
     foreach ($color_opacity_mapping as $color_meta => $config) {
@@ -157,7 +157,7 @@ class MTP_Table_Widget extends WP_Widget {
       $opacity = get_post_meta($table_id, $config['opacity_meta'], true);
 
       if (!empty($color)) {
-        $combined_color = MTP_Admin_Utilities::combine_color_opacity($color, $opacity);
+        $combined_color = MTRN_Admin_Utilities::combine_color_opacity($color, $opacity);
         $attributes[$config['attr']] = $combined_color;
       }
     }
@@ -173,11 +173,11 @@ class MTP_Table_Widget extends WP_Widget {
 
     // Define boolean parameter mapping
     $boolean_params = array(
-      '_mtp_suppress_wins' => 'sw',
-      '_mtp_suppress_logos' => 'sl',
-      '_mtp_suppress_num_matches' => 'sn',
-      '_mtp_projector_presentation' => 'bm',
-      '_mtp_navigation_for_groups' => 'nav',
+      '_mtrn_suppress_wins' => 'sw',
+      '_mtrn_suppress_logos' => 'sl',
+      '_mtrn_suppress_num_matches' => 'sn',
+      '_mtrn_projector_presentation' => 'bm',
+      '_mtrn_navigation_for_groups' => 'nav',
     );
 
     foreach ($boolean_params as $meta_key => $attr_name) {
@@ -188,13 +188,13 @@ class MTP_Table_Widget extends WP_Widget {
     }
 
     // Get language setting
-    $language = get_post_meta($table_id, '_mtp_language', true);
+    $language = get_post_meta($table_id, '_mtrn_language', true);
     if (!empty($language)) {
       $attributes['lang'] = $language;
     }
 
     // Get group setting
-    $group = get_post_meta($table_id, '_mtp_group', true);
+    $group = get_post_meta($table_id, '_mtrn_group', true);
     if (!empty($group)) {
       $attributes['group'] = $group;
     }

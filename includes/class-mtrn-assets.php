@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Assets Manager Class
  */
-class MTP_Assets {
+class MTRN_Assets {
 
   /**
    * Constructor
@@ -42,17 +42,17 @@ class MTP_Assets {
     // Only load on our post type edit pages
     if ('post.php' == $hook || 'post-new.php' == $hook) {
       global $post;
-      if ($post && ($post->post_type == 'mtp_table' || $post->post_type == 'mtp_match_list')) {
+      if ($post && ($post->post_type == 'mtrn_table' || $post->post_type == 'mtrn_match_list')) {
         // Enqueue WordPress color picker
         wp_enqueue_script('wp-color-picker');
         wp_enqueue_style('wp-color-picker');
 
         // Enqueue main plugin styles for admin
         wp_enqueue_style(
-          'mtp-admin-styles',
-          MTP_PLUGIN_URL . 'assets/css/style.css',
+          'mtrn-admin-styles',
+          MTRN_PLUGIN_URL . 'assets/css/style.css',
           array('wp-color-picker'),
-          MTP_PLUGIN_VERSION
+          MTRN_PLUGIN_VERSION
         );
 
         // Enqueue jQuery (already available in admin)
@@ -60,30 +60,30 @@ class MTP_Assets {
 
         // Enqueue custom admin scripts if needed
         wp_enqueue_script(
-          'mtp-admin-scripts',
-          MTP_PLUGIN_URL . 'assets/js/admin.js',
+          'mtrn-admin-scripts',
+          MTRN_PLUGIN_URL . 'assets/js/admin.js',
           array('jquery', 'wp-color-picker'),
-          MTP_PLUGIN_VERSION,
+          MTRN_PLUGIN_VERSION,
           true
         );
 
         // Enqueue frontend auto-resize script for admin preview
         wp_enqueue_script(
-          'mtp-frontend-scripts',
-          MTP_PLUGIN_URL . 'assets/js/frontend.js',
+          'mtrn-frontend-scripts',
+          MTRN_PLUGIN_URL . 'assets/js/frontend.js',
           array(),
-          MTP_PLUGIN_VERSION,
+          MTRN_PLUGIN_VERSION,
           true
         );
 
         // Localize script for AJAX
-        wp_localize_script('mtp-admin-scripts', 'mtp_ajax', array(
+        wp_localize_script('mtrn-admin-scripts', 'mtrn_ajax', array(
           'ajax_url' => admin_url('admin-ajax.php'),
-          'preview_nonce' => wp_create_nonce('mtp_preview_nonce')
+          'preview_nonce' => wp_create_nonce('mtrn_preview_nonce')
         ));
 
         // Add debug info for admin
-        wp_add_inline_script('mtp-frontend-scripts', 'console.log("[MTP] Frontend script loaded in admin for preview functionality");', 'before');
+        wp_add_inline_script('mtrn-frontend-scripts', 'console.log("[MTRN] Frontend script loaded in admin for preview functionality");', 'before');
       }
     }
   }
@@ -94,19 +94,19 @@ class MTP_Assets {
   public function enqueue_frontend_scripts() {
     // Debug: Always enqueue for testing (remove this later)
     wp_enqueue_script(
-      'mtp-frontend-scripts',
-      MTP_PLUGIN_URL . 'assets/js/frontend.js',
+      'mtrn-frontend-scripts',
+      MTRN_PLUGIN_URL . 'assets/js/frontend.js',
       array(),
-      MTP_PLUGIN_VERSION,
+      MTRN_PLUGIN_VERSION,
       true
     );
 
     // Also check if we have tournament tables or matches on the page
     if ($this->page_has_tournament_tables()) {
       // Add debug info to the page
-      wp_add_inline_script('mtp-frontend-scripts', 'console.log("[MTP] Tournament content detected on page");', 'before');
+      wp_add_inline_script('mtrn-frontend-scripts', 'console.log("[MTRN] Tournament content detected on page");', 'before');
     } else {
-      wp_add_inline_script('mtp-frontend-scripts', 'console.log("[MTP] No tournament content detected on page");', 'before');
+      wp_add_inline_script('mtrn-frontend-scripts', 'console.log("[MTRN] No tournament content detected on page");', 'before');
     }
   }
 
@@ -119,7 +119,7 @@ class MTP_Assets {
     // Check if we're on a page/post with tournament table or matches shortcodes or blocks
     if ($post && ($post->post_content)) {
       // Check for shortcodes
-      if (has_shortcode($post->post_content, 'mtp_table') || has_shortcode($post->post_content, 'mtp-matches')) {
+      if (has_shortcode($post->post_content, 'mtrn_table') || has_shortcode($post->post_content, 'mtrn-matches')) {
         return true;
       }
 
@@ -129,13 +129,13 @@ class MTP_Assets {
       }
 
       // Check if this is a tournament table or matches post type
-      if ($post->post_type === 'mtp_table' || $post->post_type === 'mtp_match_list') {
+      if ($post->post_type === 'mtrn_table' || $post->post_type === 'mtrn_match_list') {
         return true;
       }
     }
 
     // Also check if any widgets are displaying tournament tables or matches
-    if (is_active_widget(false, false, 'mtp_table_widget') || is_active_widget(false, false, 'mtp_matches_widget')) {
+    if (is_active_widget(false, false, 'mtrn_table_widget') || is_active_widget(false, false, 'mtrn_matches_widget')) {
       return true;
     }
 
@@ -146,13 +146,13 @@ class MTP_Assets {
    * Get plugin URL
    */
   public function get_plugin_url() {
-    return MTP_PLUGIN_URL;
+    return MTRN_PLUGIN_URL;
   }
 
   /**
    * Get assets URL
    */
   public function get_assets_url() {
-    return MTP_PLUGIN_URL . 'assets/';
+    return MTRN_PLUGIN_URL . 'assets/';
   }
 }

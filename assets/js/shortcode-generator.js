@@ -1,5 +1,5 @@
 /**
- * MTP Shortcode Generator
+ * MTRN Shortcode Generator
  * 
  * Handles shortcode copy-to-clipboard functionality and form field listeners
  * 
@@ -11,7 +11,7 @@
   'use strict';
 
   $(document).ready(function() {
-    var config = window.mtpShortcodeConfig || {};
+    var config = window.mtrnShortcodeConfig || {};
     
     // Copy shortcode to clipboard functionality
     $("#" + config.copyButtonId).on("click", function() {
@@ -25,7 +25,7 @@
     // Form field change listeners - calls custom update function if it exists
     if (typeof window[config.updateCallback] === 'function') {
       // Input and select field changes
-      $("input[id^='" + config.fieldPrefix + "'], .mtp-color-picker, select[id^='" + config.fieldPrefix + "']").on("input change", function() {
+      $("input[id^='" + config.fieldPrefix + "'], .mtrn-color-picker, select[id^='" + config.fieldPrefix + "']").on("input change", function() {
         window[config.updateCallback]();
       });
 

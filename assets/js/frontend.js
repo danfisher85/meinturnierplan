@@ -7,7 +7,7 @@
   'use strict';
 
   // Global object to store current iframe dimensions for admin use
-  window.MTP_IframeDimensions = window.MTP_IframeDimensions || {};
+  window.MTRN_IframeDimensions = window.MTRN_IframeDimensions || {};
 
   // Configuration
   const config = {
@@ -60,7 +60,7 @@
     }
 
     // Store dimensions globally for admin shortcode generation
-    window.MTP_IframeDimensions[iframe.id] = {
+    window.MTRN_IframeDimensions[iframe.id] = {
       width: validated.width || dimensions.width,
       height: validated.height || dimensions.height,
       timestamp: Date.now()
@@ -82,14 +82,14 @@
     }
 
     // Find all tournament table and matches iframes
-    const iframes = document.querySelectorAll('iframe[id^="mtp-table-"], iframe[id^="mtp-matches-"]');
+    const iframes = document.querySelectorAll('iframe[id^="mtrn-table-"], iframe[id^="mtrn-matches-"]');
 
     let resized = false;
     iframes.forEach(function(iframe) {
       // Check if this iframe matches the source of the message
       if (iframe.contentWindow === event.source) {
         // Clear any pending fallback timeout for this iframe
-        iframe.removeAttribute('data-mtp-fallback-pending');
+        iframe.removeAttribute('data-mtrn-fallback-pending');
 
         resizeIframe(iframe, {
           width: event.data.width,
@@ -104,11 +104,11 @@
    * Set up fallback resize behavior
    */
   function setupFallbacks() {
-    const iframes = document.querySelectorAll('iframe[id^="mtp-table-"], iframe[id^="mtp-matches-"]');
+    const iframes = document.querySelectorAll('iframe[id^="mtrn-table-"], iframe[id^="mtrn-matches-"]');
 
     iframes.forEach(function(iframe) {
       // Mark iframe as needing fallback
-      iframe.setAttribute('data-mtp-fallback-pending', 'true');
+      iframe.setAttribute('data-mtrn-fallback-pending', 'true');
 
       // Set up load event listener
       iframe.addEventListener('load', function() {
@@ -123,10 +123,10 @@
 
       // Set a fallback timeout - but allow postMessage to cancel it
       setTimeout(function() {
-        if (iframe.getAttribute('data-mtp-fallback-pending') === 'true') {
+        if (iframe.getAttribute('data-mtrn-fallback-pending') === 'true') {
           iframe.style.height = config.fallbackHeight + 'px';
           iframe.setAttribute('height', config.fallbackHeight);
-          iframe.removeAttribute('data-mtp-fallback-pending');
+          iframe.removeAttribute('data-mtrn-fallback-pending');
         }
       }, config.resizeTimeout);
     });
@@ -154,12 +154,12 @@
           // Check for new iframes or src changes
           if (mutation.type === 'childList') {
             mutation.addedNodes.forEach(function(node) {
-              if (node.nodeType === 1 && (node.tagName === 'IFRAME' || node.querySelector('iframe[id^="mtp-table-"], iframe[id^="mtp-matches-"]'))) {
+              if (node.nodeType === 1 && (node.tagName === 'IFRAME' || node.querySelector('iframe[id^="mtrn-table-"], iframe[id^="mtrn-matches-"]'))) {
                 shouldReset = true;
               }
             });
           } else if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
-            if (mutation.target.id && (mutation.target.id.startsWith('mtp-table-') || mutation.target.id.startsWith('mtp-matches-'))) {
+            if (mutation.target.id && (mutation.target.id.startsWith('mtrn-table-') || mutation.target.id.startsWith('mtrn-matches-'))) {
               shouldReset = true;
             }
           }

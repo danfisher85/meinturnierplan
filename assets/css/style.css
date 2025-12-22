@@ -4,38 +4,38 @@
  */
 
 /* Admin preview styles */
-#mtp-preview {
+#mtrn-preview {
   overflow-x: auto;
 }
 
-#mtp-preview .mtp-tournament-table {
+#mtrn-preview .mtrn-tournament-table {
   margin: 10px 0;
 }
 
 /* Admin two-column layout */
-.mtp-admin-two-column-layout {
+.mtrn-admin-two-column-layout {
   display: flex;
   gap: 20px;
   align-items: flex-start;
   padding-block: 8px;
 }
 
-.mtp-admin-column {
+.mtrn-admin-column {
   flex: 1;
   min-width: 0; /* Allows flex items to shrink below their content width */
 }
 
-.mtp-admin-column-left {
+.mtrn-admin-column-left {
   flex: 1.1; /* Settings take slightly more space */
 }
 
-.mtp-admin-column-right {
+.mtrn-admin-column-right {
   position: sticky;
   top: 0;
   flex: 0.9; /* Preview takes slightly less space */
 }
 
-.mtp-admin-column h3 {
+.mtrn-admin-column h3 {
   margin-top: 0;
   margin-bottom: 15px;
   padding-bottom: 8px;
@@ -44,44 +44,44 @@
   font-weight: 600;
 }
 
-.mtp-admin-clear {
+.mtrn-admin-clear {
   clear: both;
 }
 
 /* Responsive design for admin layout */
 @media (max-width: 1366px) {
-  .mtp-admin-two-column-layout {
+  .mtrn-admin-two-column-layout {
     flex-direction: column;
     gap: 15px;
   }
 
-  .mtp-admin-column-left,
-  .mtp-admin-column-right {
+  .mtrn-admin-column-left,
+  .mtrn-admin-column-right {
     flex: none;
     width: 100%;
   }
 }
 
 /* Ensure form table in settings column is responsive */
-.mtp-admin-column-left .form-table {
+.mtrn-admin-column-left .form-table {
   width: 100%;
   max-width: none;
 }
 
-.mtp-admin-column-left .form-table th {
+.mtrn-admin-column-left .form-table th {
   width: 35%;
   padding-right: 10px;
 }
 
-.mtp-admin-column-left .form-table td {
+.mtrn-admin-column-left .form-table td {
   width: 65%;
 }
 
 /* Group Header */
-.form-table .mtp-group-header-wrapper {
+.form-table .mtrn-group-header-wrapper {
   padding: 0;
 }
-.form-table .mtp-group-header {
+.form-table .mtrn-group-header {
   margin: 20px 0 10px 0;
   padding: 8px 0;
   font-size: 14px;
@@ -96,7 +96,7 @@ input[type="number"].regular-text {
 }
 
 /* Preview section styling */
-.mtp-admin-column-right #mtp-preview {
+.mtrn-admin-column-right #mtrn-preview {
   border: 1px solid #ddd;
   padding: 15px;
   background-color: #f9f9fa;
@@ -106,30 +106,30 @@ input[type="number"].regular-text {
 
 /* Adjust preview for smaller screens within the column */
 @media (max-width: 1400px) {
-  .mtp-admin-column-right #mtp-preview {
+  .mtrn-admin-column-right #mtrn-preview {
     overflow-x: auto;
   }
 
-  .mtp-admin-column-right .mtp-tournament-table {
+  .mtrn-admin-column-right .mtrn-tournament-table {
     font-size: 11px;
   }
 
-  .mtp-admin-column-right .mtp-tournament-table th,
-  .mtp-admin-column-right .mtp-tournament-table td {
+  .mtrn-admin-column-right .mtrn-tournament-table th,
+  .mtrn-admin-column-right .mtrn-tournament-table td {
     padding: 3px 5px;
   }
 }
 
 /* Generated Shortcode Field */
-.mtp-generated-shortcode-wrapper {
+.mtrn-generated-shortcode-wrapper {
   margin-bottom: 15px;
 }
-.mtp-generated-shortcode__label {
+.mtrn-generated-shortcode__label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
-.mtp-generated-shortcode__field {
+.mtrn-generated-shortcode__field {
   width: 100%;
   height: 220px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Ubuntu Mono", monospace;
@@ -138,30 +138,30 @@ input[type="number"].regular-text {
   border: 1px solid #ddd;
   background-color: #f9f9f9;
 }
-.mtp-generated-shortcode__btn {
+.mtrn-generated-shortcode__btn {
   width: 100%;
   margin-bottom: 10px;
 }
-.mtp-generated-shortcode__btn-icon {
+.mtrn-generated-shortcode__btn-icon {
   vertical-align: middle;
   margin-right: 5px;
 }
 
-.mtp-generated-shortcode__copy-success {
+.mtrn-generated-shortcode__copy-success {
   color: #46b450;
   margin-top: 8px;
   text-align: center;
 }
-.mtp-generated-shortcode__copy-success-icon {
+.mtrn-generated-shortcode__copy-success-icon {
   vertical-align: middle;
 }
 
-.mtp-generated-shortcode__message {
+.mtrn-generated-shortcode__message {
   margin-top: 10px;
   padding: 8px;
   border-radius: 3px;
 }
-.mtp-generated-shortcode__message--warning {
+.mtrn-generated-shortcode__message--warning {
   background-color: #fff3cd;
   border: 1px solid #ffeaa7;
   color: #856404;
@@ -183,7 +183,7 @@ input[type="number"].regular-text {
 
 
 /* Empty preview */
-.mtp-admin-column-right #mtp-preview .mtp-empty-preview {
+.mtrn-admin-column-right #mtrn-preview .mtrn-empty-preview {
   min-width: 300px;
   max-width: 100%;
   display: flex;
@@ -199,12 +199,12 @@ input[type="number"].regular-text {
   font-size: 14px;
   line-height: 1.5;
 }
-.mtp-admin-column-right #mtp-preview .mtp-empty-preview__icon {
+.mtrn-admin-column-right #mtrn-preview .mtrn-empty-preview__icon {
   width: 40px;
   height: 40px;
   margin-bottom: 8px;
   opacity: 0.6;
 }
-.mtp-admin-column-right #mtp-preview .mtp-empty-preview strong {
+.mtrn-admin-column-right #mtrn-preview .mtrn-empty-preview strong {
   color: #343a40;
 }

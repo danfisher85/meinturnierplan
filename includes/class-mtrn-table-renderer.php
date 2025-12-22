@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Table Renderer Class
  */
-class MTP_Table_Renderer {
+class MTRN_Table_Renderer {
 
   /**
    * Constructor
@@ -33,7 +33,7 @@ class MTP_Table_Renderer {
     if (!empty($atts['id'])) {
       $tournament_id = $atts['id'];
     } elseif (!empty($table_id)) {
-      $tournament_id = get_post_meta($table_id, '_mtp_tournament_id', true);
+      $tournament_id = get_post_meta($table_id, '_mtrn_tournament_id', true);
     }
 
     // If no tournament ID, show empty static table
@@ -52,7 +52,7 @@ class MTP_Table_Renderer {
     $iframe_url = 'https://www.meinturnierplan.de/displayTable.php?' . $this->build_query_string($params);
 
     // Generate unique ID for this iframe instance
-    $iframe_id = 'mtp-table-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
+    $iframe_id = 'mtrn-table-' . $tournament_id . '-' . substr(md5(serialize($atts)), 0, 8);
 
     // Build the iframe HTML with auto-sizing styles and shortcode dimensions
     $iframe_html = sprintf(
@@ -98,7 +98,7 @@ class MTP_Table_Renderer {
     if (isset($atts['sw'])) {
       $suppress_wins = $atts['sw'];
     } elseif ($table_id) {
-      $suppress_wins = get_post_meta($table_id, '_mtp_suppress_wins', true);
+      $suppress_wins = get_post_meta($table_id, '_mtrn_suppress_wins', true);
     }
 
     if (!empty($suppress_wins) && $suppress_wins === '1') {
@@ -110,7 +110,7 @@ class MTP_Table_Renderer {
     if (isset($atts['sl'])) {
       $suppress_logos = $atts['sl'];
     } elseif ($table_id) {
-      $suppress_logos = get_post_meta($table_id, '_mtp_suppress_logos', true);
+      $suppress_logos = get_post_meta($table_id, '_mtrn_suppress_logos', true);
     }
 
     if (!empty($suppress_logos) && $suppress_logos === '1') {
@@ -122,7 +122,7 @@ class MTP_Table_Renderer {
     if (isset($atts['sn'])) {
       $suppress_num_matches = $atts['sn'];
     } elseif ($table_id) {
-      $suppress_num_matches = get_post_meta($table_id, '_mtp_suppress_num_matches', true);
+      $suppress_num_matches = get_post_meta($table_id, '_mtrn_suppress_num_matches', true);
     }
 
     if (!empty($suppress_num_matches) && $suppress_num_matches === '1') {
@@ -134,7 +134,7 @@ class MTP_Table_Renderer {
     if (isset($atts['bm'])) {
       $projector_presentation = $atts['bm'];
     } elseif ($table_id) {
-      $projector_presentation = get_post_meta($table_id, '_mtp_projector_presentation', true);
+      $projector_presentation = get_post_meta($table_id, '_mtrn_projector_presentation', true);
     }
 
     if (!empty($projector_presentation) && $projector_presentation === '1') {
@@ -146,7 +146,7 @@ class MTP_Table_Renderer {
     if (isset($atts['nav'])) {
       $navigation_for_groups = $atts['nav'];
     } elseif ($table_id) {
-      $navigation_for_groups = get_post_meta($table_id, '_mtp_navigation_for_groups', true);
+      $navigation_for_groups = get_post_meta($table_id, '_mtrn_navigation_for_groups', true);
     }
 
     if (!empty($navigation_for_groups) && $navigation_for_groups === '1') {
@@ -158,7 +158,7 @@ class MTP_Table_Renderer {
     if (!empty($atts['setlang'])) {
       $language = $atts['setlang'];
     } elseif ($table_id) {
-      $language = get_post_meta($table_id, '_mtp_language', true);
+      $language = get_post_meta($table_id, '_mtrn_language', true);
     }
 
     if (!empty($language) && $language !== 'en') {
@@ -170,7 +170,7 @@ class MTP_Table_Renderer {
     if (!empty($atts['group'])) {
       $group = $atts['group'];
     } elseif ($table_id) {
-      $group = get_post_meta($table_id, '_mtp_group', true);
+      $group = get_post_meta($table_id, '_mtrn_group', true);
     }
 
     if (!empty($group)) {
@@ -188,25 +188,25 @@ class MTP_Table_Renderer {
 
     // Define parameter mapping and defaults
     $param_mapping = array(
-      'size' => array('attr' => 's-size', 'meta' => '_mtp_font_size', 'default' => '9'),
-      'sizeheader' => array('attr' => 's-sizeheader', 'meta' => '_mtp_header_font_size', 'default' => '10'),
-      'color' => array('attr' => 's-color', 'meta' => '_mtp_text_color', 'default' => '000000'),
-      'maincolor' => array('attr' => 's-maincolor', 'meta' => '_mtp_main_color', 'default' => '173f75'),
-      'padding' => array('attr' => 's-padding', 'meta' => '_mtp_table_padding', 'default' => '2'),
-      'innerpadding' => array('attr' => 's-innerpadding', 'meta' => '_mtp_inner_padding', 'default' => '5'),
-      'bgcolor' => array('attr' => 's-bgcolor', 'meta' => '_mtp_bg_color', 'default' => '00000000'),
-      'logosize' => array('attr' => 's-logosize', 'meta' => '_mtp_logo_size', 'default' => '20'),
-      'bcolor' => array('attr' => 's-bcolor', 'meta' => '_mtp_border_color', 'default' => 'bbbbbb'),
-      'bsizeh' => array('attr' => 's-bsizeh', 'meta' => '_mtp_bsizeh', 'default' => '1'),
-      'bsizev' => array('attr' => 's-bsizev', 'meta' => '_mtp_bsizev', 'default' => '1'),
-      'bsizeoh' => array('attr' => 's-bsizeoh', 'meta' => '_mtp_bsizeoh', 'default' => '1'),
-      'bsizeov' => array('attr' => 's-bsizeov', 'meta' => '_mtp_bsizeov', 'default' => '1'),
-      'bbcolor' => array('attr' => 's-bbcolor', 'meta' => '_mtp_head_bottom_border_color', 'default' => 'bbbbbb'),
-      'bbsize' => array('attr' => 's-bbsize', 'meta' => '_mtp_bbsize', 'default' => '2'),
-      'bgeven' => array('attr' => 's-bgeven', 'meta' => '_mtp_even_bg_color', 'default' => 'f0f8ffb0'),
-      'bgodd' => array('attr' => 's-bgodd', 'meta' => '_mtp_odd_bg_color', 'default' => 'ffffffb0'),
-      'bgover' => array('attr' => 's-bgover', 'meta' => '_mtp_hover_bg_color', 'default' => 'eeeeffb0'),
-      'bghead' => array('attr' => 's-bghead', 'meta' => '_mtp_head_bg_color', 'default' => 'eeeeffff'),
+      'size' => array('attr' => 's-size', 'meta' => '_mtrn_font_size', 'default' => '9'),
+      'sizeheader' => array('attr' => 's-sizeheader', 'meta' => '_mtrn_header_font_size', 'default' => '10'),
+      'color' => array('attr' => 's-color', 'meta' => '_mtrn_text_color', 'default' => '000000'),
+      'maincolor' => array('attr' => 's-maincolor', 'meta' => '_mtrn_main_color', 'default' => '173f75'),
+      'padding' => array('attr' => 's-padding', 'meta' => '_mtrn_table_padding', 'default' => '2'),
+      'innerpadding' => array('attr' => 's-innerpadding', 'meta' => '_mtrn_inner_padding', 'default' => '5'),
+      'bgcolor' => array('attr' => 's-bgcolor', 'meta' => '_mtrn_bg_color', 'default' => '00000000'),
+      'logosize' => array('attr' => 's-logosize', 'meta' => '_mtrn_logo_size', 'default' => '20'),
+      'bcolor' => array('attr' => 's-bcolor', 'meta' => '_mtrn_border_color', 'default' => 'bbbbbb'),
+      'bsizeh' => array('attr' => 's-bsizeh', 'meta' => '_mtrn_bsizeh', 'default' => '1'),
+      'bsizev' => array('attr' => 's-bsizev', 'meta' => '_mtrn_bsizev', 'default' => '1'),
+      'bsizeoh' => array('attr' => 's-bsizeoh', 'meta' => '_mtrn_bsizeoh', 'default' => '1'),
+      'bsizeov' => array('attr' => 's-bsizeov', 'meta' => '_mtrn_bsizeov', 'default' => '1'),
+      'bbcolor' => array('attr' => 's-bbcolor', 'meta' => '_mtrn_head_bottom_border_color', 'default' => 'bbbbbb'),
+      'bbsize' => array('attr' => 's-bbsize', 'meta' => '_mtrn_bbsize', 'default' => '2'),
+      'bgeven' => array('attr' => 's-bgeven', 'meta' => '_mtrn_even_bg_color', 'default' => 'f0f8ffb0'),
+      'bgodd' => array('attr' => 's-bgodd', 'meta' => '_mtrn_odd_bg_color', 'default' => 'ffffffb0'),
+      'bgover' => array('attr' => 's-bgover', 'meta' => '_mtrn_hover_bg_color', 'default' => 'eeeeffb0'),
+      'bghead' => array('attr' => 's-bghead', 'meta' => '_mtrn_head_bg_color', 'default' => 'eeeeffff'),
     );
 
     foreach ($param_mapping as $url_param => $config) {
@@ -224,7 +224,7 @@ class MTP_Table_Renderer {
 
         // Handle special cases for colors with opacity
         if (in_array($url_param, array('bgcolor', 'bgeven', 'bgodd', 'bgover', 'bghead'))) {
-          $value = MTP_Admin_Utilities::get_bg_color_with_opacity($table_id, $config['meta']);
+          $value = MTRN_Admin_Utilities::get_bg_color_with_opacity($table_id, $config['meta']);
         }
       }
 
@@ -244,8 +244,8 @@ class MTP_Table_Renderer {
    */
   private function render_empty_table($atts = array()) {
     // Simple placeholder message with auto-sizing
-    $html = '<div class="mtp-empty-preview">';
-    $html .= '<svg class="mtp-empty-preview__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" /></svg>';
+    $html = '<div class="mtrn-empty-preview">';
+    $html .= '<svg class="mtrn-empty-preview__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" /></svg>';
     $html .= '<strong>' . __('Tournament Table Preview', 'meinturnierplan') . '</strong>';
     $html .= __('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
     $html .= '</div>';

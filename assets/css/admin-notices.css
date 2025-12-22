@@ -7,17 +7,17 @@
  * @since   1.0.0
  */
 
-#mtp-service-notice .mtp-notice-title {
+#mtrn-service-notice .mtrn-notice-title {
   margin-bottom: 0.5em;
 }
 
-#mtp-service-notice .mtp-notice-list {
+#mtrn-service-notice .mtrn-notice-list {
   list-style: disc;
   margin-left: 20px;
   margin-top: 0;
 }
 
 /* Admin Utilities - Conditional Field Visibility */
-.mtp-field-hidden {
+.mtrn-field-hidden {
   display: none;
 }

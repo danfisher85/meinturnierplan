@@ -1,5 +1,5 @@
 /**
- * MTP Admin Utilities
+ * MTRN Admin Utilities
  * 
  * Reusable JavaScript functions for admin interfaces
  * 
@@ -10,8 +10,8 @@
 (function($) {
   'use strict';
 
-  // MTP Admin Utilities - Reusable JavaScript functions for admin interfaces
-  window.MTPAdminUtils = {
+  // MTRN Admin Utilities - Reusable JavaScript functions for admin interfaces
+  window.MTRNAdminUtils = {
 
     // Initialize color picker fields with consistent behavior
     initColorPickers: function(updateCallback) {
@@ -19,7 +19,7 @@
         updateCallback = function() {}; // Default no-op
       }
 
-      $(".mtp-color-picker").wpColorPicker({
+      $(".mtrn-color-picker").wpColorPicker({
         change: function(event, ui) {
           updateCallback();
         },
@@ -29,7 +29,7 @@
       });
 
       // Lightweight polling solution for missed changes
-      $(".mtp-color-picker").each(function() {
+      $(".mtrn-color-picker").each(function() {
         var input = this;
         var lastValue = input.value;
 
@@ -43,7 +43,7 @@
 
       // Immediate response for color picker interactions
       $(document).on('click', '.iris-palette', function() {
-        var $input = $(this).closest('.wp-picker-container').find('.mtp-color-picker');
+        var $input = $(this).closest('.wp-picker-container').find('.mtrn-color-picker');
         var currentValue = $input.val();
 
         setTimeout(function() { if ($input.val() !== currentValue) updateCallback(); }, 50);
@@ -110,7 +110,7 @@
 
     // Load tournament groups with sophisticated error handling and caching
     loadTournamentGroups: function(tournamentId, options) {
-      var config = window.mtpAdminUtilsConfig || {};
+      var config = window.mtrnAdminUtilsConfig || {};
       var defaults = {
         preserveSelection: false,
         forceRefresh: false,
@@ -119,7 +119,7 @@
         groupSelectSelector: "#" + config.fieldPrefix + "group, #" + config.fieldPrefix + "group_select",
         refreshButtonSelector: "#" + config.fieldPrefix + "refresh_groups",
         savedValueSelector: "#" + config.fieldPrefix + "group_saved_value",
-        ajaxActions: config.ajaxActions || ['mtp_get_groups', 'mtp_refresh_groups'],
+        ajaxActions: config.ajaxActions || ['mtrn_get_groups', 'mtrn_refresh_groups'],
         nonce: config.nonce || ''
       };
       options = $.extend(defaults, options || {});
@@ -200,7 +200,7 @@
           $refreshButton.prop("disabled", false);
 
           if (options.forceRefresh && response.data.refreshed) {
-            MTPAdminUtils.showTemporaryMessage(config.i18n?.groupsRefreshed || 'Groups refreshed successfully!', "success", options.groupRowSelector);
+            MTRNAdminUtils.showTemporaryMessage(config.i18n?.groupsRefreshed || 'Groups refreshed successfully!', "success", options.groupRowSelector);
           }
         } else {
           $groupSelect.prop("disabled", false).empty();
@@ -226,7 +226,7 @@
           $refreshButton.prop("disabled", false);
 
           if (options.forceRefresh) {
-            MTPAdminUtils.showTemporaryMessage(config.i18n?.noGroupsFound || 'No groups found for this tournament.', "info", options.groupRowSelector);
+            MTRNAdminUtils.showTemporaryMessage(config.i18n?.noGroupsFound || 'No groups found for this tournament.', "info", options.groupRowSelector);
           }
         }
       }).fail(function() {
@@ -250,7 +250,7 @@
         $refreshButton.prop("disabled", false);
 
         if (options.forceRefresh) {
-          MTPAdminUtils.showTemporaryMessage(config.i18n?.errorRefreshing || 'Error refreshing groups. Please try again.', "error", options.groupRowSelector);
+          MTRNAdminUtils.showTemporaryMessage(config.i18n?.errorRefreshing || 'Error refreshing groups. Please try again.', "error", options.groupRowSelector);
         }
       });
     },
@@ -295,14 +295,14 @@
 
     // Load tournament teams (participants)
     loadTournamentTeams: function(tournamentId, options) {
-      var config = window.mtpAdminUtilsConfig || {};
+      var config = window.mtrnAdminUtilsConfig || {};
       var defaults = {
         preserveSelection: false,
         forceRefresh: false,
         participantSelectSelector: "#" + config.fieldPrefix + "participant",
         refreshButtonSelector: "#" + config.fieldPrefix + "refresh_participants",
         savedValueSelector: "#" + config.fieldPrefix + "participant_saved_value",
-        ajaxActions: config.ajaxActionsTeams || ['mtp_get_teams', 'mtp_refresh_teams'],
+        ajaxActions: config.ajaxActionsTeams || ['mtrn_get_teams', 'mtrn_refresh_teams'],
         nonce: config.nonce || ''
       };
       options = $.extend(defaults, options || {});
@@ -367,7 +367,7 @@
           $refreshButton.prop("disabled", false);
 
           if (options.forceRefresh && response.data.refreshed) {
-            MTPAdminUtils.showTemporaryMessage(config.i18n?.participantsRefreshed || 'Participants refreshed successfully!', "success", options.participantSelectSelector);
+            MTRNAdminUtils.showTemporaryMessage(config.i18n?.participantsRefreshed || 'Participants refreshed successfully!', "success", options.participantSelectSelector);
           }
         } else {
           $participantSelect.prop("disabled", false).empty();
@@ -380,7 +380,7 @@
           $refreshButton.prop("disabled", false);
 
           if (options.forceRefresh) {
-            MTPAdminUtils.showTemporaryMessage(config.i18n?.noParticipantsFound || 'No participants found for this tournament.', "info", options.participantSelectSelector);
+            MTRNAdminUtils.showTemporaryMessage(config.i18n?.noParticipantsFound || 'No participants found for this tournament.', "info", options.participantSelectSelector);
           }
         }
       }).fail(function() {
@@ -395,7 +395,7 @@
         $refreshButton.prop("disabled", false);
 
         if (options.forceRefresh) {
-          MTPAdminUtils.showTemporaryMessage(config.i18n?.errorRefreshingParticipants || 'Error refreshing participants. Please try again.', "error", options.participantSelectSelector);
+          MTRNAdminUtils.showTemporaryMessage(config.i18n?.errorRefreshingParticipants || 'Error refreshing participants. Please try again.', "error", options.participantSelectSelector);
         }
       });
     },

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Matches List Post Type Management Class
  */
-class MTP_Matches_Post_Type {
+class MTRN_Matches_Post_Type {
 
   /**
    * Constructor
@@ -68,6 +68,6 @@ class MTP_Matches_Post_Type {
       'supports'           => array('title')
     );
 
-    register_post_type('mtp_match_list', $args);
+    register_post_type('mtrn_match_list', $args);
   }
 }

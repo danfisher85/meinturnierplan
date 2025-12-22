@@ -173,30 +173,6 @@ Each tournament table and match list has extensive customization options in the 
 * Toggle visibility of specific columns or information
 * Use the live preview to see changes instantly
 
-= Can I integrate with external tournament systems? =
-
-Yes! The plugin supports integration with external tournament management systems. Simply enter your external tournament ID in the settings, and the plugin will fetch and display the data with your custom styling applied.
-
-= What languages are supported? =
-
-The plugin is fully internationalized and includes translations for:
-* English (default)
-* German (de_DE)
-* Spanish (es_ES)
-* French (fr_FR)
-* Croatian (hr)
-* Italian (it_IT)
-* Polish (pl_PL)
-* Slovenian (sl_SI)
-* Turkish (tr_TR)
-
-= Can I customize the plugin with CSS? =
-
-Yes! The plugin generates inline styles based on your settings, but you can override them with custom CSS. Main classes include:
-* `.mtp-tournament-table` - Main table container
-* `.mtp-matches-container` - Matches container
-* `.mtp-match-row` - Individual match row
-
 = What are the shortcode attributes? =
 
 **Tournament Table Shortcode Attributes:**

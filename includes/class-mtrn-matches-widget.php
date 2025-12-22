@@ -5,18 +5,18 @@
  * @version 1.0.0
  */
 
-class MTP_Matches_Widget extends WP_Widget {
+class MTRN_Matches_Widget extends WP_Widget {
 
   /**
    * Constructor
    */
   public function __construct() {
     parent::__construct(
-      'mtp_matches_widget',
+      'mtrn_matches_widget',
       __('Matches Table', 'meinturnierplan'),
       array(
         'description' => __('Display a matches table.', 'meinturnierplan'),
-        'classname'   => 'mtp-matches-widget'
+        'classname'   => 'mtrn-matches-widget'
       )
     );
   }
@@ -47,12 +47,12 @@ class MTP_Matches_Widget extends WP_Widget {
       $shortcode_atts = array_merge($shortcode_atts, $this->get_config_attributes_from_meta($table_id));
 
       // Use the existing shortcode functionality
-      $mtp_plugin = MTP_Plugin::instance();
-      $shortcode = new MTP_Matches_Shortcode($mtp_plugin->matches_renderer);
+      $mtrn_plugin = MTRN_Plugin::instance();
+      $shortcode = new MTRN_Matches_Shortcode($mtrn_plugin->matches_renderer);
       // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped in the renderer class
       echo $shortcode->shortcode_callback($shortcode_atts);
     } else {
-      echo '<div class="mtp-widget-placeholder">' . esc_html__('Please select a Matches Table.', 'meinturnierplan') . '</div>';
+      echo '<div class="mtrn-widget-placeholder">' . esc_html__('Please select a Matches Table.', 'meinturnierplan') . '</div>';
     }
 
     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $args['after_widget'] is already escaped by WordPress core
@@ -68,7 +68,7 @@ class MTP_Matches_Widget extends WP_Widget {
 
     // Get all matches tables
     $tables = get_posts(array(
-      'post_type'      => 'mtp_match_list',
+      'post_type'      => 'mtrn_match_list',
       'post_status'    => 'publish',
       'posts_per_page' => -1,
       'orderby'        => 'title',
@@ -117,22 +117,22 @@ class MTP_Matches_Widget extends WP_Widget {
 
     // Define parameter mapping from meta keys to shortcode attribute names
     $param_mapping = array(
-      '_mtp_font_size' => 's-size',
-      '_mtp_header_font_size' => 's-sizeheader',
-      '_mtp_text_color' => 's-color',
-      '_mtp_main_color' => 's-maincolor',
-      '_mtp_table_padding' => 's-padding',
-      '_mtp_inner_padding' => 's-innerpadding',
-      '_mtp_border_color' => 's-bcolor',
-      '_mtp_bsizeh' => 's-bsizeh',
-      '_mtp_bsizev' => 's-bsizev',
-      '_mtp_bsizeoh' => 's-bsizeoh',
-      '_mtp_bsizeov' => 's-bsizeov',
-      '_mtp_head_bottom_border_color' => 's-bbcolor',
-      '_mtp_bbsize' => 's-bbsize',
-      '_mtp_ehrsize' => 's-ehrsize',
-      '_mtp_ehrtop' => 's-ehrtop',
-      '_mtp_ehrbottom' => 's-ehrbottom',
+      '_mtrn_font_size' => 's-size',
+      '_mtrn_header_font_size' => 's-sizeheader',
+      '_mtrn_text_color' => 's-color',
+      '_mtrn_main_color' => 's-maincolor',
+      '_mtrn_table_padding' => 's-padding',
+      '_mtrn_inner_padding' => 's-innerpadding',
+      '_mtrn_border_color' => 's-bcolor',
+      '_mtrn_bsizeh' => 's-bsizeh',
+      '_mtrn_bsizev' => 's-bsizev',
+      '_mtrn_bsizeoh' => 's-bsizeoh',
+      '_mtrn_bsizeov' => 's-bsizeov',
+      '_mtrn_head_bottom_border_color' => 's-bbcolor',
+      '_mtrn_bbsize' => 's-bbsize',
+      '_mtrn_ehrsize' => 's-ehrsize',
+      '_mtrn_ehrtop' => 's-ehrtop',
+      '_mtrn_ehrbottom' => 's-ehrbottom',
     );
 
     // Get simple color/styling values
@@ -145,11 +145,11 @@ class MTP_Matches_Widget extends WP_Widget {
 
     // Handle color+opacity combinations
     $color_opacity_mapping = array(
-      '_mtp_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtp_bg_opacity'),
-      '_mtp_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtp_even_bg_opacity'),
-      '_mtp_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtp_odd_bg_opacity'),
-      '_mtp_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtp_hover_bg_opacity'),
-      '_mtp_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtp_head_bg_opacity'),
+      '_mtrn_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtrn_bg_opacity'),
+      '_mtrn_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtrn_even_bg_opacity'),
+      '_mtrn_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtrn_odd_bg_opacity'),
+      '_mtrn_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtrn_hover_bg_opacity'),
+      '_mtrn_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtrn_head_bg_opacity'),
     );
 
     foreach ($color_opacity_mapping as $color_meta => $config) {
@@ -157,7 +157,7 @@ class MTP_Matches_Widget extends WP_Widget {
       $opacity = get_post_meta($table_id, $config['opacity_meta'], true);
 
       if (!empty($color)) {
-        $combined_color = MTP_Admin_Utilities::combine_color_opacity($color, $opacity);
+        $combined_color = MTRN_Admin_Utilities::combine_color_opacity($color, $opacity);
         $attributes[$config['attr']] = $combined_color;
       }
     }
@@ -173,14 +173,14 @@ class MTP_Matches_Widget extends WP_Widget {
 
     // Define boolean parameter mapping
     $boolean_params = array(
-      '_mtp_projector_presentation' => 'bm',
-      '_mtp_si' => 'si',
-      '_mtp_sf' => 'sf',
-      '_mtp_st' => 'st',
-      '_mtp_sg' => 'sg',
-      '_mtp_se' => 'se',
-      '_mtp_sp' => 'sp',
-      '_mtp_sh' => 'sh',
+      '_mtrn_projector_presentation' => 'bm',
+      '_mtrn_si' => 'si',
+      '_mtrn_sf' => 'sf',
+      '_mtrn_st' => 'st',
+      '_mtrn_sg' => 'sg',
+      '_mtrn_se' => 'se',
+      '_mtrn_sp' => 'sp',
+      '_mtrn_sh' => 'sh',
     );
 
     foreach ($boolean_params as $meta_key => $attr_name) {
@@ -191,25 +191,25 @@ class MTP_Matches_Widget extends WP_Widget {
     }
 
     // Get language setting
-    $language = get_post_meta($table_id, '_mtp_language', true);
+    $language = get_post_meta($table_id, '_mtrn_language', true);
     if (!empty($language)) {
       $attributes['lang'] = $language;
     }
 
     // Get group setting
-    $group = get_post_meta($table_id, '_mtp_group', true);
+    $group = get_post_meta($table_id, '_mtrn_group', true);
     if (!empty($group)) {
       $attributes['group'] = $group;
     }
 
     // Get participant setting
-    $participant = get_post_meta($table_id, '_mtp_participant', true);
+    $participant = get_post_meta($table_id, '_mtrn_participant', true);
     if (!empty($participant) && $participant !== '-1') {
       $attributes['participant'] = $participant;
     }
 
     // Get match_number setting
-    $match_number = get_post_meta($table_id, '_mtp_match_number', true);
+    $match_number = get_post_meta($table_id, '_mtrn_match_number', true);
     if (!empty($match_number)) {
       $attributes['gamenumbers'] = $match_number;
     }

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * AJAX Matches Handler Class
  */
-class MTP_Matches_Ajax_Handler {
+class MTRN_Matches_Ajax_Handler {
 
   /**
    * Matches renderer instance
@@ -34,12 +34,12 @@ class MTP_Matches_Ajax_Handler {
    * Initialize AJAX handlers
    */
   public function init() {
-    add_action('wp_ajax_mtp_preview_matches', array($this, 'ajax_preview_matches'));
-    add_action('wp_ajax_mtp_get_matches_groups', array($this, 'ajax_get_matches_groups'));
-    add_action('wp_ajax_mtp_refresh_matches_groups', array($this, 'ajax_refresh_matches_groups'));
-    add_action('wp_ajax_mtp_get_matches_teams', array($this, 'ajax_get_matches_teams'));
-    add_action('wp_ajax_mtp_refresh_matches_teams', array($this, 'ajax_refresh_matches_teams'));
-    add_action('wp_ajax_mtp_check_tournament_option', array($this, 'ajax_check_tournament_option'));
+    add_action('wp_ajax_mtrn_preview_matches', array($this, 'ajax_preview_matches'));
+    add_action('wp_ajax_mtrn_get_matches_groups', array($this, 'ajax_get_matches_groups'));
+    add_action('wp_ajax_mtrn_refresh_matches_groups', array($this, 'ajax_refresh_matches_groups'));
+    add_action('wp_ajax_mtrn_get_matches_teams', array($this, 'ajax_get_matches_teams'));
+    add_action('wp_ajax_mtrn_refresh_matches_teams', array($this, 'ajax_refresh_matches_teams'));
+    add_action('wp_ajax_mtrn_check_tournament_option', array($this, 'ajax_check_tournament_option'));
   }
 
   /**
@@ -47,7 +47,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_preview_matches() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -169,7 +169,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_get_matches_groups() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -182,7 +182,7 @@ class MTP_Matches_Ajax_Handler {
     }
 
     // Fetch groups from external API (with caching)
-    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, $force_refresh);
+    $groups_data = MTRN_Admin_Utilities::fetch_tournament_groups($tournament_id, $force_refresh);
 
     wp_send_json_success($groups_data);
   }
@@ -192,7 +192,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_refresh_matches_groups() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -204,7 +204,7 @@ class MTP_Matches_Ajax_Handler {
     }
 
     // Force refresh groups from external API
-    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, true);
+    $groups_data = MTRN_Admin_Utilities::fetch_tournament_groups($tournament_id, true);
 
     // Add refreshed flag to the response
     $groups_data['refreshed'] = true;
@@ -216,7 +216,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_get_matches_teams() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -229,7 +229,7 @@ class MTP_Matches_Ajax_Handler {
     }
 
     // Fetch teams from external API (with caching)
-    $teams = MTP_Admin_Utilities::fetch_tournament_teams($tournament_id, $force_refresh);
+    $teams = MTRN_Admin_Utilities::fetch_tournament_teams($tournament_id, $force_refresh);
 
     wp_send_json_success(array('teams' => $teams));
   }
@@ -239,7 +239,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_refresh_matches_teams() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -251,7 +251,7 @@ class MTP_Matches_Ajax_Handler {
     }
 
     // Force refresh teams from external API
-    $teams = MTP_Admin_Utilities::fetch_tournament_teams($tournament_id, true);
+    $teams = MTRN_Admin_Utilities::fetch_tournament_teams($tournament_id, true);
 
     // Add refreshed flag to the response
     wp_send_json_success(array('teams' => $teams, 'refreshed' => true));
@@ -307,7 +307,7 @@ class MTP_Matches_Ajax_Handler {
    */
   public function ajax_check_tournament_option() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_check_option_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_check_option_nonce')) {
       wp_send_json_error(array('message' => 'Security check failed'));
       return;
     }
@@ -322,7 +322,7 @@ class MTP_Matches_Ajax_Handler {
     }
 
     // Use the utility function to fetch the option
-    $option_value = MTP_Admin_Utilities::fetch_tournament_option($tournament_id, $option_name);
+    $option_value = MTRN_Admin_Utilities::fetch_tournament_option($tournament_id, $option_name);
 
     // Return the value
     wp_send_json_success(array(

@@ -10,7 +10,7 @@
 
   // Function to update preview
   function updatePreview() {
-    var config = window.mtpTablePreviewConfig || {};
+    var config = window.mtrnTablePreviewConfig || {};
     var postId = config.postId || 0;
     var previewNonce = config.previewNonce || '';
     var fieldList = config.fieldList || [];
@@ -18,39 +18,39 @@
     // Get all field values
     var data = {
       post_id: postId,
-      tournament_id: $("#mtp_tournament_id").val(),
-      font_size: $("#mtp_font_size").val(),
-      header_font_size: $("#mtp_header_font_size").val(),
-      bsizeh: $("#mtp_bsizeh").val(),
-      bsizev: $("#mtp_bsizev").val(),
-      bsizeoh: $("#mtp_bsizeoh").val(),
-      bsizeov: $("#mtp_bsizeov").val(),
-      bbsize: $("#mtp_bbsize").val(),
-      table_padding: $("#mtp_table_padding").val(),
-      inner_padding: $("#mtp_inner_padding").val(),
-      text_color: $("#mtp_text_color").val().replace("#", ""),
-      main_color: $("#mtp_main_color").val().replace("#", ""),
-      bg_color: $("#mtp_bg_color").val().replace("#", ""),
-      logo_size: $("#mtp_logo_size").val(),
-      bg_opacity: $("#mtp_bg_opacity").val(),
-      border_color: $("#mtp_border_color").val().replace("#", ""),
-      head_bottom_border_color: $("#mtp_head_bottom_border_color").val().replace("#", ""),
-      even_bg_color: $("#mtp_even_bg_color").val().replace("#", ""),
-      even_bg_opacity: $("#mtp_even_bg_opacity").val(),
-      odd_bg_color: $("#mtp_odd_bg_color").val().replace("#", ""),
-      odd_bg_opacity: $("#mtp_odd_bg_opacity").val(),
-      hover_bg_color: $("#mtp_hover_bg_color").val().replace("#", ""),
-      hover_bg_opacity: $("#mtp_hover_bg_opacity").val(),
-      head_bg_color: $("#mtp_head_bg_color").val().replace("#", ""),
-      head_bg_opacity: $("#mtp_head_bg_opacity").val(),
-      suppress_wins: $("#mtp_suppress_wins").is(":checked") ? "1" : "0",
-      suppress_logos: $("#mtp_suppress_logos").is(":checked") ? "1" : "0",
-      suppress_num_matches: $("#mtp_suppress_num_matches").is(":checked") ? "1" : "0",
-      projector_presentation: $("#mtp_projector_presentation").is(":checked") ? "1" : "0",
-      navigation_for_groups: $("#mtp_navigation_for_groups").is(":checked") ? "1" : "0",
-      language: $("#mtp_language").val(),
-      group: $("#mtp_group").val(),
-      action: "mtp_preview_table",
+      tournament_id: $("#mtrn_tournament_id").val(),
+      font_size: $("#mtrn_font_size").val(),
+      header_font_size: $("#mtrn_header_font_size").val(),
+      bsizeh: $("#mtrn_bsizeh").val(),
+      bsizev: $("#mtrn_bsizev").val(),
+      bsizeoh: $("#mtrn_bsizeoh").val(),
+      bsizeov: $("#mtrn_bsizeov").val(),
+      bbsize: $("#mtrn_bbsize").val(),
+      table_padding: $("#mtrn_table_padding").val(),
+      inner_padding: $("#mtrn_inner_padding").val(),
+      text_color: $("#mtrn_text_color").val().replace("#", ""),
+      main_color: $("#mtrn_main_color").val().replace("#", ""),
+      bg_color: $("#mtrn_bg_color").val().replace("#", ""),
+      logo_size: $("#mtrn_logo_size").val(),
+      bg_opacity: $("#mtrn_bg_opacity").val(),
+      border_color: $("#mtrn_border_color").val().replace("#", ""),
+      head_bottom_border_color: $("#mtrn_head_bottom_border_color").val().replace("#", ""),
+      even_bg_color: $("#mtrn_even_bg_color").val().replace("#", ""),
+      even_bg_opacity: $("#mtrn_even_bg_opacity").val(),
+      odd_bg_color: $("#mtrn_odd_bg_color").val().replace("#", ""),
+      odd_bg_opacity: $("#mtrn_odd_bg_opacity").val(),
+      hover_bg_color: $("#mtrn_hover_bg_color").val().replace("#", ""),
+      hover_bg_opacity: $("#mtrn_hover_bg_opacity").val(),
+      head_bg_color: $("#mtrn_head_bg_color").val().replace("#", ""),
+      head_bg_opacity: $("#mtrn_head_bg_opacity").val(),
+      suppress_wins: $("#mtrn_suppress_wins").is(":checked") ? "1" : "0",
+      suppress_logos: $("#mtrn_suppress_logos").is(":checked") ? "1" : "0",
+      suppress_num_matches: $("#mtrn_suppress_num_matches").is(":checked") ? "1" : "0",
+      projector_presentation: $("#mtrn_projector_presentation").is(":checked") ? "1" : "0",
+      navigation_for_groups: $("#mtrn_navigation_for_groups").is(":checked") ? "1" : "0",
+      language: $("#mtrn_language").val(),
+      group: $("#mtrn_group").val(),
+      action: "mtrn_preview_table",
       nonce: previewNonce
     };
 
@@ -63,35 +63,35 @@
 
     $.post(ajaxurl, data, function(response) {
       if (response.success) {
-        $("#mtp-preview").html(response.data);
+        $("#mtrn-preview").html(response.data);
       }
     });
   }
 
   // Initialize on document ready
   $(document).ready(function() {
-    var config = window.mtpTablePreviewConfig || {};
+    var config = window.mtrnTablePreviewConfig || {};
     var fieldList = config.fieldList || [];
 
     // Initialize reusable utilities with preview update callback
-    MTPAdminUtils.initColorPickers(updatePreview);
-    MTPAdminUtils.initOpacitySliders(updatePreview);
-    MTPAdminUtils.initFormFieldListeners('mtp_', updatePreview);
+    MTRNAdminUtils.initColorPickers(updatePreview);
+    MTRNAdminUtils.initOpacitySliders(updatePreview);
+    MTRNAdminUtils.initFormFieldListeners('mtrn_', updatePreview);
 
     // Initialize tournament ID field with group loading
-    MTPAdminUtils.initTournamentIdField('#mtp_tournament_id', updatePreview, function(tournamentId) {
-      MTPAdminUtils.loadTournamentGroups(tournamentId);
+    MTRNAdminUtils.initTournamentIdField('#mtrn_tournament_id', updatePreview, function(tournamentId) {
+      MTRNAdminUtils.loadTournamentGroups(tournamentId);
     });
 
     // Initialize group refresh button
-    MTPAdminUtils.initGroupRefreshButton('#mtp_refresh_groups', '#mtp_tournament_id', function(tournamentId, options) {
-      MTPAdminUtils.loadTournamentGroups(tournamentId, options);
+    MTRNAdminUtils.initGroupRefreshButton('#mtrn_refresh_groups', '#mtrn_tournament_id', function(tournamentId, options) {
+      MTRNAdminUtils.loadTournamentGroups(tournamentId, options);
     });
 
     // Load groups on page load if tournament ID exists
-    var initialTournamentId = $("#mtp_tournament_id").val();
+    var initialTournamentId = $("#mtrn_tournament_id").val();
     if (initialTournamentId) {
-      MTPAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false});
+      MTRNAdminUtils.loadTournamentGroups(initialTournamentId, {preserveSelection: false});
     }
 
     // Add specific field listeners for all form fields

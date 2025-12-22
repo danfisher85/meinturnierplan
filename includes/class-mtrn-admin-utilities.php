@@ -17,17 +17,17 @@ if (!defined('ABSPATH')) {
  *
  * Provides reusable utility functions for admin interfaces
  */
-class MTP_Admin_Utilities {
+class MTRN_Admin_Utilities {
 
   /**
    * Render a group header for admin forms
    *
    * @param string $title The title text for the group header
-   * @param string $css_class Optional. Additional CSS class for the header. Default 'mtp-group-header'.
+   * @param string $css_class Optional. Additional CSS class for the header. Default 'mtrn-group-header'.
    */
-  public static function render_group_header($title, $css_class = 'mtp-group-header') {
+  public static function render_group_header($title, $css_class = 'mtrn-group-header') {
     echo '<tr>';
-    echo '<td class="mtp-group-header-wrapper" colspan="2">';
+    echo '<td class="mtrn-group-header-wrapper" colspan="2">';
     echo '<h4 class="' . esc_attr($css_class) . '">' . esc_html($title) . '</h4>';
     echo '</td>';
     echo '</tr>';
@@ -135,9 +135,9 @@ class MTP_Admin_Utilities {
       $show_field = ($json_value === true);
     }
 
-    $row_classes = 'mtp-conditional-field';
+    $row_classes = 'mtrn-conditional-field';
     if (!$show_field) {
-      $row_classes .= ' mtp-field-hidden';
+      $row_classes .= ' mtrn-field-hidden';
     }
 
     echo '<tr id="' . esc_attr($field_row_id) . '" class="' . esc_attr($row_classes) . '" data-condition-field="' . esc_attr($json_field) . '" data-tournament-id="' . esc_attr($tournament_id) . '" data-show-field="' . esc_attr($show_field ? '1' : '0') . '">';
@@ -188,7 +188,7 @@ class MTP_Admin_Utilities {
     echo '<tr>';
     echo '<th scope="row"><label for="' . esc_attr($field_name) . '">' . esc_html($label) . '</label></th>';
     echo '<td>';
-    echo '<input type="text" id="' . esc_attr($field_name) . '" name="' . esc_attr($field_name) . '" value="#' . esc_attr($value) . '" class="mtp-color-picker" />';
+    echo '<input type="text" id="' . esc_attr($field_name) . '" name="' . esc_attr($field_name) . '" value="#' . esc_attr($value) . '" class="mtrn-color-picker" />';
     if ($description) {
       echo '<p class="description">' . esc_html($description) . '</p>';
     }
@@ -211,7 +211,7 @@ class MTP_Admin_Utilities {
     echo '<th scope="row"><label for="' . esc_attr($color_field) . '">' . esc_html($label) . '</label></th>';
     echo '<td>';
     echo '<div style="display: flex; align-items: center; gap: 15px;">';
-    echo '<input type="text" id="' . esc_attr($color_field) . '" name="' . esc_attr($color_field) . '" value="#' . esc_attr($color_value) . '" class="mtp-color-picker" style="width: 120px;" />';
+    echo '<input type="text" id="' . esc_attr($color_field) . '" name="' . esc_attr($color_field) . '" value="#' . esc_attr($color_value) . '" class="mtrn-color-picker" style="width: 120px;" />';
     echo '<div style="display: flex; align-items: center; gap: 8px;">';
     echo '<label for="' . esc_attr($opacity_field) . '" style="margin: 0; font-weight: normal;">' . esc_html__('Opacity:', 'meinturnierplan') . '</label>';
     echo '<input type="range" id="' . esc_attr($opacity_field) . '" name="' . esc_attr($opacity_field) . '" value="' . esc_attr($opacity_value) . '" min="0" max="100" step="1" style="width: 100px;" />';
@@ -308,11 +308,11 @@ class MTP_Admin_Utilities {
 
     // Determine opacity meta key based on color meta key
     $opacity_meta_mapping = array(
-      '_mtp_bg_color' => '_mtp_bg_opacity',
-      '_mtp_even_bg_color' => '_mtp_even_bg_opacity',
-      '_mtp_odd_bg_color' => '_mtp_odd_bg_opacity',
-      '_mtp_hover_bg_color' => '_mtp_hover_bg_opacity',
-      '_mtp_head_bg_color' => '_mtp_head_bg_opacity',
+      '_mtrn_bg_color' => '_mtrn_bg_opacity',
+      '_mtrn_even_bg_color' => '_mtrn_even_bg_opacity',
+      '_mtrn_odd_bg_color' => '_mtrn_odd_bg_opacity',
+      '_mtrn_hover_bg_color' => '_mtrn_hover_bg_opacity',
+      '_mtrn_head_bg_color' => '_mtrn_head_bg_opacity',
     );
 
     $opacity_meta_key = isset($opacity_meta_mapping[$color_meta_key]) ? $opacity_meta_mapping[$color_meta_key] : null;
@@ -324,7 +324,7 @@ class MTP_Admin_Utilities {
     }
 
     if (empty($bg_opacity) && $bg_opacity !== '0') {
-      $bg_opacity = $color_meta_key === '_mtp_bg_color' ? 0 : 69; // Different defaults for different colors
+      $bg_opacity = $color_meta_key === '_mtrn_bg_color' ? 0 : 69; // Different defaults for different colors
     }
 
     return self::combine_color_opacity($bg_color, $bg_opacity);
@@ -443,7 +443,7 @@ class MTP_Admin_Utilities {
       return array('groups' => array(), 'hasFinalRound' => false);
     }
 
-    $cache_key = 'mtp_groups_' . $tournament_id;
+    $cache_key = 'mtrn_groups_' . $tournament_id;
     $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
 
     // Try to get cached data first (unless force refresh is requested)
@@ -531,7 +531,7 @@ class MTP_Admin_Utilities {
       return array();
     }
 
-    $cache_key = 'mtp_teams_' . $tournament_id;
+    $cache_key = 'mtrn_teams_' . $tournament_id;
     $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
 
     // Try to get cached data first (unless force refresh is requested)
@@ -590,7 +590,7 @@ class MTP_Admin_Utilities {
       return null;
     }
 
-    $cache_key = 'mtp_data_' . $tournament_id;
+    $cache_key = 'mtrn_data_' . $tournament_id;
     $cache_expiry = 15 * MINUTE_IN_SECONDS; // Cache for 15 minutes
 
     // Try to get cached data first
@@ -631,23 +631,23 @@ class MTP_Admin_Utilities {
    * This enqueues the admin utilities JavaScript file and localizes configuration data.
    *
    * @param array $config Optional configuration array with keys:
-   *   - 'nonce_action': The nonce action name for AJAX calls (default: 'mtp_preview_nonce')
-   *   - 'ajax_actions': Array of AJAX action names (default: ['mtp_get_groups', 'mtp_refresh_groups'])
-   *   - 'ajax_actions_teams': Array of AJAX action names for teams (default: ['mtp_get_teams', 'mtp_refresh_teams'])
-   *   - 'field_prefix': Prefix for field IDs (default: 'mtp_')
+   *   - 'nonce_action': The nonce action name for AJAX calls (default: 'mtrn_preview_nonce')
+   *   - 'ajax_actions': Array of AJAX action names (default: ['mtrn_get_groups', 'mtrn_refresh_groups'])
+   *   - 'ajax_actions_teams': Array of AJAX action names for teams (default: ['mtrn_get_teams', 'mtrn_refresh_teams'])
+   *   - 'field_prefix': Prefix for field IDs (default: 'mtrn_')
    */
   public static function render_admin_javascript_utilities($config = array()) {
     $defaults = array(
-      'nonce_action' => 'mtp_preview_nonce',
-      'ajax_actions' => array('mtp_get_groups', 'mtp_refresh_groups'),
-      'ajax_actions_teams' => array('mtp_get_teams', 'mtp_refresh_teams'),
-      'field_prefix' => 'mtp_'
+      'nonce_action' => 'mtrn_preview_nonce',
+      'ajax_actions' => array('mtrn_get_groups', 'mtrn_refresh_groups'),
+      'ajax_actions_teams' => array('mtrn_get_teams', 'mtrn_refresh_teams'),
+      'field_prefix' => 'mtrn_'
     );
     $config = array_merge($defaults, $config);
     
     // Enqueue the admin utilities script
     wp_enqueue_script(
-      'mtp-admin-utilities',
+      'mtrn-admin-utilities',
       plugins_url('assets/js/admin-utilities.js', dirname(__FILE__)),
       array('jquery', 'wp-color-picker'),
       '1.0.0',
@@ -655,7 +655,7 @@ class MTP_Admin_Utilities {
     );
     
     // Localize script with configuration and i18n strings
-    wp_localize_script('mtp-admin-utilities', 'mtpAdminUtilsConfig', array(
+    wp_localize_script('mtrn-admin-utilities', 'mtrnAdminUtilsConfig', array(
       'fieldPrefix' => $config['field_prefix'],
       'ajaxActions' => $config['ajax_actions'],
       'ajaxActionsTeams' => $config['ajax_actions_teams'],
@@ -693,39 +693,39 @@ class MTP_Admin_Utilities {
    * @param string $shortcode The generated shortcode string
    * @param string $tournament_id Optional. Tournament ID for validation messaging
    * @param array $config Optional configuration array with keys:
-   *   - 'field_id': ID for the textarea field (default: 'mtp_shortcode_field')
-   *   - 'copy_button_id': ID for the copy button (default: 'mtp_copy_shortcode')
-   *   - 'success_message_id': ID for success message (default: 'mtp_copy_success')
-   *   - 'field_prefix': Prefix for field selectors (default: 'mtp_')
+   *   - 'field_id': ID for the textarea field (default: 'mtrn_shortcode_field')
+   *   - 'copy_button_id': ID for the copy button (default: 'mtrn_copy_shortcode')
+   *   - 'success_message_id': ID for success message (default: 'mtrn_copy_success')
+   *   - 'field_prefix': Prefix for field selectors (default: 'mtrn_')
    *   - 'shortcode_updater_callback': Name of JavaScript function to call for live updates
    */
   public static function render_shortcode_generator($shortcode, $tournament_id = '', $config = array()) {
     $defaults = array(
-      'field_id' => 'mtp_shortcode_field',
-      'copy_button_id' => 'mtp_copy_shortcode',
-      'success_message_id' => 'mtp_copy_success',
-      'field_prefix' => 'mtp_',
+      'field_id' => 'mtrn_shortcode_field',
+      'copy_button_id' => 'mtrn_copy_shortcode',
+      'success_message_id' => 'mtrn_copy_success',
+      'field_prefix' => 'mtrn_',
       'shortcode_updater_callback' => 'updateShortcode'
     );
     $config = array_merge($defaults, $config);
 
-    echo '<div class="mtp-generated-shortcode-wrapper">';
-    echo '<label class="mtp-generated-shortcode__label" for="' . esc_attr($config['field_id']) . '">' . esc_html__('Generated Shortcode:', 'meinturnierplan') . '</label>';
-    echo '<textarea class="mtp-generated-shortcode__field" id="' . esc_attr($config['field_id']) . '" readonly>' . esc_textarea($shortcode) . '</textarea>';
+    echo '<div class="mtrn-generated-shortcode-wrapper">';
+    echo '<label class="mtrn-generated-shortcode__label" for="' . esc_attr($config['field_id']) . '">' . esc_html__('Generated Shortcode:', 'meinturnierplan') . '</label>';
+    echo '<textarea class="mtrn-generated-shortcode__field" id="' . esc_attr($config['field_id']) . '" readonly>' . esc_textarea($shortcode) . '</textarea>';
     echo '</div>';
 
-    echo '<button type="button" id="' . esc_attr($config['copy_button_id']) . '" class="mtp-generated-shortcode__btn button button-secondary">';
-    echo '<span class="mtp-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
+    echo '<button type="button" id="' . esc_attr($config['copy_button_id']) . '" class="mtrn-generated-shortcode__btn button button-secondary">';
+    echo '<span class="mtrn-generated-shortcode__btn-icon dashicons dashicons-admin-page"></span>';
     echo esc_html__('Copy Shortcode', 'meinturnierplan');
     echo '</button>';
 
-    echo '<div id="' . esc_attr($config['success_message_id']) . '" class="mtp-generated-shortcode__copy-success" style="display: none;">';
-    echo '<span class="mtp-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
+    echo '<div id="' . esc_attr($config['success_message_id']) . '" class="mtrn-generated-shortcode__copy-success" style="display: none;">';
+    echo '<span class="mtrn-generated-shortcode__copy-success-icon dashicons dashicons-yes-alt"></span> ';
     echo esc_html__('Shortcode copied to clipboard!', 'meinturnierplan');
     echo '</div>';
 
     if (empty($tournament_id)) {
-      echo '<div class="mtp-generated-shortcode__message mtp-generated-shortcode__message--warning">';
+      echo '<div class="mtrn-generated-shortcode__message mtrn-generated-shortcode__message--warning">';
       echo '<strong>' . esc_html__('Note:', 'meinturnierplan') . '</strong> ';
       echo esc_html__('Enter a Tournament ID above to display live tournament data.', 'meinturnierplan');
       echo '</div>';
@@ -745,7 +745,7 @@ class MTP_Admin_Utilities {
   public static function render_shortcode_javascript($config) {
     // Enqueue the shortcode generator script
     wp_enqueue_script(
-      'mtp-shortcode-generator',
+      'mtrn-shortcode-generator',
       plugins_url('assets/js/shortcode-generator.js', dirname(__FILE__)),
       array('jquery'),
       '1.0.0',
@@ -753,7 +753,7 @@ class MTP_Admin_Utilities {
     );
     
     // Localize script with configuration
-    wp_localize_script('mtp-shortcode-generator', 'mtpShortcodeConfig', array(
+    wp_localize_script('mtrn-shortcode-generator', 'mtrnShortcodeConfig', array(
       'fieldId' => $config['field_id'],
       'copyButtonId' => $config['copy_button_id'],
       'successMessageId' => $config['success_message_id'],
@@ -766,10 +766,10 @@ class MTP_Admin_Utilities {
    * Render conditional group field for tournament selection
    *
    * @param array $meta_values Array containing tournament_id and group values
-   * @param string $field_prefix Optional. Prefix for field names. Default 'mtp_'.
+   * @param string $field_prefix Optional. Prefix for field names. Default 'mtrn_'.
    * @param string $context Optional. Context: 'matches' or 'tables'. Default 'tables'. Only 'matches' shows "All Matches" option.
    */
-  public static function render_conditional_group_field($meta_values, $field_prefix = 'mtp_', $context = 'tables') {
+  public static function render_conditional_group_field($meta_values, $field_prefix = 'mtrn_', $context = 'tables') {
     $tournament_id = $meta_values['tournament_id'];
     $saved_group = $meta_values['group'];
     $groups = array();
@@ -791,7 +791,7 @@ class MTP_Admin_Utilities {
     // Always render the field, but populate it based on available groups
     $row_classes = '';
     if (empty($tournament_id)) {
-      $row_classes = ' mtp-field-hidden';
+      $row_classes = ' mtrn-field-hidden';
     }
 
     echo '<tr id="' . esc_attr($group_field_row_id) . '"' . (!empty($row_classes) ? ' class="' . esc_attr(trim($row_classes)) . '"' : '') . '>';
@@ -878,9 +878,9 @@ class MTP_Admin_Utilities {
    * Render conditional participant field for tournament selection
    *
    * @param array $meta_values Array containing tournament_id and participant values
-   * @param string $field_prefix Optional. Prefix for field names. Default 'mtp_'.
+   * @param string $field_prefix Optional. Prefix for field names. Default 'mtrn_'.
    */
-  public static function render_conditional_participant_field($meta_values, $field_prefix = 'mtp_') {
+  public static function render_conditional_participant_field($meta_values, $field_prefix = 'mtrn_') {
     $tournament_id = $meta_values['tournament_id'];
     $saved_participant = isset($meta_values['participant']) ? $meta_values['participant'] : '-1';
     $teams = array();

@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * AJAX Table Handler Class
  */
-class MTP_Table_Ajax_Handler {
+class MTRN_Table_Ajax_Handler {
 
   /**
    * Table renderer instance
@@ -34,9 +34,9 @@ class MTP_Table_Ajax_Handler {
    * Initialize AJAX handlers
    */
   public function init() {
-    add_action('wp_ajax_mtp_preview_table', array($this, 'ajax_preview_table'));
-    add_action('wp_ajax_mtp_get_groups', array($this, 'ajax_get_groups'));
-    add_action('wp_ajax_mtp_refresh_groups', array($this, 'ajax_refresh_groups'));
+    add_action('wp_ajax_mtrn_preview_table', array($this, 'ajax_preview_table'));
+    add_action('wp_ajax_mtrn_get_groups', array($this, 'ajax_get_groups'));
+    add_action('wp_ajax_mtrn_refresh_groups', array($this, 'ajax_refresh_groups'));
   }
 
   /**
@@ -44,7 +44,7 @@ class MTP_Table_Ajax_Handler {
    */
   public function ajax_preview_table() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -128,7 +128,7 @@ class MTP_Table_Ajax_Handler {
    */
   public function ajax_get_groups() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -141,7 +141,7 @@ class MTP_Table_Ajax_Handler {
     }
 
     // Fetch groups from external API (with caching)
-    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, $force_refresh);
+    $groups_data = MTRN_Admin_Utilities::fetch_tournament_groups($tournament_id, $force_refresh);
 
     wp_send_json_success($groups_data);
   }
@@ -151,7 +151,7 @@ class MTP_Table_Ajax_Handler {
    */
   public function ajax_refresh_groups() {
     // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_preview_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_preview_nonce')) {
       wp_die('Security check failed');
     }
 
@@ -163,7 +163,7 @@ class MTP_Table_Ajax_Handler {
     }
 
     // Force refresh groups from external API
-    $groups_data = MTP_Admin_Utilities::fetch_tournament_groups($tournament_id, true);
+    $groups_data = MTRN_Admin_Utilities::fetch_tournament_groups($tournament_id, true);
 
     // Add refreshed flag to the response
     $groups_data['refreshed'] = true;

@@ -38,10 +38,10 @@
       // Fetch tournament tables on component mount
       useEffect(() => {
         const formData = new FormData();
-        formData.append('action', 'mtp_get_matches');
-        formData.append('nonce', mtpMatchesBlock.nonce);
+        formData.append('action', 'mtrn_get_matches');
+        formData.append('nonce', mtrnMatchesBlock.nonce);
 
-        fetch(mtpMatchesBlock.ajaxUrl, {
+        fetch(mtrnMatchesBlock.ajaxUrl, {
           method: 'POST',
           body: formData
         })

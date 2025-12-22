@@ -1,6 +1,6 @@
 <?php
 /**
- * Table Gutenberg Block Handler Class
+ * Matches Gutenberg Block Handler Class
  *
  * @package MeinTurnierplan
  * @since   0.1.0
@@ -13,20 +13,20 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Table Gutenberg Block Handler Class
+ * Matches Gutenberg Block Handler Class
  */
-class MTP_Table_Gutenberg_Block {
+class MTRN_Matches_Gutenberg_Block {
 
   /**
-   * Table renderer instance
+   * Matches renderer instance
    */
-  private $table_renderer;
+  private $matches_renderer;
 
   /**
    * Constructor
    */
-  public function __construct($table_renderer) {
-    $this->table_renderer = $table_renderer;
+  public function __construct($matches_renderer) {
+    $this->matches_renderer = $matches_renderer;
     $this->init();
   }
 
@@ -35,12 +35,12 @@ class MTP_Table_Gutenberg_Block {
    */
   public function init() {
     add_action('init', array($this, 'register_block'));
-    add_action('wp_ajax_mtp_get_tables', array($this, 'get_tables_ajax'));
-    add_action('wp_ajax_nopriv_mtp_get_tables', array($this, 'get_tables_ajax'));
+    add_action('wp_ajax_mtrn_get_matches', array($this, 'get_tables_ajax'));
+    add_action('wp_ajax_nopriv_mtrn_get_matches', array($this, 'get_tables_ajax'));
   }
 
   /**
-   * Register the Gutenberg block
+   * Register the Matches Gutenberg block
    */
   public function register_block() {
     // Only register if Gutenberg is available
@@ -49,19 +49,19 @@ class MTP_Table_Gutenberg_Block {
     }
 
     wp_register_script(
-      'mtp-tournament-table-block',
-      MTP_PLUGIN_URL . 'assets/js/tournament-table-block.js',
+      'mtrn-tournament-matches-block',
+      MTRN_PLUGIN_URL . 'assets/js/tournament-matches-block.js',
       array('wp-blocks', 'wp-element', 'wp-components', 'wp-block-editor', 'wp-data', 'wp-api-fetch'),
-      MTP_PLUGIN_VERSION,
+      MTRN_PLUGIN_VERSION,
       true
     );
 
-    wp_localize_script('mtp-tournament-table-block', 'mtpBlock', array(
+    wp_localize_script('mtrn-tournament-matches-block', 'mtrnMatchesBlock', array(
       'ajaxUrl' => admin_url('admin-ajax.php'),
-      'nonce' => wp_create_nonce('mtp_block_nonce')
+      'nonce' => wp_create_nonce('mtrn_matches_block_nonce')
     ));
 
-    register_block_type(MTP_PLUGIN_PATH . 'blocks/tournament-table/block.json', array(
+    register_block_type(MTRN_PLUGIN_PATH . 'blocks/tournament-matches/block.json', array(
       'render_callback' => array($this, 'render_block')
     ));
   }
@@ -73,7 +73,7 @@ class MTP_Table_Gutenberg_Block {
     $table_id = isset($attributes['tableId']) ? $attributes['tableId'] : '';
 
     if (empty($table_id)) {
-      return '<div class="mtp-block-placeholder">' . __('Please select a Tournament Table.', 'meinturnierplan') . '</div>';
+      return '<div class="mtrn-block-placeholder">' . __('Please select a Matches Table.', 'meinturnierplan') . '</div>';
     }
 
     // Prepare shortcode attributes (width and height are now auto-determined)
@@ -86,7 +86,7 @@ class MTP_Table_Gutenberg_Block {
     $shortcode_atts = array_merge($shortcode_atts, $this->get_config_attributes_from_meta($table_id));
 
     // Use the existing shortcode functionality
-    $shortcode = new MTP_Table_Shortcode($this->table_renderer);
+    $shortcode = new MTRN_Matches_Shortcode($this->matches_renderer);
     return $shortcode->shortcode_callback($shortcode_atts);
   }
 
@@ -98,20 +98,22 @@ class MTP_Table_Gutenberg_Block {
 
     // Define parameter mapping from meta keys to shortcode attribute names
     $param_mapping = array(
-      '_mtp_font_size' => 's-size',
-      '_mtp_header_font_size' => 's-sizeheader',
-      '_mtp_text_color' => 's-color',
-      '_mtp_main_color' => 's-maincolor',
-      '_mtp_table_padding' => 's-padding',
-      '_mtp_inner_padding' => 's-innerpadding',
-      '_mtp_logo_size' => 's-logosize',
-      '_mtp_border_color' => 's-bcolor',
-      '_mtp_bsizeh' => 's-bsizeh',
-      '_mtp_bsizev' => 's-bsizev',
-      '_mtp_bsizeoh' => 's-bsizeoh',
-      '_mtp_bsizeov' => 's-bsizeov',
-      '_mtp_head_bottom_border_color' => 's-bbcolor',
-      '_mtp_bbsize' => 's-bbsize',
+      '_mtrn_font_size' => 's-size',
+      '_mtrn_header_font_size' => 's-sizeheader',
+      '_mtrn_text_color' => 's-color',
+      '_mtrn_main_color' => 's-maincolor',
+      '_mtrn_table_padding' => 's-padding',
+      '_mtrn_inner_padding' => 's-innerpadding',
+      '_mtrn_border_color' => 's-bcolor',
+      '_mtrn_bsizeh' => 's-bsizeh',
+      '_mtrn_bsizev' => 's-bsizev',
+      '_mtrn_bsizeoh' => 's-bsizeoh',
+      '_mtrn_bsizeov' => 's-bsizeov',
+      '_mtrn_ehrsize' => 's-ehrsize',
+      '_mtrn_ehrtop' => 's-ehrtop',
+      '_mtrn_ehrbottom' => 's-ehrbottom',
+      '_mtrn_head_bottom_border_color' => 's-bbcolor',
+      '_mtrn_bbsize' => 's-bbsize',
     );
 
     // Get simple color/styling values
@@ -124,11 +126,11 @@ class MTP_Table_Gutenberg_Block {
 
     // Handle color+opacity combinations
     $color_opacity_mapping = array(
-      '_mtp_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtp_bg_opacity'),
-      '_mtp_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtp_even_bg_opacity'),
-      '_mtp_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtp_odd_bg_opacity'),
-      '_mtp_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtp_hover_bg_opacity'),
-      '_mtp_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtp_head_bg_opacity'),
+      '_mtrn_bg_color' => array('attr' => 's-bgcolor', 'opacity_meta' => '_mtrn_bg_opacity'),
+      '_mtrn_even_bg_color' => array('attr' => 's-bgeven', 'opacity_meta' => '_mtrn_even_bg_opacity'),
+      '_mtrn_odd_bg_color' => array('attr' => 's-bgodd', 'opacity_meta' => '_mtrn_odd_bg_opacity'),
+      '_mtrn_hover_bg_color' => array('attr' => 's-bgover', 'opacity_meta' => '_mtrn_hover_bg_opacity'),
+      '_mtrn_head_bg_color' => array('attr' => 's-bghead', 'opacity_meta' => '_mtrn_head_bg_opacity'),
     );
 
     foreach ($color_opacity_mapping as $color_meta => $config) {
@@ -136,7 +138,7 @@ class MTP_Table_Gutenberg_Block {
       $opacity = get_post_meta($table_id, $config['opacity_meta'], true);
 
       if (!empty($color)) {
-        $combined_color = MTP_Admin_Utilities::combine_color_opacity($color, $opacity);
+        $combined_color = MTRN_Admin_Utilities::combine_color_opacity($color, $opacity);
         $attributes[$config['attr']] = $combined_color;
       }
     }
@@ -152,11 +154,14 @@ class MTP_Table_Gutenberg_Block {
 
     // Define boolean parameter mapping
     $boolean_params = array(
-      '_mtp_suppress_wins' => 'sw',
-      '_mtp_suppress_logos' => 'sl',
-      '_mtp_suppress_num_matches' => 'sn',
-      '_mtp_projector_presentation' => 'bm',
-      '_mtp_navigation_for_groups' => 'nav',
+      '_mtrn_projector_presentation' => 'bm',
+      '_mtrn_si' => 'si',
+      '_mtrn_sf' => 'sf',
+      '_mtrn_st' => 'st',
+      '_mtrn_sg' => 'sg',
+      '_mtrn_se' => 'se',
+      '_mtrn_sp' => 'sp',
+      '_mtrn_sh' => 'sh',
     );
 
     foreach ($boolean_params as $meta_key => $attr_name) {
@@ -167,13 +172,13 @@ class MTP_Table_Gutenberg_Block {
     }
 
     // Get language setting
-    $language = get_post_meta($table_id, '_mtp_language', true);
+    $language = get_post_meta($table_id, '_mtrn_language', true);
     if (!empty($language)) {
       $attributes['lang'] = $language;
     }
 
     // Get group setting
-    $group = get_post_meta($table_id, '_mtp_group', true);
+    $group = get_post_meta($table_id, '_mtrn_group', true);
     if (!empty($group)) {
       $attributes['group'] = $group;
     }
@@ -182,16 +187,16 @@ class MTP_Table_Gutenberg_Block {
   }
 
   /**
-   * AJAX handler to get tournament tables
+   * AJAX handler to get matches
    */
   public function get_tables_ajax() {
     // Verify nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtp_block_nonce')) {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mtrn_matches_block_nonce')) {
       wp_die(esc_html__('Security check failed', 'meinturnierplan'));
     }
 
-    $tables = get_posts(array(
-      'post_type' => 'mtp_table',
+    $matches = get_posts(array(
+      'post_type' => 'mtrn_match_list',
       'post_status' => 'publish',
       'posts_per_page' => -1,
       'orderby' => 'title',
@@ -201,13 +206,13 @@ class MTP_Table_Gutenberg_Block {
     $options = array();
     $options[] = array(
       'value' => '',
-      'label' => __('Select a Tournament Table', 'meinturnierplan')
+      'label' => __('Select a Matches Table', 'meinturnierplan')
     );
 
-    foreach ($tables as $table) {
+    foreach ($matches as $match) {
       $options[] = array(
-        'value' => $table->ID,
-        'label' => $table->post_title
+        'value' => $match->ID,
+        'label' => $match->post_title
       );
     }
 

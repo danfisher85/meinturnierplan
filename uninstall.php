@@ -16,12 +16,12 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 // Define plugin path if not already defined
-if (!defined('MTP_PLUGIN_PATH')) {
-  define('MTP_PLUGIN_PATH', plugin_dir_path(__FILE__));
+if (!defined('MTRN_PLUGIN_PATH')) {
+  define('MTRN_PLUGIN_PATH', plugin_dir_path(__FILE__));
 }
 
 // Include the installer class which contains the uninstall method
-require_once MTP_PLUGIN_PATH . 'includes/class-mtp-installer.php';
+require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-installer.php';
 
 // Run the uninstall process - this will remove all plugin data
-MTP_Installer::uninstall();
+MTRN_Installer::uninstall();

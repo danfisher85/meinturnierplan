@@ -13,11 +13,11 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Class MTP_Requirements_Checker
+ * Class MTRN_Requirements_Checker
  *
  * Checks if the server environment meets the plugin requirements
  */
-class MTP_Requirements_Checker {
+class MTRN_Requirements_Checker {
 
   /**
    * Minimum PHP version required
