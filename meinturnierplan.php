@@ -26,7 +26,7 @@
  * Privacy Policy: https://www.meinturnierplan.de/legal.php?t=privacy&v=2019-04-20&l=en
  * Terms of Service: https://www.meinturnierplan.de/legal.php?t=tou&v=2019-04-20&l=en
  * 
- * TRACKING & COOKIES (Technical Analysis - December 2024):
+ * TRACKING & COOKIES:
  * 
  * The embedded widgets do NOT:
  *   - Use tracking scripts (no Google Analytics, Facebook Pixel, etc.)
