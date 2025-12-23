@@ -100,7 +100,6 @@ Because the embedded widgets do not use cookies, tracking scripts, or persistent
 * External integration with tournament management systems via IDs
 * Responsive design - Mobile-friendly styling with automatic adjustments
 * AJAX-powered live preview in admin area
-* Internationalization - Multi-language support (English, German, Spanish, French, Croatian, Italian, Polish, Slovenian, Turkish)
 * Automatic display on single custom post type pages
 
 = Usage =
