@@ -94,7 +94,7 @@
     var headBgColor = $("#mtrn_head_bg_color").val().replace("#", "") + opacityToHex(Math.round(($("#mtrn_head_bg_opacity").val() / 100) * 255));
 
     // Build complete shortcode (width and height removed for auto-sizing)
-    var newShortcode = '[mtp-table id="' + tournamentId + '" post_id="' + postId + '" lang="' + language + '"' +
+    var newShortcode = '[mtrn-table id="' + tournamentId + '" post_id="' + postId + '" lang="' + language + '"' +
                       ' s-size="' + fontSize + '"' +
                       ' s-sizeheader="' + headerFontSize + '"' +
                       ' s-color="' + textColor + '"' +

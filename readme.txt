@@ -109,7 +109,7 @@ Because the embedded widgets do not use cookies, tracking scripts, or persistent
 **Multiple Display Methods:**
 
 * **Gutenberg Blocks** - Native block editor support for both tables and matches
-* **Shortcodes** - `[mtp-table]` and `[mtp-matches]` with extensive customization options
+* **Shortcodes** - `[mtrn-table]` and `[mtrn-matches]` with extensive customization options
 * **Widgets** - Legacy widget support for both content types
 
 **Extensive Customization:**
@@ -131,21 +131,21 @@ Because the embedded widgets do not use cookies, tracking scripts, or persistent
 After activation, navigate to **Tournament Tables** or **Matches** in the admin menu to create your first content. You can then display your content using:
 
 1. **Gutenberg Blocks** - Add the Tournament Table or Matches block to any post or page
-2. **Shortcodes** - Use `[mtp-table id="123"]` or `[mtp-matches id="456"]`
+2. **Shortcodes** - Use `[mtrn-table id="123"]` or `[mtrn-matches id="456"]`
 3. **Widgets** - Add the Tournament Table or Matches widget to any widget area
 4. **Automatic Display** - Visit single tournament table or match list pages directly
 
 = Shortcode Examples =
 
 **Tournament Table:**
-`[mtp-table id="external-id"]`
-`[mtp-table post_id="123"]`
-`[mtp-table id="external-id" lang="de" group="A"]`
+`[mtrn-table id="external-id"]`
+`[mtrn-table post_id="123"]`
+`[mtrn-table id="external-id" lang="de" group="A"]`
 
 **Matches:**
-`[mtp-matches id="external-id"]`
-`[mtp-matches post_id="456"]`
-`[mtp-matches id="external-id" lang="de" group="A"]`
+`[mtrn-matches id="external-id"]`
+`[mtrn-matches post_id="456"]`
+`[mtrn-matches id="external-id" lang="de" group="A"]`
 
 = Links =
 
@@ -183,7 +183,7 @@ After activation, navigate to **Tournament Tables** or **Matches** in the admin 
 
 You have several options:
 1. Use the Gutenberg block: Add the "Tournament Table" block to any post or page
-2. Use the shortcode: `[mtp-table post_id="123"]` (replace 123 with your table's post ID)
+2. Use the shortcode: `[mtrn-table post_id="123"]` (replace 123 with your table's post ID)
 3. Use the widget: Go to Appearance > Widgets and add the "Tournament Table" widget
 4. Visit the single post page directly - content displays automatically
 

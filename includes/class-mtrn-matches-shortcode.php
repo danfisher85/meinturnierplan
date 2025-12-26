@@ -34,7 +34,7 @@ class MTRN_Matches_Shortcode {
    * Initialize shortcode
    */
   public function init() {
-    add_shortcode('mtp-matches', array($this, 'shortcode_callback'));
+    add_shortcode('mtrn-matches', array($this, 'shortcode_callback'));
   }
 
   /**
@@ -80,7 +80,7 @@ class MTRN_Matches_Shortcode {
       'sp' => '0',
       'sh' => '0',
       'gamenumbers' => '',
-    ), $atts, 'mtp-matches');
+    ), $atts, 'mtrn-matches');
 
     // Map lang to setlang for internal processing
     $atts['setlang'] = $atts['lang'];

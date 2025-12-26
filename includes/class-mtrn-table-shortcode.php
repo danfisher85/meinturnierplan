@@ -34,7 +34,7 @@ class MTRN_Table_Shortcode {
    * Initialize shortcode
    */
   public function init() {
-    add_shortcode('mtp-table', array($this, 'shortcode_callback'));
+    add_shortcode('mtrn-table', array($this, 'shortcode_callback'));
   }
 
   /**
@@ -72,7 +72,7 @@ class MTRN_Table_Shortcode {
       'sn' => '0', // Suppress num matches
       'bm' => '0', // Projector presentation
       'nav' => '0' // Navigation for groups
-    ), $atts, 'mtp-table');
+    ), $atts, 'mtrn-table');
 
     // Map lang to setlang for internal processing
     $atts['setlang'] = $atts['lang'];
