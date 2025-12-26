@@ -14,7 +14,7 @@ Display tournament tables and match lists using custom post types, supporting Gu
 
 MeinTurnierplan allows you to display tournament tables and match schedules from meinturnierplan.de on your WordPress site. Perfect for sports clubs, leagues, and tournament organizers who want to showcase standings, rankings, and match schedules on their WordPress website.
 
-== Third-Party Services ==
+== External (Third-Party) Service ==
 
 **MeinTurnierplan.de Service**
 
