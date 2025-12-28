@@ -7,6 +7,11 @@
  * @version 1.0.0
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 class MTRN_Table_Widget extends WP_Widget {
 
   /**

@@ -10,6 +10,11 @@
  * @version 1.0.0
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 // Exit if accessed directly or not uninstalling
 if (!defined('WP_UNINSTALL_PLUGIN')) {
   exit;
