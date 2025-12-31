@@ -40,6 +40,7 @@ class MTRN_Plugin {
   public $table_gutenberg_block;
   public $matches_gutenberg_block;
   public $single_content_filter;
+  public $admin_notices;
   /**
    * Main Plugin Instance
    */
@@ -90,6 +91,7 @@ class MTRN_Plugin {
     // Core classes
     include_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-admin-utilities.php';
     include_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-assets.php';
+    include_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-admin-notices.php';
 
     // Widget class
     include_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-table-widget.php';
@@ -119,6 +121,7 @@ class MTRN_Plugin {
     $this->matches_admin_meta_boxes = new MTRN_Admin_Matches_Meta_Boxes($this->matches_renderer);
     $this->table_ajax_handler = new MTRN_Table_Ajax_Handler($this->table_renderer);
     $this->matches_ajax_handler = new MTRN_Matches_Ajax_Handler($this->matches_renderer);
+    $this->admin_notices = new MTRN_Admin_Notices();
     $this->assets = new MTRN_Assets();
     $this->table_gutenberg_block = new MTRN_Table_Gutenberg_Block($this->table_renderer);
     $this->matches_gutenberg_block = new MTRN_Matches_Gutenberg_Block($this->matches_renderer);

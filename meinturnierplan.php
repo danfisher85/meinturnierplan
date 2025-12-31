@@ -38,11 +38,6 @@ if (!MTRN_Requirements_Checker::check()) {
   return;
 }
 
-// Include admin notices
-if (is_admin()) {
-  require_once plugin_dir_path(__FILE__) . 'includes/admin-notices.php';
-}
-
 // Include required files
 require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-plugin.php';
 require_once MTRN_PLUGIN_PATH . 'includes/class-mtrn-installer.php';
