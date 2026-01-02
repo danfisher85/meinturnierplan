@@ -18,9 +18,7 @@ MeinTurnierplan allows you to display tournament tables and match schedules from
 
 **MeinTurnierplan.de Service**
 
-This plugin uses meinturnierplan.de for both displaying tournament content and retrieving tournament configuration data.
-
-* **Service Used:** MeinTurnierplan.de (https://www.meinturnierplan.de/)
+This plugin uses [MeinTurnierplan.de](https://www.meinturnierplan.de/) for both displaying tournament content and retrieving tournament configuration data.
 
 **What it does:**
 
@@ -56,7 +54,7 @@ This plugin uses meinturnierplan.de for both displaying tournament content and r
 
 **What the Embedded Widgets Collect:**
 
-Based on technical analysis of the embedded widgets (as of December 2024):
+The embedded widgets:
 
 * **NO tracking scripts** - The embedded widgets do not use Google Analytics or any other analytics services
 * **NO cookies** - The widgets do not set any cookies in users' browsers
@@ -66,6 +64,7 @@ Based on technical analysis of the embedded widgets (as of December 2024):
 **What Data May Be Collected:**
 
 When users view embedded tournament content, meinturnierplan.de's web server may automatically log:
+
 * IP addresses (standard web server logs)
 * Browser type and version (from User-Agent header)
 * Referrer URL (your website where the widget is embedded)
@@ -73,11 +72,10 @@ When users view embedded tournament content, meinturnierplan.de's web server may
 
 This is standard web server logging and does not involve cookies, tracking scripts, or persistent user identification.
 
-**Important:** While the embedded widgets themselves are clean and don't track users, the main meinturnierplan.de website uses Google Analytics according to their privacy policy. However, this tracking is NOT present in the embedded widget endpoints used by this plugin.
-
 == Privacy Notice ==
 
 **This plugin itself does not:**
+
 * Track users
 * Collect personal data
 * Use cookies or localStorage
@@ -87,7 +85,8 @@ This is standard web server logging and does not involve cookies, tracking scrip
 The only data sent by this plugin is the Tournament ID to meinturnierplan.de when you explicitly add tournament content (via shortcode, block, or widget) to display on your pages.
 
 **Embedded Widget Behavior:**
-Based on technical analysis, the embedded widgets from meinturnierplan.de:
+The embedded widgets from meinturnierplan.de:
+
 * Do NOT use tracking scripts (no Google Analytics in widgets)
 * Do NOT set cookies
 * Do NOT load third-party services (no Google Fonts, AdSense, etc.)
@@ -138,14 +137,16 @@ After activation, navigate to **Tournament Tables** or **Matches** in the admin 
 = Shortcode Examples =
 
 **Tournament Table:**
-`[mtrn-table id="external-id"]`
-`[mtrn-table post_id="123"]`
-`[mtrn-table id="external-id" lang="de" group="A"]`
+
+* `[mtrn-table id="external-id"]`
+* `[mtrn-table post_id="123"]`
+* `[mtrn-table id="external-id" lang="de" group="A"]`
 
 **Matches:**
-`[mtrn-matches id="external-id"]`
-`[mtrn-matches post_id="456"]`
-`[mtrn-matches id="external-id" lang="de" group="A"]`
+
+* `[mtrn-matches id="external-id"]`
+* `[mtrn-matches post_id="456"]`
+* `[mtrn-matches id="external-id" lang="de" group="A"]`
 
 = Links =
 
@@ -176,6 +177,11 @@ After activation, navigate to **Tournament Tables** or **Matches** in the admin 
 3. Configure settings and styling options
 4. Use the preview section to see changes in real-time
 5. Publish and display using blocks, shortcodes, or widgets
+
+== Screenshots ==
+
+1. Add a new Tournament Table.
+1. Add a New Tournament Match List.
 
 == Frequently Asked Questions ==
 
