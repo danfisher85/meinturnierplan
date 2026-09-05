@@ -2,9 +2,9 @@
 Contributors: meinturnierplan, ramzesimus
 Tags: tournament, sports, table, matches, standings
 Requires at least: 6.3
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ This plugin uses language-specific service domains for both displaying tournamen
 **Domain selection by language:**
 
 * German (`de`) -> `https://www.meinturnierplan.de`
-* English (`en`) -> `https://tournamentbase.com`
+* English (`en`) -> `https://tournamentbase.co.uk`
 * French (`fr`) -> `https://tournoiplus.fr`
 * Polish (`pl`) -> `https://turniej.pl`
 * Spanish (`es`) -> `https://torneo.es`
@@ -285,6 +285,10 @@ Display Options:
 
 == Changelog ==
 
+= 1.2.1 =
+* Tweak - WordPress 7.1 compatibility confirmed, bump "Tested up to" to 7.1
+* Tweak - Update the English service domain from tournamentbase.com to tournamentbase.co.uk
+
 = 1.2.0 =
 * Feature - Add responsive layout option for tournament tables and match lists. When enabled, long names wrap and the embed scrolls horizontally instead of being clipped on narrow screens (e.g. mobile)
 * Feature - Add new `s-wrap` shortcode attribute and a "Responsive" settings group with live preview for both post types
@@ -319,6 +323,9 @@ Display Options:
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+* WordPress 7.1 compatibility and the new tournamentbase.co.uk domain for English-language embeds and API requests.
 
 = 1.2.0 =
 * Adds an optional responsive layout for tables and match lists so embeds adapt to mobile screens via the new `s-wrap` attribute / "Responsive" setting.

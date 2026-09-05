@@ -4,7 +4,7 @@
  *
  * @package MeinTurnierplan
  * @since   1.0.0
- * @version 1.1.1
+ * @version 1.2.1
  */
 
 // Prevent direct access
@@ -442,7 +442,7 @@ class MTRN_Admin_Utilities {
 
     $domain_map = array(
       'de' => 'https://www.meinturnierplan.de',
-      'en' => 'https://tournamentbase.com',
+      'en' => 'https://tournamentbase.co.uk',
       'fr' => 'https://tournoiplus.fr',
       'pl' => 'https://turniej.pl',
       'es' => 'https://torneo.es',
