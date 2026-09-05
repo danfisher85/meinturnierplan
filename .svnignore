@@ -6,6 +6,8 @@ package.json
 package-lock.json
 .svnignore
 .DS_Store
+*~
+*.bak
 *.log
 .env
 .vscode
